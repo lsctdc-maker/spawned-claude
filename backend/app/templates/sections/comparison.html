@@ -1,0 +1,65 @@
+<!-- 비교표 섹션 -->
+<div style="width:{{ config.page_width }}px;max-width:100%;margin:0 auto;
+            padding:50px 40px;background:#F8F9FA;">
+
+    {% if copy.headline %}
+    <h2 style="font-size:26px;font-weight:700;color:{{ palette.text_primary }};
+               text-align:center;margin:0 0 10px 0;
+               font-family:{{ config.font_family }};">
+        {{ copy.headline }}
+    </h2>
+    {% endif %}
+
+    {% if copy.subheadline %}
+    <p style="font-size:15px;color:{{ palette.text_secondary }};
+              text-align:center;margin:0 0 36px 0;
+              font-family:{{ config.font_family }};">
+        {{ copy.subheadline }}
+    </p>
+    {% endif %}
+
+    {% if copy.bullet_points %}
+    <div style="max-width:700px;margin:0 auto;border-radius:12px;overflow:hidden;
+                box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+
+        <!-- 테이블 헤더 -->
+        <div style="display:flex;background:{{ palette.primary }};color:#FFFFFF;">
+            <div style="flex:2;padding:16px 20px;font-size:14px;font-weight:600;
+                        font-family:{{ config.font_family }};">비교 항목</div>
+            <div style="flex:2;padding:16px 20px;font-size:14px;font-weight:600;
+                        text-align:center;background:{{ palette.primary }};
+                        font-family:{{ config.font_family }};">
+                {{ copy.extra_data.get('our_brand', '우리 제품') if copy.extra_data else '우리 제품' }}
+            </div>
+            <div style="flex:2;padding:16px 20px;font-size:14px;font-weight:600;
+                        text-align:center;background:#888888;
+                        font-family:{{ config.font_family }};">일반 제품</div>
+        </div>
+
+        <!-- 테이블 바디 -->
+        {% for row in copy.bullet_points %}
+        {% set cols = row.split('|') %}
+        {% if cols|length >= 3 %}
+        <div style="display:flex;background:{{ '#FFFFFF' if loop.index is odd else '#FAFAFA' }};
+                    border-bottom:1px solid #F0F0F0;">
+            <div style="flex:2;padding:14px 20px;font-size:14px;font-weight:500;
+                        color:{{ palette.text_primary }};
+                        font-family:{{ config.font_family }};">
+                {{ cols[0].strip() }}
+            </div>
+            <div style="flex:2;padding:14px 20px;font-size:14px;text-align:center;
+                        color:{{ palette.primary }};font-weight:600;
+                        font-family:{{ config.font_family }};">
+                {{ cols[1].strip() }}
+            </div>
+            <div style="flex:2;padding:14px 20px;font-size:14px;text-align:center;
+                        color:{{ palette.text_muted }};
+                        font-family:{{ config.font_family }};">
+                {{ cols[2].strip() }}
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>

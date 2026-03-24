@@ -1,0 +1,55 @@
+<!-- 상세 설명 섹션 -->
+<div style="width:{{ config.page_width }}px;max-width:100%;margin:0 auto;
+            padding:50px 40px;background:{{ palette.background }};">
+
+    {% if copy.headline %}
+    <h2 style="font-size:26px;font-weight:700;color:{{ palette.text_primary }};
+               margin:0 0 10px 0;font-family:{{ config.font_family }};">
+        {{ copy.headline }}
+    </h2>
+    {% endif %}
+
+    {% if copy.subheadline %}
+    <p style="font-size:15px;color:{{ palette.primary }};font-weight:500;
+              margin:0 0 30px 0;font-family:{{ config.font_family }};">
+        {{ copy.subheadline }}
+    </p>
+    {% endif %}
+
+    {% if copy.body_text %}
+    <div style="margin-bottom:30px;">
+        {% for paragraph in copy.body_text.split('\n') %}
+        {% if paragraph.strip() %}
+        <p style="font-size:15px;color:{{ palette.text_primary }};
+                  line-height:1.9;margin:0 0 14px 0;
+                  font-family:{{ config.font_family }};">
+            {{ paragraph }}
+        </p>
+        {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if copy.bullet_points %}
+    <div style="background:#F8F9FA;border-radius:12px;padding:28px 30px;
+                border-left:4px solid {{ palette.primary }};">
+        {% for point in copy.bullet_points %}
+        <div style="display:flex;align-items:flex-start;margin-bottom:{{ '0' if loop.last else '14px' }};">
+            <span style="color:{{ palette.primary }};font-size:14px;margin-right:10px;
+                         margin-top:2px;flex-shrink:0;">●</span>
+            <span style="font-size:15px;color:{{ palette.text_primary }};line-height:1.6;
+                         font-family:{{ config.font_family }};">
+                {{ point }}
+            </span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if images.get('detail') %}
+    <div style="margin-top:30px;text-align:center;">
+        <img src="{{ images.detail }}" alt="상세 이미지"
+             style="max-width:100%;border-radius:8px;">
+    </div>
+    {% endif %}
+</div>

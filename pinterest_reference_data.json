@@ -1,0 +1,127 @@
+{
+  "collected_date": "2026-03-23",
+  "source": "Pinterest (kr.pinterest.com)",
+  "purpose": "한국형 상세페이지 레퍼런스 수집",
+  "categories": {
+    "food": {
+      "category_name_ko": "식품",
+      "search_query": "한국 식품 상세페이지 디자인",
+      "pins": [
+        {
+          "url": "https://kr.pinterest.com/pin/808044358182133309/",
+          "pin_id": "808044358182133309"
+        },
+        {
+          "url": "https://kr.pinterest.com/pin/606367537337906462/",
+          "pin_id": "606367537337906462"
+        },
+        {
+          "url": "https://kr.pinterest.com/pin/539306124140773941/",
+          "pin_id": "539306124140773941"
+        },
+        {
+          "url": "https://kr.pinterest.com/pin/426575395980929931/",
+          "pin_id": "426575395980929931"
+        }
+      ],
+      "pin_count": 4
+    },
+    "cosmetics": {
+      "category_name_ko": "화장품",
+      "search_query": "한국 화장품 상세페이지 디자인",
+      "pins": [
+        {
+          "url": "https://kr.pinterest.com/pin/416371928070727522/",
+          "pin_id": "416371928070727522"
+        },
+        {
+          "url": "https://kr.pinterest.com/pin/352758583333596378/",
+          "pin_id": "352758583333596378"
+        },
+        {
+          "url": "https://kr.pinterest.com/pin/1018095059892730936/",
+          "pin_id": "1018095059892730936"
+        },
+        {
+          "url": "https://kr.pinterest.com/pin/426575395980929931/",
+          "pin_id": "426575395980929931"
+        }
+      ],
+      "pin_count": 4
+    },
+    "health_supplements": {
+      "category_name_ko": "건강기능식품",
+      "search_query": "한국 건강기능식품 상세페이지 디자인",
+      "pins": [
+        {
+          "url": "https://kr.pinterest.com/pin/418201515417839789/",
+          "pin_id": "418201515417839789"
+        },
+        {
+          "url": "https://kr.pinterest.com/pin/426575395980655193/",
+          "pin_id": "426575395980655193"
+        },
+        {
+          "url": "https://kr.pinterest.com/pin/65513369576226661/",
+          "pin_id": "65513369576226661"
+        },
+        {
+          "url": "https://kr.pinterest.com/pin/858076535293836628/",
+          "pin_id": "858076535293836628"
+        },
+        {
+          "url": "https://kr.pinterest.com/pin/1018095060748279198/",
+          "pin_id": "1018095060748279198"
+        }
+      ],
+      "pin_count": 5
+    },
+    "electronics": {
+      "category_name_ko": "가전제품",
+      "search_query": "한국 가전제품 상세페이지 디자인",
+      "pins": [
+        {
+          "url": "https://kr.pinterest.com/pin/808044358182133309/",
+          "pin_id": "808044358182133309"
+        },
+        {
+          "url": "https://kr.pinterest.com/pin/606367537337906462/",
+          "pin_id": "606367537337906462"
+        },
+        {
+          "url": "https://kr.pinterest.com/pin/539306124140773941/",
+          "pin_id": "539306124140773941"
+        }
+      ],
+      "pin_count": 3
+    },
+    "fashion": {
+      "category_name_ko": "패션/의류",
+      "search_query": "한국 패션 의류 상세페이지 디자인",
+      "pins": [
+        {
+          "url": "https://kr.pinterest.com/pin/990369774789517239/",
+          "pin_id": "990369774789517239"
+        },
+        {
+          "url": "https://kr.pinterest.com/pin/731412795754956908/",
+          "pin_id": "731412795754956908"
+        },
+        {
+          "url": "https://kr.pinterest.com/pin/605171268691927134/",
+          "pin_id": "605171268691927134"
+        },
+        {
+          "url": "https://kr.pinterest.com/pin/955115033453357830/",
+          "pin_id": "955115033453357830"
+        },
+        {
+          "url": "https://kr.pinterest.com/pin/296604325471836802/",
+          "pin_id": "296604325471836802"
+        }
+      ],
+      "pin_count": 5
+    }
+  },
+  "total_pins": 21
+}

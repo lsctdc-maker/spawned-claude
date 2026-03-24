@@ -1,0 +1,1667 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 상세페이지 기획자 — 한국형 상세페이지 자동 생성기 v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   RESET & BASE
+   ═══════════════════════════════════════════════ */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --primary: #6366f1;
+  --primary-light: #eef2ff;
+  --bg: #f4f5f9;
+  --card: #fff;
+  --text: #222;
+  --text-sub: #666;
+  --border: #e2e4ea;
+  --radius: 14px;
+  --shadow: 0 2px 12px rgba(0,0,0,.06);
+  --transition: .3s cubic-bezier(.4,0,.2,1);
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Noto Sans KR', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+button { cursor:pointer; font-family:inherit; border:none; }
+input, textarea, select { font-family:inherit; }
+
+/* ═══════════════════════════════════════════════
+   APP HEADER
+   ═══════════════════════════════════════════════ */
+.app-header {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  padding: 14px 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: sticky; top: 0; z-index: 1000;
+  box-shadow: 0 1px 8px rgba(0,0,0,.04);
+}
+.logo-icon {
+  width: 38px; height: 38px; border-radius: 11px;
+  background: linear-gradient(135deg, #6366f1, #a78bfa);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 900; font-size: 17px;
+  flex-shrink: 0;
+}
+.app-header h1 { font-size: 17px; font-weight: 800; color: #111; }
+.app-header .badge {
+  font-size: 11px; background: linear-gradient(135deg,#6366f1,#a78bfa);
+  color: #fff; padding: 2px 8px; border-radius: 20px; font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════
+   PROGRESS BAR
+   ═══════════════════════════════════════════════ */
+.progress-bar-wrap {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  padding: 16px 32px;
+}
+.progress-inner {
+  max-width: 700px; margin: 0 auto;
+  display: flex; align-items: center; gap: 0;
+}
+.step-dot {
+  display: flex; flex-direction: column; align-items: center;
+  position: relative; z-index: 2; flex-shrink: 0;
+}
+.step-circle {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: #e9ecef; color: #aaa;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 14px;
+  transition: var(--transition);
+  border: 2px solid transparent;
+}
+.step-dot.active .step-circle {
+  background: var(--primary); color: #fff;
+  box-shadow: 0 2px 12px rgba(99,102,241,.35);
+}
+.step-dot.done .step-circle {
+  background: #10b981; color: #fff;
+}
+.step-label {
+  font-size: 11px; color: #aaa; margin-top: 5px; font-weight: 500;
+  white-space: nowrap; transition: var(--transition);
+}
+.step-dot.active .step-label, .step-dot.done .step-label { color: var(--text); }
+.step-line {
+  flex: 1; height: 3px; background: #e9ecef;
+  border-radius: 2px; position: relative; overflow: hidden;
+}
+.step-line .fill {
+  position: absolute; left: 0; top: 0; height: 100%;
+  background: var(--primary); width: 0;
+  transition: width .5s ease;
+}
+.step-line.done .fill { width: 100%; }
+
+/* ═══════════════════════════════════════════════
+   MAIN CONTENT AREA
+   ═══════════════════════════════════════════════ */
+.main-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 32px;
+}
+.step-panel {
+  display: none;
+  animation: fadeSlideIn .4s ease forwards;
+}
+.step-panel.active { display: block; }
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════════════════════════════════════════
+   CARD FORM (Step 1, 3)
+   ═══════════════════════════════════════════════ */
+.card-form {
+  max-width: 600px; margin: 0 auto;
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 36px 32px;
+}
+.card-form h2 {
+  font-size: 22px; font-weight: 800; margin-bottom: 4px;
+}
+.card-form .desc {
+  color: var(--text-sub); font-size: 14px; margin-bottom: 28px; line-height: 1.5;
+}
+.form-group { margin-bottom: 20px; }
+.form-group label {
+  display: block; font-size: 13px; font-weight: 600;
+  color: #444; margin-bottom: 6px;
+}
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group select,
+.form-group textarea {
+  width: 100%; padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px; font-size: 14px;
+  transition: var(--transition);
+  background: #fafbfc;
+  outline: none;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99,102,241,.12);
+  background: #fff;
+}
+
+/* 카테고리 카드 선택 */
+.cat-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 10px; margin-bottom: 20px;
+}
+.cat-card {
+  background: #fafbfc; border: 2px solid var(--border);
+  border-radius: 12px; padding: 16px 10px;
+  text-align: center; cursor: pointer;
+  transition: var(--transition);
+}
+.cat-card:hover { border-color: #bbb; transform: translateY(-1px); }
+.cat-card.selected { border-color: var(--primary); background: var(--primary-light); }
+.cat-card .emoji { font-size: 28px; margin-bottom: 4px; }
+.cat-card .cat-name { font-size: 13px; font-weight: 600; }
+
+/* 이미지 업로드 영역 */
+.upload-zone {
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 32px; text-align: center;
+  cursor: pointer; transition: var(--transition);
+  background: #fafbfc;
+}
+.upload-zone:hover { border-color: var(--primary); background: var(--primary-light); }
+.upload-zone.dragover { border-color: var(--primary); background: var(--primary-light); transform: scale(1.01); }
+.upload-zone .icon { font-size: 36px; margin-bottom: 8px; }
+.upload-zone p { font-size: 13px; color: var(--text-sub); }
+.upload-zone .preview-grid {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; justify-content: center;
+}
+.upload-zone .preview-thumb {
+  width: 72px; height: 72px; border-radius: 8px;
+  background: #e9ecef; display: flex; align-items: center; justify-content: center;
+  font-size: 10px; color: #888; position: relative; overflow: hidden;
+}
+.upload-zone .preview-thumb img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+
+/* 버튼 */
+.btn-primary {
+  background: var(--primary);
+  color: #fff; padding: 13px 32px;
+  border-radius: 10px; font-size: 15px; font-weight: 700;
+  transition: var(--transition); width: 100%;
+  box-shadow: 0 2px 10px rgba(99,102,241,.25);
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(99,102,241,.35); }
+.btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+.btn-secondary {
+  background: #f0f0f5; color: #555;
+  padding: 10px 20px; border-radius: 10px;
+  font-size: 14px; font-weight: 600;
+  transition: var(--transition);
+}
+.btn-secondary:hover { background: #e4e4ec; }
+
+.btn-row { display: flex; gap: 10px; margin-top: 24px; }
+
+/* ═══════════════════════════════════════════════
+   STEP 2 — CHAT UI
+   ═══════════════════════════════════════════════ */
+.chat-container {
+  max-width: 640px; margin: 0 auto;
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: flex; flex-direction: column;
+  height: calc(100vh - 220px);
+  min-height: 500px;
+  overflow: hidden;
+}
+.chat-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.chat-header .avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg,#6366f1,#a78bfa);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 16px; font-weight: 900;
+}
+.chat-header .info h3 { font-size: 14px; font-weight: 700; }
+.chat-header .info p { font-size: 12px; color: #888; }
+
+.chat-messages {
+  flex: 1; overflow-y: auto; padding: 20px;
+  display: flex; flex-direction: column; gap: 14px;
+  scroll-behavior: smooth;
+}
+.msg {
+  display: flex; gap: 10px;
+  max-width: 85%;
+  animation: msgIn .3s ease forwards;
+}
+@keyframes msgIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.msg.ai { align-self: flex-start; }
+.msg.user { align-self: flex-end; flex-direction: row-reverse; }
+.msg .bubble {
+  padding: 12px 16px; border-radius: 16px;
+  font-size: 14px; line-height: 1.6;
+}
+.msg.ai .bubble {
+  background: #f0f2f8; color: var(--text);
+  border-bottom-left-radius: 4px;
+}
+.msg.user .bubble {
+  background: var(--primary); color: #fff;
+  border-bottom-right-radius: 4px;
+}
+.msg .small-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: linear-gradient(135deg,#6366f1,#a78bfa);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 11px; font-weight: 900; flex-shrink: 0;
+  margin-top: 2px;
+}
+.msg.user .small-avatar {
+  background: #e0e2eb; color: #666;
+}
+.skip-btn {
+  background: none; color: #888; font-size: 12px;
+  padding: 4px 0; margin-top: 4px;
+  text-decoration: underline; display: inline-block;
+}
+.skip-btn:hover { color: var(--primary); }
+
+.chat-input-area {
+  border-top: 1px solid var(--border);
+  padding: 14px 16px;
+  display: flex; gap: 10px;
+}
+.chat-input-area input {
+  flex: 1; border: 1.5px solid var(--border);
+  border-radius: 10px; padding: 10px 14px;
+  font-size: 14px; outline: none;
+  transition: var(--transition);
+}
+.chat-input-area input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99,102,241,.12);
+}
+.chat-input-area .send-btn {
+  width: 42px; height: 42px; border-radius: 10px;
+  background: var(--primary); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; transition: var(--transition);
+}
+.chat-input-area .send-btn:hover { background: #4f46e5; }
+
+/* USP 카드 영역 */
+.usp-section {
+  max-width: 640px; margin: 20px auto 0;
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+}
+.usp-section h3 { font-size: 16px; font-weight: 700; margin-bottom: 14px; }
+.usp-card {
+  background: #f8f9fc; border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 16px;
+  margin-bottom: 10px; display: flex; align-items: center; gap: 12px;
+  transition: var(--transition);
+}
+.usp-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+.usp-card .usp-emoji { font-size: 24px; flex-shrink: 0; }
+.usp-card .usp-text { flex: 1; }
+.usp-card .usp-title { font-size: 14px; font-weight: 700; }
+.usp-card .usp-desc { font-size: 12px; color: var(--text-sub); margin-top: 2px; }
+.usp-card .usp-actions { display: flex; gap: 4px; }
+.usp-card .usp-actions button {
+  width: 28px; height: 28px; border-radius: 6px;
+  background: #fff; border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; transition: var(--transition);
+}
+.usp-card .usp-actions button:hover { border-color: #f44; color: #f44; }
+.add-usp-btn {
+  width: 100%; padding: 10px; border: 2px dashed var(--border);
+  border-radius: 10px; background: none;
+  color: var(--text-sub); font-size: 13px; font-weight: 600;
+  transition: var(--transition);
+}
+.add-usp-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+/* Analyzing 애니메이션 */
+.analyzing-overlay {
+  display: none;
+  flex-direction: column; align-items: center; justify-content: center;
+  padding: 40px 20px;
+}
+.analyzing-overlay.show { display: flex; }
+.analyzing-spinner {
+  width: 48px; height: 48px;
+  border: 3px solid #e9ecef; border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.analyzing-overlay p {
+  margin-top: 16px; font-size: 14px; color: var(--text-sub);
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════════
+   STEP 3 — TONE SELECTION
+   ═══════════════════════════════════════════════ */
+.tone-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 14px; margin-bottom: 20px;
+}
+.tone-card {
+  border: 2px solid var(--border);
+  border-radius: 14px; padding: 24px 18px;
+  text-align: center; cursor: pointer;
+  transition: var(--transition); background: var(--card);
+}
+.tone-card:hover { border-color: #bbb; transform: translateY(-2px); box-shadow: var(--shadow); }
+.tone-card.selected { border-color: var(--primary); background: var(--primary-light); }
+.tone-card .tone-emoji { font-size: 36px; margin-bottom: 8px; }
+.tone-card .tone-name { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.tone-card .tone-desc { font-size: 12px; color: var(--text-sub); line-height: 1.5; }
+.tone-preview {
+  background: #f8f9fc; border-radius: 10px; padding: 16px;
+  font-size: 13px; color: #555; line-height: 1.7;
+  margin-bottom: 20px; min-height: 60px;
+  border-left: 3px solid var(--primary);
+  display: none;
+}
+.tone-preview.show { display: block; animation: fadeSlideIn .3s ease; }
+
+/* ═══════════════════════════════════════════════
+   STEP 4 — PREVIEW & EDIT
+   ═══════════════════════════════════════════════ */
+.editor-layout {
+  display: flex; gap: 20px; align-items: flex-start;
+}
+.section-sidebar {
+  width: 280px; flex-shrink: 0;
+  background: var(--card); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 16px;
+  position: sticky; top: 130px;
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
+}
+.section-sidebar h3 {
+  font-size: 14px; font-weight: 700; margin-bottom: 12px;
+  color: #444;
+}
+.section-list-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 10px; border-radius: 8px;
+  cursor: grab; transition: var(--transition);
+  font-size: 13px; font-weight: 500;
+  border: 1px solid transparent;
+  margin-bottom: 4px;
+  user-select: none;
+}
+.section-list-item:hover { background: #f4f5f9; }
+.section-list-item.dragging { opacity: .5; border: 1px dashed var(--primary); }
+.section-list-item .drag-handle { color: #ccc; cursor: grab; font-size: 14px; }
+.section-list-item .sec-name { flex: 1; }
+.section-list-item .sec-del {
+  width: 22px; height: 22px; border-radius: 5px;
+  background: none; color: #ccc; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition);
+}
+.section-list-item .sec-del:hover { color: #f44; background: #fff0f0; }
+.add-section-btn {
+  width: 100%; padding: 10px; margin-top: 8px;
+  border: 2px dashed var(--border); border-radius: 8px;
+  background: none; color: var(--text-sub);
+  font-size: 13px; font-weight: 600;
+  transition: var(--transition);
+}
+.add-section-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+/* 미리보기 영역 */
+.preview-frame {
+  flex: 1; max-width: 880px;
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 24px rgba(0,0,0,.08);
+  overflow: hidden;
+}
+.preview-toolbar {
+  background: #f8f9fc;
+  border-bottom: 1px solid var(--border);
+  padding: 10px 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.preview-toolbar .dot { width: 10px; height: 10px; border-radius: 50%; }
+.preview-toolbar .dot.r { background: #f44; }
+.preview-toolbar .dot.y { background: #ffa500; }
+.preview-toolbar .dot.g { background: #0c0; }
+.preview-toolbar .url-bar {
+  flex: 1; margin-left: 12px; background: #fff;
+  border: 1px solid var(--border); border-radius: 6px;
+  padding: 5px 12px; font-size: 12px; color: #888;
+}
+.preview-content {
+  width: 860px; margin: 0 auto;
+  padding: 0;
+}
+
+/* 미리보기 내 섹션 */
+.preview-section {
+  position: relative;
+  transition: var(--transition);
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+.preview-section:hover { border-color: rgba(99,102,241,.3); }
+.preview-section .edit-overlay {
+  position: absolute; top: 8px; right: 8px;
+  display: none; gap: 4px;
+}
+.preview-section:hover .edit-overlay { display: flex; }
+.edit-overlay button {
+  width: 30px; height: 30px; border-radius: 6px;
+  background: rgba(255,255,255,.95); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: #555; transition: var(--transition);
+  box-shadow: 0 1px 4px rgba(0,0,0,.1);
+}
+.edit-overlay button:hover { color: var(--primary); border-color: var(--primary); }
+
+/* 미리보기 섹션 스타일 */
+.sec-hero {
+  padding: 60px 40px; text-align: center;
+  background: linear-gradient(135deg, var(--cat-primary), var(--cat-primary-dark, #333));
+  color: #fff; position: relative; overflow: hidden;
+}
+.sec-hero::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at 30% 70%, rgba(255,255,255,.1), transparent 60%);
+}
+.sec-hero * { position: relative; z-index: 1; }
+.sec-hero .hero-tag {
+  display: inline-block; background: rgba(255,255,255,.2);
+  padding: 4px 14px; border-radius: 20px;
+  font-size: 12px; font-weight: 600; margin-bottom: 16px;
+  backdrop-filter: blur(4px);
+}
+.sec-hero h2 {
+  font-size: 32px; font-weight: 900; margin-bottom: 12px; line-height: 1.3;
+}
+.sec-hero p { font-size: 16px; opacity: .9; margin-bottom: 24px; line-height: 1.6; }
+.sec-hero .hero-cta {
+  display: inline-block; background: #fff;
+  color: var(--cat-primary); padding: 14px 36px;
+  border-radius: 50px; font-size: 15px; font-weight: 700;
+  text-decoration: none; transition: var(--transition);
+}
+
+.sec-usp { padding: 48px 40px; background: #fff; }
+.sec-usp h3 {
+  text-align: center; font-size: 22px; font-weight: 800;
+  margin-bottom: 32px; color: var(--text);
+}
+.usp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+.usp-item {
+  background: var(--cat-light); border-radius: 14px;
+  padding: 24px 20px; text-align: center;
+  transition: var(--transition);
+}
+.usp-item:hover { transform: translateY(-3px); box-shadow: 0 4px 16px rgba(0,0,0,.06); }
+.usp-item .usp-icon { font-size: 36px; margin-bottom: 10px; }
+.usp-item h4 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.usp-item p { font-size: 13px; color: var(--text-sub); line-height: 1.6; }
+
+.sec-detail { padding: 48px 40px; background: #fafbfc; }
+.sec-detail h3 { font-size: 22px; font-weight: 800; margin-bottom: 24px; text-align: center; }
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: center; }
+.detail-text p { font-size: 14px; line-height: 1.8; color: #555; margin-bottom: 12px; }
+.detail-img-placeholder {
+  width: 100%; aspect-ratio: 4/3; background: linear-gradient(135deg, var(--cat-light), #e9ecef);
+  border-radius: 14px; display: flex; align-items: center; justify-content: center;
+  color: #bbb; font-size: 14px;
+}
+
+.sec-compare { padding: 48px 40px; background: #fff; }
+.sec-compare h3 { font-size: 22px; font-weight: 800; margin-bottom: 24px; text-align: center; }
+.compare-table {
+  width: 100%; border-collapse: collapse;
+  border-radius: 12px; overflow: hidden;
+  box-shadow: 0 1px 6px rgba(0,0,0,.06);
+}
+.compare-table th, .compare-table td {
+  padding: 14px 20px; font-size: 14px; text-align: center;
+}
+.compare-table thead th {
+  background: var(--cat-primary); color: #fff; font-weight: 700;
+}
+.compare-table thead th:first-child { background: #888; }
+.compare-table tbody tr:nth-child(even) { background: #f8f9fc; }
+.compare-table tbody td:last-child { color: var(--cat-primary); font-weight: 700; }
+
+.sec-howto { padding: 48px 40px; background: #fafbfc; }
+.sec-howto h3 { font-size: 22px; font-weight: 800; margin-bottom: 32px; text-align: center; }
+.howto-steps { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+.howto-step {
+  flex: 1; min-width: 180px; max-width: 220px;
+  text-align: center;
+}
+.howto-num {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--cat-primary); color: #fff;
+  font-size: 18px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 12px;
+}
+.howto-step h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.howto-step p { font-size: 12px; color: var(--text-sub); line-height: 1.5; }
+
+.sec-trust { padding: 40px; background: #fff; text-align: center; }
+.sec-trust h3 { font-size: 22px; font-weight: 800; margin-bottom: 20px; }
+.trust-badges { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
+.trust-badge {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.trust-badge .badge-icon {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--cat-light);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+}
+.trust-badge span { font-size: 12px; font-weight: 600; color: #555; }
+
+.sec-review { padding: 48px 40px; background: #fafbfc; }
+.sec-review h3 { font-size: 22px; font-weight: 800; margin-bottom: 24px; text-align: center; }
+.review-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.review-card {
+  background: #fff; border-radius: 12px; padding: 20px;
+  box-shadow: 0 1px 6px rgba(0,0,0,.05);
+}
+.review-card .stars { color: #ffa500; font-size: 14px; margin-bottom: 8px; }
+.review-card .review-text { font-size: 13px; color: #555; line-height: 1.6; margin-bottom: 10px; }
+.review-card .reviewer { font-size: 12px; color: #999; }
+
+.sec-faq { padding: 48px 40px; background: #fff; }
+.sec-faq h3 { font-size: 22px; font-weight: 800; margin-bottom: 24px; text-align: center; }
+.faq-item {
+  border: 1px solid var(--border); border-radius: 10px;
+  margin-bottom: 10px; overflow: hidden;
+}
+.faq-question {
+  width: 100%; padding: 16px 20px;
+  background: none; text-align: left;
+  font-size: 14px; font-weight: 600;
+  display: flex; justify-content: space-between; align-items: center;
+  transition: var(--transition);
+}
+.faq-question:hover { background: #f8f9fc; }
+.faq-question .arrow { transition: transform .3s; }
+.faq-item.open .faq-question .arrow { transform: rotate(180deg); }
+.faq-answer {
+  max-height: 0; overflow: hidden;
+  transition: max-height .3s ease;
+  padding: 0 20px;
+  font-size: 13px; color: #666; line-height: 1.7;
+}
+.faq-item.open .faq-answer { max-height: 200px; padding: 0 20px 16px; }
+
+.sec-cta {
+  padding: 48px 40px; text-align: center;
+  background: linear-gradient(135deg, var(--cat-primary), var(--cat-primary-dark, #333));
+  color: #fff;
+}
+.sec-cta h3 { font-size: 26px; font-weight: 900; margin-bottom: 8px; }
+.sec-cta p { font-size: 15px; opacity: .9; margin-bottom: 24px; }
+.sec-cta .cta-button {
+  display: inline-block; background: #fff;
+  color: var(--cat-primary); padding: 16px 48px;
+  border-radius: 50px; font-size: 16px; font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(0,0,0,.15);
+}
+
+/* inline edit */
+[contenteditable="true"] {
+  outline: 2px solid rgba(99,102,241,.4);
+  outline-offset: 2px;
+  border-radius: 4px;
+  min-width: 20px;
+}
+[contenteditable="true"]:focus {
+  outline-color: var(--primary);
+  background: rgba(99,102,241,.04);
+}
+
+/* ═══════════════════════════════════════════════
+   STEP 5 — EXPORT
+   ═══════════════════════════════════════════════ */
+.export-panel {
+  max-width: 600px; margin: 0 auto;
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 36px 32px; text-align: center;
+}
+.export-panel h2 { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+.export-panel .desc { color: var(--text-sub); font-size: 14px; margin-bottom: 28px; }
+.export-buttons { display: flex; flex-direction: column; gap: 12px; }
+.export-btn {
+  padding: 16px 24px; border-radius: 12px;
+  font-size: 15px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: var(--transition);
+}
+.export-btn.html-dl { background: var(--primary); color: #fff; box-shadow: 0 2px 12px rgba(99,102,241,.25); }
+.export-btn.html-dl:hover { transform: translateY(-1px); }
+.export-btn.copy-code { background: #f0f0f5; color: #555; }
+.export-btn.copy-code:hover { background: #e4e4ec; }
+.export-btn.regen { background: #fff3e0; color: #e65100; }
+.export-btn.regen:hover { background: #ffe0b2; }
+.export-btn.img-save { background: #e8f5e9; color: #2e7d32; }
+.export-btn.img-save:hover { background: #c8e6c9; }
+.copy-toast {
+  display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+  background: #333; color: #fff; padding: 10px 24px; border-radius: 8px;
+  font-size: 14px; font-weight: 500; z-index: 9999;
+  animation: toastIn .3s ease;
+}
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* 스크롤바 */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d0d0d8; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #b0b0b8; }
+
+/* 반응형 보정 */
+@media (max-width: 1200px) {
+  .editor-layout { flex-direction: column; }
+  .section-sidebar { width: 100%; position: static; max-height: none; }
+  .preview-frame { max-width: 100%; }
+  .preview-content { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header class="app-header">
+  <div class="logo-icon">AI</div>
+  <h1>상세페이지 기획자</h1>
+  <span class="badge">v2.0</span>
+</header>
+
+<!-- ═══ PROGRESS BAR ═══ -->
+<div class="progress-bar-wrap">
+  <div class="progress-inner">
+    <div class="step-dot active" data-step="1">
+      <div class="step-circle">1</div>
+      <div class="step-label">상품 정보</div>
+    </div>
+    <div class="step-line" id="line1"><div class="fill"></div></div>
+    <div class="step-dot" data-step="2">
+      <div class="step-circle">2</div>
+      <div class="step-label">AI 인터뷰</div>
+    </div>
+    <div class="step-line" id="line2"><div class="fill"></div></div>
+    <div class="step-dot" data-step="3">
+      <div class="step-circle">3</div>
+      <div class="step-label">톤앤매너</div>
+    </div>
+    <div class="step-line" id="line3"><div class="fill"></div></div>
+    <div class="step-dot" data-step="4">
+      <div class="step-circle">4</div>
+      <div class="step-label">미리보기</div>
+    </div>
+    <div class="step-line" id="line4"><div class="fill"></div></div>
+    <div class="step-dot" data-step="5">
+      <div class="step-circle">5</div>
+      <div class="step-label">내보내기</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main-content">
+
+  <!-- ──── STEP 1: 상품 기본 정보 ──── -->
+  <div class="step-panel active" id="step1">
+    <div class="card-form">
+      <h2>📦 상품 기본 정보</h2>
+      <p class="desc">상세페이지를 만들 상품의 기본 정보를 입력해주세요.</p>
+
+      <div class="form-group">
+        <label>상품명 *</label>
+        <input type="text" id="productName" placeholder="예: 제주 감귤 농축액 100%" />
+      </div>
+
+      <div class="form-group">
+        <label>카테고리 *</label>
+        <div class="cat-grid" id="catGrid">
+          <div class="cat-card" data-cat="food"><div class="emoji">🍊</div><div class="cat-name">식품</div></div>
+          <div class="cat-card" data-cat="cosmetic"><div class="emoji">💄</div><div class="cat-name">화장품</div></div>
+          <div class="cat-card" data-cat="health"><div class="emoji">💊</div><div class="cat-name">건강기능식품</div></div>
+          <div class="cat-card" data-cat="electronics"><div class="emoji">📱</div><div class="cat-name">가전</div></div>
+          <div class="cat-card" data-cat="fashion"><div class="emoji">👕</div><div class="cat-name">패션</div></div>
+          <div class="cat-card" data-cat="living"><div class="emoji">🏠</div><div class="cat-name">생활용품</div></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>가격대 (원)</label>
+        <input type="text" id="productPrice" placeholder="예: 29,800" />
+      </div>
+
+      <div class="form-group">
+        <label>상품 이미지</label>
+        <div class="upload-zone" id="uploadZone">
+          <div class="icon">📷</div>
+          <p>클릭하거나 이미지를 드래그해서 올려주세요</p>
+          <p style="font-size:11px;color:#bbb;margin-top:4px;">(프로토타입 — 실제 업로드 미지원)</p>
+          <div class="preview-grid" id="previewGrid"></div>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="step1Next" disabled>다음 단계로 →</button>
+    </div>
+  </div>
+
+  <!-- ──── STEP 2: AI 인터뷰 ──── -->
+  <div class="step-panel" id="step2">
+    <div class="chat-container" id="chatContainer">
+      <div class="chat-header">
+        <div class="avatar">AI</div>
+        <div class="info">
+          <h3>AI 기획 어시스턴트</h3>
+          <p>상품에 대해 몇 가지 여쭤볼게요</p>
+        </div>
+      </div>
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="chat-input-area">
+        <input type="text" id="chatInput" placeholder="답변을 입력하세요..." />
+        <button class="send-btn" id="sendBtn">➤</button>
+      </div>
+    </div>
+    <div class="analyzing-overlay" id="analyzingOverlay">
+      <div class="analyzing-spinner"></div>
+      <p>AI가 상품 정보를 분석하고 있어요...</p>
+    </div>
+    <div class="usp-section" id="uspSection" style="display:none;">
+      <h3>✨ AI가 도출한 핵심 셀링 포인트</h3>
+      <div id="uspList"></div>
+      <button class="add-usp-btn" id="addUspBtn">+ 셀링 포인트 추가</button>
+      <div class="btn-row" style="margin-top:20px;">
+        <button class="btn-secondary" onclick="goToStep(1)">← 이전</button>
+        <button class="btn-primary" style="flex:1;" id="step2Next">톤앤매너 선택하기 →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ──── STEP 3: 톤앤매너 ──── -->
+  <div class="step-panel" id="step3">
+    <div class="card-form">
+      <h2>🎨 톤앤매너 선택</h2>
+      <p class="desc">상세페이지의 전체 분위기를 결정해주세요.</p>
+
+      <div class="tone-grid" id="toneGrid">
+        <div class="tone-card" data-tone="trust">
+          <div class="tone-emoji">🎯</div>
+          <div class="tone-name">신뢰형</div>
+          <div class="tone-desc">"검증된 품질, 확실한 선택"<br>데이터·인증 강조</div>
+        </div>
+        <div class="tone-card" data-tone="emotion">
+          <div class="tone-emoji">💝</div>
+          <div class="tone-name">감성형</div>
+          <div class="tone-desc">"일상을 바꿔줄 특별한"<br>스토리텔링 중심</div>
+        </div>
+        <div class="tone-card" data-tone="impact">
+          <div class="tone-emoji">⚡</div>
+          <div class="tone-name">임팩트형</div>
+          <div class="tone-desc">"지금 바로, 놓치지 마세요"<br>강한 CTA</div>
+        </div>
+      </div>
+      <div class="tone-preview" id="tonePreview"></div>
+      <div class="btn-row">
+        <button class="btn-secondary" onclick="goToStep(2)">← 이전</button>
+        <button class="btn-primary" style="flex:1;" id="step3Next" disabled>상세페이지 생성하기 →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ──── STEP 4: 미리보기 & 편집 ──── -->
+  <div class="step-panel" id="step4">
+    <div class="editor-layout">
+      <div class="section-sidebar">
+        <h3>📑 섹션 목록</h3>
+        <div id="sectionList"></div>
+        <button class="add-section-btn" id="addSectionBtn">+ 새 섹션 추가</button>
+        <div class="btn-row" style="margin-top:16px;">
+          <button class="btn-secondary" onclick="goToStep(3)">← 이전</button>
+          <button class="btn-primary" style="flex:1;font-size:13px;" onclick="goToStep(5)">내보내기 →</button>
+        </div>
+      </div>
+      <div class="preview-frame">
+        <div class="preview-toolbar">
+          <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+          <div class="url-bar">smartstore.naver.com/my-product</div>
+        </div>
+        <div class="preview-content" id="previewContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ──── STEP 5: 내보내기 ──── -->
+  <div class="step-panel" id="step5">
+    <div class="export-panel">
+      <h2>🎉 상세페이지가 완성되었어요!</h2>
+      <p class="desc">원하는 형태로 내보내세요.</p>
+      <div class="export-buttons">
+        <button class="export-btn html-dl" onclick="downloadHTML()">📥 HTML 다운로드</button>
+        <button class="export-btn copy-code" onclick="copyCode()">📋 쿠팡용 코드 복사</button>
+        <button class="export-btn img-save" disabled>🖼️ 이미지로 저장 (준비 중)</button>
+        <button class="export-btn regen" onclick="goToStep(1)">🔄 처음부터 다시 만들기</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="copy-toast" id="copyToast">✅ 클립보드에 복사되었습니다!</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   DATA & STATE
+   ═══════════════════════════════════════════════════════ */
+const STATE = {
+  step: 1,
+  productName: '',
+  category: '',
+  price: '',
+  tone: '',
+  answers: [],
+  usps: [],
+  sections: []
+};
+
+const CATEGORY_COLORS = {
+  food:        { primary: '#FF6B35', dark: '#e05520', light: '#FFF3E0', name: '식품', emoji: '🍊' },
+  cosmetic:    { primary: '#E91E8C', dark: '#c4157a', light: '#FCE4EC', name: '화장품', emoji: '💄' },
+  health:      { primary: '#2E7D32', dark: '#1b5e20', light: '#E8F5E9', name: '건강기능식품', emoji: '💊' },
+  electronics: { primary: '#1565C0', dark: '#0d47a1', light: '#E3F2FD', name: '가전', emoji: '📱' },
+  fashion:     { primary: '#212121', dark: '#111111', light: '#F5F5F5', name: '패션', emoji: '👕' },
+  living:      { primary: '#7B1FA2', dark: '#6a1b9a', light: '#F3E5F5', name: '생활용품', emoji: '🏠' }
+};
+
+const QUESTIONS = {
+  food: [
+    '원산지와 주요 원재료를 알려주세요 🌿',
+    '유기농, 무첨가 등 인증이 있으신가요? 🏅',
+    '주 타겟 고객은 누구인가요? (연령대, 라이프스타일) 👥',
+    '경쟁 제품 대비 가장 큰 차별점은? 💎',
+    '고객이 이 제품을 선택해야 하는 이유 한 가지는? ❤️'
+  ],
+  cosmetic: [
+    '주요 성분과 기대 효능을 알려주세요 🧪',
+    '어떤 피부 타입/고민에 적합한가요? 🌟',
+    '임상 테스트나 인증 결과가 있나요? 📊',
+    '경쟁 제품(예: OO 브랜드) 대비 장점은? 🏆',
+    '브랜드의 핵심 가치나 스토리가 있다면? 💫'
+  ],
+  health: [
+    '주요 원료와 함량을 알려주세요 🧬',
+    '어떤 건강 고민을 가진 분들에게 추천하시나요? 💪',
+    'GMP, HACCP 등 인증 현황은? ✅',
+    '임상시험이나 논문 근거가 있나요? 📝',
+    '복용 방법과 권장 기간은? ⏰'
+  ],
+  electronics: [
+    '핵심 스펙 3가지를 알려주세요 ⚙️',
+    '기존 제품 대비 어떤 점이 개선되었나요? 🔄',
+    '주요 사용 시나리오는? (어디서, 누가, 어떻게) 🏠',
+    'AS/보증 정책은? 🛡️',
+    '에너지 효율이나 특별한 기술이 있나요? ⚡'
+  ],
+  fashion: [
+    '소재와 원단 특징을 알려주세요 🧵',
+    '어떤 스타일링에 어울리나요? 👗',
+    '사이즈 범위와 핏 특징은? 📏',
+    '세탁/관리 방법은? 🧺',
+    '이 제품만의 디자인 포인트는? ✨'
+  ],
+  living: [
+    '주요 소재와 특징을 알려주세요 🔧',
+    '어떤 문제를 해결해주는 제품인가요? 💡',
+    '기존 제품 대비 편의성 개선점은? 📈',
+    '안전 인증이나 테스트 결과는? 🛡️',
+    '사용 방법이 간단한가요? 👌'
+  ]
+};
+
+const TONE_PREVIEWS = {
+  trust: {
+    food: '"국내산 100% 원재료만 사용, HACCP 인증 시설에서 생산합니다. 30,000명의 고객이 선택한 검증된 맛."',
+    cosmetic: '"피부과 전문의 테스트 완료. 민감성 피부 적합 판정. 12주 임상시험 결과, 피부 탄력 23% 개선."',
+    health: '"식약처 인증 건강기능식품. GMP 시설에서 제조, 주요 원료 함량 100% 표기."',
+    electronics: '"삼성 반도체 탑재, 3년 무상 보증. 국가공인 시험기관 성능 테스트 통과."',
+    fashion: '"이태리산 프리미엄 원단, ISO 인증 봉제 공장 생산. 100회 세탁 테스트 통과."',
+    living: '"KC 안전인증 완료. 10,000회 내구성 테스트 통과. 2년 무상 교환 보증."'
+  },
+  emotion: {
+    food: '"제주 바람이 키운 감귤, 한 모금에 담긴 자연의 이야기. 아이의 웃음이 달라지는 순간."',
+    cosmetic: '"거울 속 나를 다시 만나는 시간. 매일 아침, 피부가 말하는 고마움을 느껴보세요."',
+    health: '"내일의 나를 위한 오늘의 선택. 작은 습관 하나가 삶의 에너지를 바꿔줍니다."',
+    electronics: '"기술이 만든 여유, 당신의 하루에 한 시간을 선물합니다."',
+    fashion: '"입는 순간 달라지는 무드. 나만의 스타일이 완성되는 한 벌의 마법."',
+    living: '"집이 달라지면 마음도 달라집니다. 작은 변화가 만드는 큰 행복."'
+  },
+  impact: {
+    food: '"지금 주문하면 신선배송! 오늘만 40% 할인 — 2만 개 한정 수량. 망설이면 품절!"',
+    cosmetic: '"출시 3일 만에 1만 개 판매! 지금 구매 시 미니어처 세트 증정. 오늘이 마지막 기회!"',
+    health: '"매진 임박! 이번 달만 1+1 이벤트. 건강은 미룰수록 비싸집니다."',
+    electronics: '"이 스펙, 이 가격은 지금뿐! 사전예약 고객 한정 30% 할인 + 무료배송."',
+    fashion: '"인스타 인플루언서 착용 화제! 당일발송, 리미티드 에디션 — 잔여수량 확인!"',
+    living: '"10만 개 판매 돌파 기념! 지금 주문하면 내일 도착. 구매자 리뷰 4.9점!"'
+  }
+};
+
+/* ═══════════════════════════════════════════════════════
+   STEP NAVIGATION
+   ═══════════════════════════════════════════════════════ */
+function goToStep(n) {
+  STATE.step = n;
+  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('step' + n).classList.add('active');
+
+  document.querySelectorAll('.step-dot').forEach(d => {
+    const s = +d.dataset.step;
+    d.classList.remove('active', 'done');
+    if (s === n) d.classList.add('active');
+    else if (s < n) d.classList.add('done');
+  });
+
+  document.querySelectorAll('.step-line').forEach((l, i) => {
+    if (i + 1 < n) l.classList.add('done');
+    else l.classList.remove('done');
+  });
+
+  if (n === 2 && document.getElementById('chatMessages').children.length === 0) {
+    startInterview();
+  }
+  if (n === 4) {
+    generatePreview();
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ═══════════════════════════════════════════════════════
+   STEP 1: 상품 기본 정보
+   ═══════════════════════════════════════════════════════ */
+const catGrid = document.getElementById('catGrid');
+catGrid.addEventListener('click', e => {
+  const card = e.target.closest('.cat-card');
+  if (!card) return;
+  catGrid.querySelectorAll('.cat-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  STATE.category = card.dataset.cat;
+  checkStep1();
+});
+
+document.getElementById('productName').addEventListener('input', e => {
+  STATE.productName = e.target.value.trim();
+  checkStep1();
+});
+document.getElementById('productPrice').addEventListener('input', e => {
+  STATE.price = e.target.value.trim();
+});
+
+function checkStep1() {
+  document.getElementById('step1Next').disabled = !(STATE.productName && STATE.category);
+}
+
+document.getElementById('step1Next').addEventListener('click', () => goToStep(2));
+
+// 이미지 업로드 시뮬레이션
+const uploadZone = document.getElementById('uploadZone');
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadZone.classList.remove('dragover');
+  simulateUpload(e.dataTransfer.files);
+});
+uploadZone.addEventListener('click', () => {
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = 'image/*'; input.multiple = true;
+  input.onchange = () => simulateUpload(input.files);
+  input.click();
+});
+
+function simulateUpload(files) {
+  const grid = document.getElementById('previewGrid');
+  for (const file of files) {
+    if (!file.type.startsWith('image/')) continue;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const thumb = document.createElement('div');
+      thumb.className = 'preview-thumb';
+      thumb.innerHTML = `<img src="${e.target.result}" alt="preview" />`;
+      grid.appendChild(thumb);
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   STEP 2: AI 인터뷰 (채팅 UI)
+   ═══════════════════════════════════════════════════════ */
+let currentQIndex = 0;
+let chatInputLocked = false;
+
+function startInterview() {
+  currentQIndex = 0;
+  STATE.answers = [];
+  const msgs = document.getElementById('chatMessages');
+  msgs.innerHTML = '';
+
+  addAiMessage(`안녕하세요! 😊 <b>${STATE.productName}</b>에 대해 몇 가지 질문드릴게요. 답변을 바탕으로 최적의 상세페이지를 기획해드리겠습니다.`);
+
+  setTimeout(() => askQuestion(0), 800);
+}
+
+function askQuestion(idx) {
+  const qs = QUESTIONS[STATE.category];
+  if (idx >= qs.length) {
+    finishInterview();
+    return;
+  }
+  const optTag = idx >= 3 ? ' <span style="color:#aaa;font-size:12px;">(선택사항)</span>' : '';
+  addAiMessage(qs[idx] + optTag, idx >= 3);
+  currentQIndex = idx;
+  chatInputLocked = false;
+  document.getElementById('chatInput').focus();
+}
+
+function addAiMessage(html, skippable = false) {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'msg ai';
+  div.innerHTML = `
+    <div class="small-avatar">AI</div>
+    <div>
+      <div class="bubble">${html}</div>
+      ${skippable ? '<button class="skip-btn" onclick="skipQuestion()">건너뛰기</button>' : ''}
+    </div>
+  `;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addUserMessage(text) {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'msg user';
+  div.innerHTML = `
+    <div class="small-avatar">나</div>
+    <div class="bubble">${text}</div>
+  `;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function handleSend() {
+  if (chatInputLocked) return;
+  const input = document.getElementById('chatInput');
+  const val = input.value.trim();
+  if (!val) return;
+  chatInputLocked = true;
+  addUserMessage(val);
+  STATE.answers.push(val);
+  input.value = '';
+  setTimeout(() => askQuestion(currentQIndex + 1), 600);
+}
+
+function skipQuestion() {
+  chatInputLocked = true;
+  addUserMessage('(건너뛰기)');
+  STATE.answers.push('');
+  setTimeout(() => askQuestion(currentQIndex + 1), 400);
+}
+
+document.getElementById('sendBtn').addEventListener('click', handleSend);
+document.getElementById('chatInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') handleSend();
+});
+
+function finishInterview() {
+  chatInputLocked = true;
+  addAiMessage('감사합니다! 🎉 답변을 바탕으로 핵심 셀링 포인트를 분석할게요.');
+
+  document.getElementById('chatContainer').style.display = 'none';
+  const overlay = document.getElementById('analyzingOverlay');
+  overlay.classList.add('show');
+
+  setTimeout(() => {
+    overlay.classList.remove('show');
+    generateUSPs();
+    document.getElementById('uspSection').style.display = 'block';
+  }, 2000);
+}
+
+function generateUSPs() {
+  const cat = STATE.category;
+  const name = STATE.productName;
+  const ans = STATE.answers;
+
+  const templates = {
+    food: [
+      { emoji: '🌿', title: '프리미엄 원재료', desc: `${ans[0] || '엄선된 원산지'}에서 직접 공수한 최상급 원재료` },
+      { emoji: '✅', title: '안전 인증', desc: `${ans[1] || '식품 안전 인증'} 획득으로 믿고 드실 수 있습니다` },
+      { emoji: '👥', title: '타겟 맞춤', desc: `${ans[2] || '건강을 생각하는 분들'}을 위해 설계` },
+      { emoji: '💎', title: '차별화 포인트', desc: ans[3] || `${name}만의 특별한 제조 공법` },
+      { emoji: '❤️', title: '선택의 이유', desc: ans[4] || '한 번 맛보면 다시 찾게 되는 맛' }
+    ],
+    cosmetic: [
+      { emoji: '🧪', title: '핵심 성분', desc: `${ans[0] || '특허 성분'} 함유로 확실한 효과` },
+      { emoji: '🌟', title: '피부 적합성', desc: `${ans[1] || '모든 피부 타입'}에 최적화` },
+      { emoji: '📊', title: '임상 검증', desc: ans[2] || '피부과 테스트 완료, 자극 지수 최소' },
+      { emoji: '🏆', title: '경쟁력', desc: ans[3] || '동일 가격대 최고 성분 함량' },
+      { emoji: '💫', title: '브랜드 스토리', desc: ans[4] || '피부 본연의 아름다움을 추구하는 브랜드' }
+    ],
+    health: [
+      { emoji: '🧬', title: '핵심 원료', desc: `${ans[0] || '고함량 활성 원료'}로 효율적 섭취` },
+      { emoji: '💪', title: '추천 대상', desc: `${ans[1] || '활력이 필요한 현대인'}에게 추천` },
+      { emoji: '✅', title: '인증 현황', desc: ans[2] || 'GMP 인증 시설에서 제조' },
+      { emoji: '📝', title: '과학적 근거', desc: ans[3] || '국내외 연구 결과로 입증된 효능' },
+      { emoji: '⏰', title: '간편한 복용', desc: ans[4] || '하루 1회, 간편하게 건강 관리' }
+    ],
+    electronics: [
+      { emoji: '⚙️', title: '핵심 스펙', desc: ans[0] || '최첨단 기술 탑재' },
+      { emoji: '🔄', title: '혁신 포인트', desc: ans[1] || '기존 대비 성능 대폭 향상' },
+      { emoji: '🏠', title: '사용 시나리오', desc: ans[2] || '가정에서 누구나 쉽게' },
+      { emoji: '🛡️', title: '보증 정책', desc: ans[3] || '안심 보증 프로그램 제공' },
+      { emoji: '⚡', title: '특별 기술', desc: ans[4] || '에너지 효율 최적화' }
+    ],
+    fashion: [
+      { emoji: '🧵', title: '프리미엄 소재', desc: ans[0] || '고급 원단으로 제작' },
+      { emoji: '👗', title: '스타일링', desc: ans[1] || '다양한 스타일링에 매치 가능' },
+      { emoji: '📏', title: '핏 & 사이즈', desc: ans[2] || '체형별 최적 핏 제공' },
+      { emoji: '🧺', title: '관리 편의성', desc: ans[3] || '세탁기 사용 가능, 관리 간편' },
+      { emoji: '✨', title: '디자인 포인트', desc: ans[4] || '디테일이 살아있는 디자인' }
+    ],
+    living: [
+      { emoji: '🔧', title: '제품 특징', desc: ans[0] || '프리미엄 소재로 내구성 우수' },
+      { emoji: '💡', title: '문제 해결', desc: ans[1] || '일상의 불편함을 해소' },
+      { emoji: '📈', title: '편의성', desc: ans[2] || '기존 제품보다 편리한 사용성' },
+      { emoji: '🛡️', title: '안전 인증', desc: ans[3] || 'KC 인증 획득' },
+      { emoji: '👌', title: '간편 사용', desc: ans[4] || '누구나 쉽게 사용 가능' }
+    ]
+  };
+
+  STATE.usps = (templates[cat] || templates.food).filter(u => u.desc && u.desc !== '');
+  renderUSPs();
+}
+
+function renderUSPs() {
+  const list = document.getElementById('uspList');
+  list.innerHTML = '';
+  STATE.usps.forEach((u, i) => {
+    const div = document.createElement('div');
+    div.className = 'usp-card';
+    div.innerHTML = `
+      <div class="usp-emoji">${u.emoji}</div>
+      <div class="usp-text">
+        <div class="usp-title">${u.title}</div>
+        <div class="usp-desc">${u.desc}</div>
+      </div>
+      <div class="usp-actions">
+        <button onclick="editUSP(${i})" title="수정">✏️</button>
+        <button onclick="deleteUSP(${i})" title="삭제">🗑</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function editUSP(idx) {
+  const u = STATE.usps[idx];
+  const newTitle = prompt('셀링 포인트 제목:', u.title);
+  if (newTitle === null) return;
+  const newDesc = prompt('설명:', u.desc);
+  if (newDesc === null) return;
+  STATE.usps[idx].title = newTitle || u.title;
+  STATE.usps[idx].desc = newDesc || u.desc;
+  renderUSPs();
+}
+
+function deleteUSP(idx) {
+  STATE.usps.splice(idx, 1);
+  renderUSPs();
+}
+
+document.getElementById('addUspBtn').addEventListener('click', () => {
+  const title = prompt('새 셀링 포인트 제목:');
+  if (!title) return;
+  const desc = prompt('설명:');
+  STATE.usps.push({ emoji: '⭐', title, desc: desc || '' });
+  renderUSPs();
+});
+
+document.getElementById('step2Next').addEventListener('click', () => goToStep(3));
+
+/* ═══════════════════════════════════════════════════════
+   STEP 3: 톤앤매너
+   ═══════════════════════════════════════════════════════ */
+document.getElementById('toneGrid').addEventListener('click', e => {
+  const card = e.target.closest('.tone-card');
+  if (!card) return;
+  document.querySelectorAll('.tone-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  STATE.tone = card.dataset.tone;
+
+  const preview = document.getElementById('tonePreview');
+  const cat = STATE.category || 'food';
+  preview.textContent = TONE_PREVIEWS[STATE.tone]?.[cat] || '';
+  preview.classList.add('show');
+
+  document.getElementById('step3Next').disabled = false;
+});
+
+document.getElementById('step3Next').addEventListener('click', () => goToStep(4));
+
+/* ═══════════════════════════════════════════════════════
+   STEP 4: 미리보기 생성
+   ═══════════════════════════════════════════════════════ */
+function getCatColor() { return CATEGORY_COLORS[STATE.category] || CATEGORY_COLORS.food; }
+
+function generateCopy(type) {
+  const c = getCatColor();
+  const name = STATE.productName;
+  const tone = STATE.tone;
+  const ans = STATE.answers;
+  const usps = STATE.usps;
+
+  const headlines = {
+    trust: [`${name}, 데이터가 증명합니다`, `검증된 품질, ${name}`, `${name} — 전문가가 인정한 선택`],
+    emotion: [`당신의 일상에 찾아온 ${name}`, `${name}와 함께하는 특별한 순간`, `하루를 바꿔줄 ${name}`],
+    impact: [`${name} — 지금이 기회입니다!`, `놓치면 후회할 ${name}!`, `한정 수량! ${name}`]
+  };
+
+  const subs = {
+    trust: [`수많은 고객이 선택한 이유가 있습니다`, `품질과 신뢰, 두 마리 토끼를 잡다`, `까다로운 기준을 통과한 제품`],
+    emotion: [`작은 선택이 만드는 큰 변화`, `매일이 조금씩 달라지는 경험`, `진심을 담아 만들었습니다`],
+    impact: [`오늘 주문하면 내일 도착!`, `지금 바로 확인하세요`, `품절 전에 서두르세요!`]
+  };
+
+  const ctas = {
+    trust: ['자세히 알아보기', '제품 스펙 확인', '인증 정보 보기'],
+    emotion: ['나만의 경험 시작하기', '특별함 느껴보기', '지금 만나보기'],
+    impact: ['지금 바로 구매', '한정 할인 확인', '바로 주문하기']
+  };
+
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+  return {
+    headline: pick(headlines[tone] || headlines.trust),
+    sub: pick(subs[tone] || subs.trust),
+    cta: pick(ctas[tone] || ctas.trust),
+    heroTag: c.name + ' BEST',
+  };
+}
+
+function generateSections() {
+  const c = getCatColor();
+  const name = STATE.productName;
+  const copy = generateCopy();
+  const usps = STATE.usps;
+  const ans = STATE.answers;
+  const tone = STATE.tone;
+
+  const compareItems = {
+    food: [['원재료','수입산 혼합','국내산 100%'],['첨가물','인공감미료 사용','무첨가'],['인증','미인증','HACCP 인증'],['배송','일반배송','신선 냉장배송']],
+    cosmetic: [['성분','합성 성분 위주','자연유래 90%'],['테스트','동물실험','피부과 테스트'],['용량','30ml','50ml 대용량'],['효과','일시적','지속적 개선']],
+    health: [['원료 함량','최소 함량','고함량 배합'],['인증','미인증','GMP/HACCP'],['복용','하루 3회','하루 1회 간편'],['원료','합성원료','자연유래 원료']],
+    electronics: [['성능','기본 사양','프리미엄 스펙'],['보증','1년','3년 무상보증'],['소음','평균 이상','초저소음'],['에너지','일반','1등급 효율']],
+    fashion: [['소재','일반 폴리','프리미엄 원단'],['봉제','기계 봉제','정밀 봉제'],['핏','프리사이즈','체형별 핏'],['세탁','드라이만','세탁기 가능']],
+    living: [['소재','일반 플라스틱','프리미엄 소재'],['내구성','1년 사용','3년 이상'],['안전','미인증','KC 인증'],['디자인','기본','인테리어 조화']]
+  };
+
+  const howtos = {
+    food: [{t:'주문하기',d:'원하는 수량 선택 후 주문'},{t:'수령하기',d:'신선하게 포장된 제품 수령'},{t:'즐기기',d:'기호에 맞게 맛있게 즐기세요'},{t:'재주문',d:'만족스러운 맛, 정기배송 등록'}],
+    cosmetic: [{t:'클렌징',d:'깨끗이 세안 후 물기 제거'},{t:'적당량 도포',d:'1~2펌프 적당량 사용'},{t:'흡수시키기',d:'피부결 따라 부드럽게 흡수'},{t:'마무리',d:'다음 단계 스킨케어 진행'}],
+    health: [{t:'개봉',d:'밀봉 확인 후 개봉'},{t:'섭취',d:'하루 권장량에 맞춰 복용'},{t:'꾸준히',d:'최소 4주 이상 꾸준한 섭취'},{t:'변화 확인',d:'건강 변화를 체감하세요'}],
+    electronics: [{t:'개봉',d:'구성품 확인 및 설치'},{t:'설정',d:'간편한 초기 설정 진행'},{t:'연결',d:'와이파이/블루투스 연결'},{t:'사용',d:'스마트한 일상을 시작하세요'}],
+    fashion: [{t:'사이즈 확인',d:'상세 사이즈표 참고'},{t:'스타일링',d:'내 스타일에 맞는 코디'},{t:'착용',d:'편안한 착용감 확인'},{t:'관리',d:'관리법에 따라 오래 입으세요'}],
+    living: [{t:'확인',d:'구성품 및 상태 확인'},{t:'설치/배치',d:'원하는 위치에 설치'},{t:'사용',d:'설명서 따라 간편하게 사용'},{t:'관리',d:'주기적 관리로 오래 사용'}]
+  };
+
+  const reviews = [
+    { stars: 5, text: `${name} 정말 만족합니다! 다른 제품과 비교 불가에요. 재구매 의사 100%`, who: '김*진 / 구매자' },
+    { stars: 5, text: `배송도 빠르고 품질이 기대 이상이에요. 주변에 추천하고 있습니다.`, who: '이*라 / 구매자' },
+    { stars: 4, text: `가격 대비 성능이 훌륭해요. 한 가지 아쉬운 점은 포장이지만 제품 자체는 완벽!`, who: '박*수 / 구매자' }
+  ];
+
+  const faqs = {
+    food: [
+      {q:'배송은 얼마나 걸리나요?',a:'주문 후 1~2영업일 내 출고되며, 신선식품은 냉장/냉동 포장으로 안전하게 배송됩니다.'},
+      {q:'유통기한은 얼마나 되나요?',a:'제조일로부터 12개월이며, 개봉 후에는 냉장 보관하여 빠른 시일 내 섭취를 권장합니다.'},
+      {q:'교환/반품이 가능한가요?',a:'미개봉 제품에 한해 수령 후 7일 이내 교환/반품이 가능합니다.'}
+    ],
+    cosmetic: [
+      {q:'민감성 피부도 사용 가능한가요?',a:'네, 피부과 테스트를 통과한 저자극 제품으로 민감 피부에도 안심하고 사용하실 수 있습니다.'},
+      {q:'효과는 언제쯤 나타나나요?',a:'개인차가 있으나 꾸준한 사용 시 약 2~4주 후 피부 변화를 체감하실 수 있습니다.'},
+      {q:'다른 화장품과 함께 사용해도 되나요?',a:'네, 대부분의 스킨케어 루틴에 적용 가능하며, 세럼 단계에서 사용을 권장합니다.'}
+    ],
+    health: [
+      {q:'하루에 얼마나 섭취하면 되나요?',a:'1일 1회, 1포(정)를 식후에 섭취하시는 것을 권장합니다.'},
+      {q:'약과 함께 복용해도 되나요?',a:'특정 질환이 있거나 약을 복용 중이신 경우, 전문의와 상담 후 섭취를 권장합니다.'},
+      {q:'얼마나 먹어야 효과를 볼 수 있나요?',a:'최소 4~8주 이상 꾸준히 섭취하시면 변화를 체감하실 수 있습니다.'}
+    ],
+    electronics: [
+      {q:'설치가 어렵지 않나요?',a:'간편한 설치 가이드가 제공되며, 대부분 10분 이내 설치 완료됩니다.'},
+      {q:'AS는 어떻게 받나요?',a:'고객센터 또는 공식 홈페이지를 통해 접수하시면 신속하게 처리해드립니다.'},
+      {q:'호환 가능한 기기가 있나요?',a:'상세 스펙 페이지에서 호환 기기 목록을 확인하실 수 있습니다.'}
+    ],
+    fashion: [
+      {q:'사이즈 교환이 가능한가요?',a:'수령 후 7일 이내, 미착용 상태에서 무료 교환이 가능합니다.'},
+      {q:'실제 색상과 동일한가요?',a:'모니터 환경에 따라 약간의 차이가 있을 수 있으나, 실물이 더 예쁘다는 후기가 많습니다.'},
+      {q:'세탁 시 줄어들지 않나요?',a:'세탁 표시 사항에 따라 관리하시면 수축 없이 오래 입으실 수 있습니다.'}
+    ],
+    living: [
+      {q:'내구성은 어느 정도인가요?',a:'엄격한 내구성 테스트를 통과했으며, 정상 사용 시 3년 이상 사용 가능합니다.'},
+      {q:'불량 시 교환 가능한가요?',a:'수령 후 30일 이내 제조 불량 확인 시 무상 교환해드립니다.'},
+      {q:'선물 포장 가능한가요?',a:'주문 시 선물 포장 옵션을 선택하시면 감사 카드와 함께 포장해드립니다.'}
+    ]
+  };
+
+  const price = STATE.price || '29,800';
+  const catKey = STATE.category || 'food';
+
+  STATE.sections = [
+    {
+      id: 'hero', name: '히어로 배너', icon: '🎨',
+      html: `<div class="sec-hero" style="--cat-primary:${c.primary};--cat-primary-dark:${c.dark};">
+        <div class="hero-tag">${copy.heroTag}</div>
+        <h2>${copy.headline}</h2>
+        <p>${copy.sub}</p>
+        <div class="hero-cta" style="color:${c.primary};">${copy.cta}</div>
+      </div>`
+    },
+    {
+      id: 'usp', name: '핵심 USP 포인트', icon: '✨',
+      html: `<div class="sec-usp" style="--cat-light:${c.light};">
+        <h3>왜 ${name}인가요?</h3>
+        <div class="usp-grid">
+          ${usps.map(u => `<div class="usp-item"><div class="usp-icon">${u.emoji}</div><h4>${u.title}</h4><p>${u.desc}</p></div>`).join('')}
+        </div>
+      </div>`
+    },
+    {
+      id: 'detail', name: '제품 상세', icon: '📝',
+      html: `<div class="sec-detail" style="--cat-light:${c.light};">
+        <h3>${name} 상세 정보</h3>
+        <div class="detail-grid">
+          <div class="detail-text">
+            <p>${ans[0] ? `<b>원재료/성분:</b> ${ans[0]}` : `${name}의 상세 스펙과 정보를 확인하세요.`}</p>
+            <p>${ans[1] ? `<b>특징:</b> ${ans[1]}` : '최고의 품질을 위해 엄격한 기준으로 제작되었습니다.'}</p>
+            <p>${ans[2] ? `<b>추천 대상:</b> ${ans[2]}` : '누구나 만족할 수 있는 제품입니다.'}</p>
+          </div>
+          <div class="detail-img-placeholder">📷 상품 이미지 영역</div>
+        </div>
+      </div>`
+    },
+    {
+      id: 'compare', name: '특장점 비교', icon: '⚖️',
+      html: `<div class="sec-compare" style="--cat-primary:${c.primary};">
+        <h3>일반 제품 vs ${name}</h3>
+        <table class="compare-table">
+          <thead><tr><th>항목</th><th>일반 제품</th><th>${name}</th></tr></thead>
+          <tbody>${(compareItems[catKey] || compareItems.food).map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('')}</tbody>
+        </table>
+      </div>`
+    },
+    {
+      id: 'howto', name: '사용법 HOW TO', icon: '📖',
+      html: `<div class="sec-howto" style="--cat-primary:${c.primary};">
+        <h3>${name} 이렇게 사용하세요</h3>
+        <div class="howto-steps">
+          ${(howtos[catKey] || howtos.food).map((s, i) => `<div class="howto-step"><div class="howto-num">${i + 1}</div><h4>${s.t}</h4><p>${s.d}</p></div>`).join('')}
+        </div>
+      </div>`
+    },
+    {
+      id: 'trust', name: '인증/신뢰 배지', icon: '🛡️',
+      html: `<div class="sec-trust" style="--cat-light:${c.light};">
+        <h3>이런 인증을 받았어요</h3>
+        <div class="trust-badges">
+          <div class="trust-badge"><div class="badge-icon">✅</div><span>품질 인증</span></div>
+          <div class="trust-badge"><div class="badge-icon">🏭</div><span>GMP 제조</span></div>
+          <div class="trust-badge"><div class="badge-icon">🔬</div><span>안전 테스트</span></div>
+          <div class="trust-badge"><div class="badge-icon">📦</div><span>안심 배송</span></div>
+          <div class="trust-badge"><div class="badge-icon">🛡️</div><span>교환/반품 보장</span></div>
+        </div>
+      </div>`
+    },
+    {
+      id: 'review', name: '고객 리뷰', icon: '⭐',
+      html: `<div class="sec-review">
+        <h3>고객 리뷰</h3>
+        <div class="review-grid">
+          ${reviews.map(r => `<div class="review-card">
+            <div class="stars">${'★'.repeat(r.stars)}${'☆'.repeat(5 - r.stars)}</div>
+            <div class="review-text">${r.text}</div>
+            <div class="reviewer">${r.who}</div>
+          </div>`).join('')}
+        </div>
+      </div>`
+    },
+    {
+      id: 'faq', name: 'FAQ', icon: '❓',
+      html: `<div class="sec-faq">
+        <h3>자주 묻는 질문</h3>
+        ${(faqs[catKey] || faqs.food).map((f, i) => `<div class="faq-item" onclick="this.classList.toggle('open')">
+          <button class="faq-question"><span>${f.q}</span><span class="arrow">▼</span></button>
+          <div class="faq-answer">${f.a}</div>
+        </div>`).join('')}
+      </div>`
+    },
+    {
+      id: 'cta', name: '구매 CTA', icon: '🛒',
+      html: `<div class="sec-cta" style="--cat-primary:${c.primary};--cat-primary-dark:${c.dark};">
+        <h3>${tone === 'impact' ? '🔥 지금 바로 구매하세요!' : tone === 'emotion' ? '💝 특별한 경험을 시작하세요' : '✅ 현명한 선택을 하세요'}</h3>
+        <p>${name} ${price}원</p>
+        <div class="cta-button" style="color:${c.primary};">${tone === 'impact' ? '지금 바로 구매하기 →' : tone === 'emotion' ? '나만의 경험 시작하기 →' : '제품 상세보기 →'}</div>
+      </div>`
+    }
+  ];
+}
+
+function generatePreview() {
+  generateSections();
+  renderSectionList();
+  renderPreview();
+}
+
+function renderSectionList() {
+  const list = document.getElementById('sectionList');
+  list.innerHTML = '';
+  STATE.sections.forEach((sec, i) => {
+    const div = document.createElement('div');
+    div.className = 'section-list-item';
+    div.draggable = true;
+    div.dataset.idx = i;
+    div.innerHTML = `
+      <span class="drag-handle">⠿</span>
+      <span class="sec-name">${sec.icon} ${sec.name}</span>
+      <button class="sec-del" onclick="deleteSection(${i})" title="삭제">✕</button>
+    `;
+    // Drag events
+    div.addEventListener('dragstart', e => {
+      div.classList.add('dragging');
+      e.dataTransfer.setData('text/plain', i);
+    });
+    div.addEventListener('dragend', () => div.classList.remove('dragging'));
+    div.addEventListener('dragover', e => e.preventDefault());
+    div.addEventListener('drop', e => {
+      e.preventDefault();
+      const from = +e.dataTransfer.getData('text/plain');
+      const to = i;
+      if (from === to) return;
+      const [moved] = STATE.sections.splice(from, 1);
+      STATE.sections.splice(to, 0, moved);
+      renderSectionList();
+      renderPreview();
+    });
+
+    div.addEventListener('click', e => {
+      if (e.target.closest('.sec-del')) return;
+      const target = document.getElementById('prev-' + sec.id);
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+
+    list.appendChild(div);
+  });
+}
+
+function renderPreview() {
+  const content = document.getElementById('previewContent');
+  const c = getCatColor();
+  content.style.setProperty('--cat-primary', c.primary);
+  content.style.setProperty('--cat-primary-dark', c.dark);
+  content.style.setProperty('--cat-light', c.light);
+
+  content.innerHTML = STATE.sections.map(sec =>
+    `<div class="preview-section" id="prev-${sec.id}" data-section="${sec.id}">
+      <div class="edit-overlay">
+        <button onclick="enableEdit(this)" title="편집">✏️</button>
+      </div>
+      ${sec.html}
+    </div>`
+  ).join('');
+}
+
+function deleteSection(idx) {
+  STATE.sections.splice(idx, 1);
+  renderSectionList();
+  renderPreview();
+}
+
+document.getElementById('addSectionBtn').addEventListener('click', () => {
+  const name = prompt('새 섹션 이름:');
+  if (!name) return;
+  const c = getCatColor();
+  STATE.sections.push({
+    id: 'custom-' + Date.now(),
+    name,
+    icon: '📄',
+    html: `<div style="padding:48px 40px;text-align:center;">
+      <h3 style="font-size:22px;font-weight:800;margin-bottom:12px;">${name}</h3>
+      <p style="color:#888;">여기에 내용을 입력하세요. (더블클릭하여 편집)</p>
+    </div>`
+  });
+  renderSectionList();
+  renderPreview();
+});
+
+function enableEdit(btn) {
+  const section = btn.closest('.preview-section');
+  const editables = section.querySelectorAll('h2, h3, h4, p, span, td, .hero-tag, .hero-cta, .cta-button');
+  editables.forEach(el => {
+    if (el.querySelector('*:not(b):not(br):not(span)')) return;
+    el.contentEditable = 'true';
+    el.addEventListener('blur', () => {
+      // 변경사항을 STATE에 반영
+      const secId = section.dataset.section;
+      const secObj = STATE.sections.find(s => s.id === secId);
+      if (secObj) {
+        secObj.html = section.querySelector('.sec-hero, .sec-usp, .sec-detail, .sec-compare, .sec-howto, .sec-trust, .sec-review, .sec-faq, .sec-cta, div').outerHTML;
+      }
+    }, { once: true });
+  });
+  editables[0]?.focus();
+}
+
+/* ═══════════════════════════════════════════════════════
+   STEP 5: 내보내기
+   ═══════════════════════════════════════════════════════ */
+function downloadHTML() {
+  const c = getCatColor();
+  const html = `<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${STATE.productName} — 상세페이지</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;color:#222;line-height:1.6;background:#fff}
+${document.querySelector('style').textContent.split('/* 미리보기 내 섹션 */')[1]?.split('/* inline edit */')[0] || ''}
+.faq-item{cursor:pointer}
+</style>
+</head>
+<body>
+<div style="max-width:860px;margin:0 auto;">
+${STATE.sections.map(s => s.html).join('\n')}
+</div>
+<script>
+document.querySelectorAll('.faq-item').forEach(item=>{
+  item.addEventListener('click',()=>item.classList.toggle('open'));
+});
+<\/script>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${STATE.productName}_상세페이지.html`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function copyCode() {
+  const html = STATE.sections.map(s => s.html).join('\n');
+  navigator.clipboard.writeText(html).then(() => {
+    const toast = document.getElementById('copyToast');
+    toast.style.display = 'block';
+    setTimeout(() => toast.style.display = 'none', 2000);
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DetailMaker - Product Information</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-tertiary-container": "#ffd0d2",
+              "tertiary-fixed-dim": "#ffb2b7",
+              "secondary-fixed-dim": "#c0c1ff",
+              "on-tertiary-fixed": "#40000d",
+              "on-primary-fixed-variant": "#3b35a7",
+              "tertiary-fixed": "#ffdadb",
+              "surface": "#f7f9fb",
+              "secondary": "#4648d4",
+              "surface-dim": "#d8dadc",
+              "on-tertiary-fixed-variant": "#92002a",
+              "on-surface": "#191c1e",
+              "primary-fixed-dim": "#c3c0ff",
+              "surface-container": "#eceef0",
+              "inverse-surface": "#2d3133",
+              "primary-fixed": "#e2dfff",
+              "on-secondary-fixed": "#07006c",
+              "on-primary-fixed": "#0f0069",
+              "surface-container-lowest": "#ffffff",
+              "error-container": "#ffdad6",
+              "surface-container-low": "#f2f4f6",
+              "error": "#ba1a1a",
+              "outline": "#777587",
+              "outline-variant": "#c7c4d8",
+              "primary-container": "#5551c2",
+              "on-secondary": "#ffffff",
+              "on-secondary-fixed-variant": "#2f2ebe",
+              "tertiary-container": "#bf0f3c",
+              "on-error-container": "#93000a",
+              "tertiary": "#95002b",
+              "secondary-container": "#6063ee",
+              "surface-bright": "#f7f9fb",
+              "inverse-on-surface": "#eff1f3",
+              "background": "#f7f9fb",
+              "on-primary-container": "#dad7ff",
+              "primary": "#3d37a9",
+              "on-primary": "#ffffff",
+              "on-error": "#ffffff",
+              "surface-container-high": "#e6e8ea",
+              "secondary-fixed": "#e1e0ff",
+              "surface-tint": "#544fc0",
+              "surface-container-highest": "#e0e3e5",
+              "surface-variant": "#e0e3e5",
+              "inverse-primary": "#c3c0ff",
+              "on-secondary-container": "#fffbff",
+              "on-surface-variant": "#464555",
+              "on-background": "#191c1e",
+              "on-tertiary": "#ffffff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+      }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-sm shadow-indigo-500/5">
+<div class="flex items-center justify-between px-8 py-4 max-w-7xl mx-auto w-full">
+<div class="text-xl font-bold tracking-tighter text-slate-900 dark:text-slate-50 font-headline">DetailMaker</div>
+<div class="hidden md:flex gap-8 items-center">
+<a class="font-manrope text-sm font-medium tracking-tight text-slate-600 dark:text-slate-400 hover:text-indigo-500 transition-colors" href="#">홈</a>
+<a class="font-manrope text-sm font-medium tracking-tight text-indigo-600 dark:text-indigo-400 font-semibold border-b-2 border-indigo-600" href="#">주요 기능</a>
+<a class="font-manrope text-sm font-medium tracking-tight text-slate-600 dark:text-slate-400 hover:text-indigo-500 transition-colors" href="#">요금제</a>
+<a class="font-manrope text-sm font-medium tracking-tight text-slate-600 dark:text-slate-400 hover:text-indigo-500 transition-colors" href="#">로그인</a>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-lg font-headline text-sm font-semibold active:scale-95 duration-200">시작하기</button>
+</div>
+</div>
+</nav>
+<main class="pt-32 pb-24 px-6 min-h-screen">
+<div class="max-w-4xl mx-auto">
+<!-- Step Progress Bar -->
+<div class="mb-16">
+<div class="flex items-center justify-between relative">
+<div class="absolute top-1/2 left-0 w-full h-px bg-surface-container-highest -z-10 -translate-y-1/2"></div>
+<!-- Step 1: Active -->
+<div class="flex flex-col items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-headline font-bold text-sm shadow-lg shadow-primary/20">1</div>
+<span class="text-label-sm font-bold text-primary tracking-wider uppercase text-[10px]">상품 정보 입력</span>
+</div>
+<!-- Step 2 -->
+<div class="flex flex-col items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center font-headline font-bold text-sm">2</div>
+<span class="text-label-sm font-medium text-on-surface-variant tracking-wider uppercase text-[10px]">AI 인터뷰</span>
+</div>
+<!-- Step 3 -->
+<div class="flex flex-col items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center font-headline font-bold text-sm">3</div>
+<span class="text-label-sm font-medium text-on-surface-variant tracking-wider uppercase text-[10px]">톤앤매너</span>
+</div>
+<!-- Step 4 -->
+<div class="flex flex-col items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center font-headline font-bold text-sm">4</div>
+<span class="text-label-sm font-medium text-on-surface-variant tracking-wider uppercase text-[10px]">검토</span>
+</div>
+</div>
+</div>
+<!-- Page Header -->
+<div class="mb-10 text-center md:text-left">
+<h1 class="text-4xl font-headline font-extrabold text-on-surface tracking-tight mb-3">상품 정보 정의하기</h1>
+<p class="text-body-md text-on-surface-variant max-w-lg">상품의 핵심 정보를 입력해주세요. AI가 이 정보를 바탕으로 타겟 시장에 최적화된 상세페이지를 설계합니다.</p>
+</div>
+<!-- Main Form Card -->
+<div class="bg-surface-container-lowest rounded-xl p-8 md:p-12 shadow-xl shadow-indigo-500/5 space-y-10">
+<!-- Product Name Section -->
+<div class="space-y-4">
+<label class="block text-sm font-bold text-on-surface font-headline uppercase tracking-wider">Product Identity</label>
+<div class="relative group">
+<input class="w-full bg-surface-container-low border-0 rounded-xl px-6 py-4 focus:ring-0 focus:bg-surface-container-lowest transition-all duration-300 text-on-surface placeholder:text-outline-variant font-medium" placeholder="예: 루미나 프로 무선 헤드폰" type="text"/>
+<div class="absolute inset-0 border-2 border-primary/0 group-focus-within:border-primary/20 rounded-xl pointer-events-none transition-all duration-300"></div>
+</div>
+</div>
+<!-- Category Selection Grid -->
+<div class="space-y-4">
+<label class="block text-sm font-bold text-on-surface font-headline uppercase tracking-wider">Category</label>
+<div class="grid grid-cols-2 md:grid-cols-6 gap-3">
+<!-- Category Item -->
+<button class="flex flex-col items-center justify-center gap-3 p-4 rounded-xl bg-surface-container-low hover:bg-secondary-fixed transition-all duration-300 group">
+<span class="material-symbols-outlined text-2xl text-on-surface-variant group-hover:text-primary" data-icon="restaurant">restaurant</span>
+<span class="text-xs font-semibold text-on-surface-variant group-hover:text-primary">식품</span>
+</button>
+<!-- Category Item (Selected) -->
+<button class="flex flex-col items-center justify-center gap-3 p-4 rounded-xl bg-primary text-on-primary transition-all duration-300 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-2xl" data-icon="auto_awesome" data-weight="fill" style="font-variation-settings: 'FILL' 1;">상품 정보 입력</span>
+<span class="text-xs font-semibold">화장품</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-3 p-4 rounded-xl bg-surface-container-low hover:bg-secondary-fixed transition-all duration-300 group">
+<span class="material-symbols-outlined text-2xl text-on-surface-variant group-hover:text-primary" data-icon="health_and_safety">AI 인터뷰</span>
+<span class="text-xs font-semibold text-on-surface-variant group-hover:text-primary">건강</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-3 p-4 rounded-xl bg-surface-container-low hover:bg-secondary-fixed transition-all duration-300 group">
+<span class="material-symbols-outlined text-2xl text-on-surface-variant group-hover:text-primary" data-icon="devices">톤앤매너</span>
+<span class="text-xs font-semibold text-on-surface-variant group-hover:text-primary">전자제품</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-3 p-4 rounded-xl bg-surface-container-low hover:bg-secondary-fixed transition-all duration-300 group">
+<span class="material-symbols-outlined text-2xl text-on-surface-variant group-hover:text-primary" data-icon="apparel">검토</span>
+<span class="text-xs font-semibold text-on-surface-variant group-hover:text-primary">패션</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-3 p-4 rounded-xl bg-surface-container-low hover:bg-secondary-fixed transition-all duration-300 group">
+<span class="material-symbols-outlined text-2xl text-on-surface-variant group-hover:text-primary" data-icon="home">home</span>
+<span class="text-xs font-semibold text-on-surface-variant group-hover:text-primary">생활용품</span>
+</button>
+</div>
+</div>
+<!-- Price & Image Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Price Input -->
+<div class="space-y-4">
+<label class="block text-sm font-bold text-on-surface font-headline uppercase tracking-wider">Price Range</label>
+<div class="relative group">
+<div class="absolute left-6 top-1/2 -translate-y-1/2 text-on-surface-variant font-bold">$</div>
+<input class="w-full bg-surface-container-low border-0 rounded-xl pl-10 pr-6 py-4 focus:ring-0 focus:bg-surface-container-lowest transition-all duration-300 text-on-surface placeholder:text-outline-variant font-medium" placeholder="0.00" type="number"/>
+<div class="absolute inset-0 border-2 border-primary/0 group-focus-within:border-primary/20 rounded-xl pointer-events-none transition-all duration-300"></div>
+</div>
+<p class="text-[10px] text-on-surface-variant flex items-center gap-1 px-1"><span class="material-symbols-outlined text-xs">info</span>상품의 시장 포지셔닝을 설정하는 데 도움이 됩니다.</p>
+</div>
+<!-- Image Upload Zone -->
+<div class="space-y-4">
+<label class="block text-sm font-bold text-on-surface font-headline uppercase tracking-wider">Product Visuals</label>
+<div class="relative h-[120px] rounded-xl border-2 border-dashed border-outline-variant bg-surface-container-low hover:bg-surface-container hover:border-primary transition-all duration-300 group flex flex-col items-center justify-center cursor-pointer overflow-hidden">
+<div class="flex flex-col items-center gap-1 group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-3xl text-on-surface-variant group-hover:text-primary" data-icon="cloud_upload">상품 정보 입력</span>
+<span class="text-xs font-semibold text-on-surface-variant group-hover:text-primary">상품 정보 입력</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Bar -->
+<div class="pt-6 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-surface-container">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-xl" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">톤앤매너</span>
+<span class="text-sm font-medium">톤앤매너</span>
+</div>
+<button class="w-full md:w-auto bg-primary text-on-primary px-10 py-4 rounded-xl font-headline font-bold text-lg shadow-xl shadow-primary/30 hover:shadow-primary/40 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 group">다음 단계로 <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span></button>
+</div>
+</div>
+<!-- Hint/AI Support Tooltip Section -->
+<div class="mt-8 flex gap-4 p-6 bg-secondary-fixed/30 rounded-xl border border-secondary-fixed-dim/20">
+<div class="w-12 h-12 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-primary" data-icon="psychology">psychology</span>
+</div>
+<div>
+<h4 class="font-headline font-bold text-sm text-on-surface">프로 아틀리에 팁</h4>
+<p class="text-xs text-on-surface-variant mt-1 leading-relaxed">더 정확한 AI 생성을 위해 상품명에 '유기농', '고성능', '한정판' 등 핵심 키워드를 포함해 보세요. 톤앤매너 설정 시 즉각적으로 반영됩니다.</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-slate-50 dark:bg-slate-950 w-full py-12 px-8 border-t border-slate-200/50 dark:border-slate-800/50">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-7xl mx-auto">
+<div class="space-y-4">
+<div class="text-lg font-bold text-slate-900 dark:text-slate-100 font-headline">DetailMaker</div>
+<p class="font-inter text-xs text-slate-500 dark:text-slate-400">© 2024 DetailMaker. 전문가를 위한 AI 상세페이지 제작 서비스.</p>
+</div>
+<div class="flex flex-col gap-3">
+<span class="font-headline font-bold text-slate-900 dark:text-slate-100 text-sm">제품</span>
+<a class="font-inter text-xs text-slate-500 dark:text-slate-400 hover:text-indigo-500 transition-colors" href="#">주요 기능</a>
+<a class="font-inter text-xs text-slate-500 dark:text-slate-400 hover:text-indigo-500 transition-colors" href="#">AI 스튜디오</a>
+<a class="font-inter text-xs text-slate-500 dark:text-slate-400 hover:text-indigo-500 transition-colors" href="#">요금제</a>
+</div>
+<div class="flex flex-col gap-3">
+<span class="font-headline font-bold text-slate-900 dark:text-slate-100 text-sm">리소스</span>
+<a class="font-inter text-xs text-slate-500 dark:text-slate-400 hover:text-indigo-500 transition-colors" href="#">문서</a>
+<a class="font-inter text-xs text-slate-500 dark:text-slate-400 hover:text-indigo-500 transition-colors" href="#">가이드</a>
+<a class="font-inter text-xs text-slate-500 dark:text-slate-400 hover:text-indigo-500 transition-colors" href="#">사이트맵</a>
+</div>
+<div class="flex flex-col gap-3">
+<span class="font-headline font-bold text-slate-900 dark:text-slate-100 text-sm">법적 고지</span>
+<a class="font-inter text-xs text-slate-500 dark:text-slate-400 hover:text-indigo-500 transition-colors" href="#">개인정보 처리방침</a>
+<a class="font-inter text-xs text-slate-500 dark:text-slate-400 hover:text-indigo-500 transition-colors" href="#">이용약관</a>
+<a class="font-inter text-xs text-slate-500 dark:text-slate-400 hover:text-indigo-500 transition-colors" href="#">쿠키 정책</a>
+</div>
+</div>
+</footer>
+</body></html>

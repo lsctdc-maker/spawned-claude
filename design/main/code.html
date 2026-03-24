@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DetailMaker - AI 대신, 완벽한 상세페이지를 만듭니다</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-tertiary-container": "#ffd0d2",
+              "tertiary-fixed-dim": "#ffb2b7",
+              "secondary-fixed-dim": "#c0c1ff",
+              "on-tertiary-fixed": "#40000d",
+              "on-primary-fixed-variant": "#3b35a7",
+              "tertiary-fixed": "#ffdadb",
+              "surface": "#f7f9fb",
+              "secondary": "#4648d4",
+              "surface-dim": "#d8dadc",
+              "on-tertiary-fixed-variant": "#92002a",
+              "on-surface": "#191c1e",
+              "primary-fixed-dim": "#c3c0ff",
+              "surface-container": "#eceef0",
+              "inverse-surface": "#2d3133",
+              "primary-fixed": "#e2dfff",
+              "on-secondary-fixed": "#07006c",
+              "on-primary-fixed": "#0f0069",
+              "surface-container-lowest": "#ffffff",
+              "error-container": "#ffdad6",
+              "surface-container-low": "#f2f4f6",
+              "error": "#ba1a1a",
+              "outline": "#777587",
+              "outline-variant": "#c7c4d8",
+              "primary-container": "#5551c2",
+              "on-secondary": "#ffffff",
+              "on-secondary-fixed-variant": "#2f2ebe",
+              "tertiary-container": "#bf0f3c",
+              "on-error-container": "#93000a",
+              "tertiary": "#95002b",
+              "secondary-container": "#6063ee",
+              "surface-bright": "#f7f9fb",
+              "inverse-on-surface": "#eff1f3",
+              "background": "#f7f9fb",
+              "on-primary-container": "#dad7ff",
+              "primary": "#3d37a9",
+              "on-primary": "#ffffff",
+              "on-error": "#ffffff",
+              "surface-container-high": "#e6e8ea",
+              "secondary-fixed": "#e1e0ff",
+              "surface-tint": "#544fc0",
+              "surface-container-highest": "#e0e3e5",
+              "surface-variant": "#e0e3e5",
+              "inverse-primary": "#c3c0ff",
+              "on-secondary-container": "#fffbff",
+              "on-surface-variant": "#464555",
+              "on-background": "#191c1e",
+              "on-tertiary": "#ffffff"
+            },
+            fontFamily: {
+              "headline": ["Manrope", "sans-serif"],
+              "body": ["Inter", "sans-serif"],
+              "label": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .atelier-blur {
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+      }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+      }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface">
+<!-- Top Navigation -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-sm shadow-indigo-500/5">
+<div class="flex items-center justify-between px-8 py-4 max-w-7xl mx-auto w-full">
+<div class="text-xl font-bold tracking-tighter text-slate-900 dark:text-slate-50 font-headline">DetailMaker</div>
+<div class="hidden md:flex items-center space-x-8">
+<a class="text-indigo-600 dark:text-indigo-400 font-semibold border-b-2 border-indigo-600 font-manrope text-sm tracking-tight" href="#">홈</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-indigo-500 transition-colors font-manrope text-sm font-medium tracking-tight" href="#">주요 기능</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-indigo-500 transition-colors font-manrope text-sm font-medium tracking-tight" href="#">요금제</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-indigo-500 transition-colors font-manrope text-sm font-medium tracking-tight" href="#">로그인</a>
+</div>
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-lg font-medium active:scale-95 duration-200 transition-all">시작하기</button>
+</div>
+</nav>
+<main class="pt-24">
+<!-- Hero Section -->
+<section class="relative px-8 pt-24 pb-32 max-w-7xl mx-auto overflow-hidden">
+<div class="grid lg:grid-cols-2 gap-16 items-center">
+<div class="z-10">
+<span class="inline-block px-4 py-1.5 mb-6 text-primary bg-primary-fixed rounded-full text-xs font-bold tracking-widest uppercase font-label">The Digital Atelier</span>
+<h1 class="text-[3.5rem] leading-[1.1] font-extrabold text-on-surface font-headline tracking-tighter mb-8">
+                        AI 대신,<br/>완벽한 상세페이지를<br/>만듭니다
+                    </h1>
+<p class="text-lg text-on-surface-variant leading-relaxed mb-10 max-w-lg font-body">
+                        단순한 텍스트 생성이 아닙니다. 제품의 본질을 꿰뚫는 인터뷰와 브랜딩 전략을 통해 고관여 소비자의 마음을 움직이는 프리미엄 상세페이지를 설계합니다.
+                    </p>
+<div class="flex flex-col sm:flex-row gap-4">
+<button class="bg-primary text-on-primary px-8 py-4 rounded-xl font-bold text-lg shadow-xl shadow-primary/20 hover:bg-primary-container transition-all">무료로 시작하기</button>
+<button class="bg-surface-container-highest text-on-surface px-8 py-4 rounded-xl font-bold text-lg hover:bg-surface-container-high transition-all">작업 사례 보기</button>
+</div>
+</div>
+<div class="relative">
+<div class="absolute -top-20 -right-20 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
+<div class="relative bg-surface-container-lowest p-4 rounded-3xl shadow-2xl transform rotate-2">
+<img alt="DetailMaker UI Preview" class="rounded-2xl w-full h-auto object-cover" data-alt="clean minimal software interface showing professional web design workspace with typography and layout tools in soft studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDta4YO5YoNefH6rFJ8qvHWa6ueg3C9XDoVJXNqMOXunzMLY4_zwuZpCLx8Lf5RH9uZtSUxrrRC3dmAN5C4g3-CJNdwXLT7Wy6OiMa9Nk143g9QjCbVpJWIA239xsmXHA2N4ZGHoLd8JWFakaQgZU7vCT8OTZYlBFKV1GzkXb_mcJ1O0clCcfsdixc_8fcXXB7vcguDmB2XMEj4-otXDpT94JpzYCxdsqq1OgfDAdbNqQ5W6cCoPLc9g0acbwW97qRQNOipKY-fQbYW"/>
+<div class="absolute -bottom-6 -left-6 glass-card p-6 rounded-2xl shadow-xl border border-white/20 max-w-xs">
+<div class="flex items-center gap-3 mb-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">stars</span>
+<span class="text-sm font-bold font-headline">전환 최적화</span>
+</div>
+<p class="text-xs text-on-surface-variant font-body">전환율 180% 상승을 위한 데이터 기반의 레이아웃 설계</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Features Bento Grid -->
+<section class="py-24 px-8 bg-surface-container-low">
+<div class="max-w-7xl mx-auto">
+<div class="mb-16">
+<h2 class="text-3xl font-bold font-headline text-on-surface tracking-tight mb-4">픽셀 단위로 구현되는 장인정신</h2>
+<p class="text-on-surface-variant max-w-2xl font-body">단순한 자동 생성이 아닌, 전문가의 손길이 닿은 듯한 고밀도 결과물을 약속합니다.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Feature 1: AI Interview -->
+<div class="md:col-span-2 bg-surface-container-lowest p-10 rounded-3xl flex flex-col md:flex-row gap-8 items-center border border-outline-variant/10 shadow-sm">
+<div class="flex-1">
+<div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-6 text-primary">
+<span class="material-symbols-outlined">psychology</span>
+</div>
+<h3 class="text-2xl font-bold font-headline mb-4">심층 USP 인터뷰</h3>
+<p class="text-on-surface-variant leading-relaxed font-body">AI가 제품의 핵심 장점을 추출하기 위해 전문적인 인터뷰를 진행합니다. 숨겨진 가치를 발견하여 설득력 있는 스토리라인을 구축합니다.</p>
+</div>
+<div class="flex-1 bg-surface-container rounded-2xl p-4 w-full h-48 flex items-end overflow-hidden">
+<div class="w-full space-y-2">
+<div class="bg-primary/20 h-8 rounded-lg w-3/4"></div>
+<div class="bg-primary/10 h-8 rounded-lg w-full"></div>
+<div class="bg-primary h-8 rounded-lg w-1/2"></div>
+</div>
+</div>
+</div>
+<!-- Feature 2: 860px Optimized -->
+<div class="bg-secondary-container text-on-secondary-container p-10 rounded-3xl border border-secondary/20 shadow-lg">
+<div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-6">
+<span class="material-symbols-outlined">straighten</span>
+</div>
+<h3 class="text-2xl font-bold font-headline mb-4">860px 정밀도</h3>
+<p class="opacity-90 leading-relaxed font-body">이커머스 표준 860px 너비에 최적화된 가독성을 제공합니다. 모바일과 데스크탑 어디서든 완벽한 구매 경험을 선사합니다.</p>
+</div>
+<!-- Feature 3: Customizable Branding -->
+<div class="bg-surface-container-lowest p-10 rounded-3xl border border-outline-variant/10 shadow-sm">
+<div class="w-12 h-12 bg-tertiary/10 rounded-xl flex items-center justify-center mb-6 text-tertiary">
+<span class="material-symbols-outlined">palette</span>
+</div>
+<h3 class="text-2xl font-bold font-headline mb-4">브랜드 아이덴티티</h3>
+<p class="text-on-surface-variant font-body">브랜드 컬러, 폰트, 톤앤매너를 완벽하게 반영합니다. AI가 만든 것이라고 믿기 어려운 일관된 브랜드 경험을 완성하세요.</p>
+</div>
+<!-- Feature 4: Expert Layouts -->
+<div class="md:col-span-2 bg-inverse-surface text-inverse-on-surface p-10 rounded-3xl flex flex-col md:flex-row gap-8 items-center shadow-2xl">
+<div class="flex-1">
+<h3 class="text-2xl font-bold font-headline mb-4">전환 패턴 설계</h3>
+<p class="opacity-80 leading-relaxed font-body">수만 건의 성공적인 상세페이지 데이터를 학습한 레이아웃 엔진이 소비자의 심리적 허들을 낮추는 최적의 흐름을 구성합니다.</p>
+</div>
+<div class="flex-1 relative h-40 w-full">
+<div class="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-2xl opacity-20"></div>
+<div class="absolute inset-4 border-2 border-dashed border-white/20 rounded-xl flex items-center justify-center">
+<span class="text-sm font-label tracking-widest uppercase">독자적 플로우 엔진</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 5-Step Visual Flow -->
+<section class="py-32 px-8">
+<div class="max-w-5xl mx-auto">
+<div class="text-center mb-24">
+<span class="text-primary font-bold font-label tracking-widest uppercase text-xs">The Methodology</span>
+<h2 class="text-4xl font-extrabold font-headline mt-4">5단계로 완성되는 프리미엄 상세페이지</h2>
+</div>
+<div class="space-y-12">
+<!-- Step 1 -->
+<div class="flex flex-col md:flex-row gap-12 items-center">
+<div class="w-20 h-20 bg-primary text-on-primary rounded-full flex items-center justify-center text-3xl font-bold font-headline shrink-0 shadow-lg">01</div>
+<div class="flex-1">
+<h3 class="text-2xl font-bold font-headline mb-2">심층 AI 인터뷰</h3>
+<p class="text-on-surface-variant font-body leading-relaxed">제품의 타겟, 문제점, 솔루션, 차별점을 파악하기 위해 AI가 질문을 던집니다. 당신의 답변이 상세페이지의 뼈대가 됩니다.</p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="flex flex-col md:flex-row gap-12 items-center">
+<div class="w-20 h-20 bg-surface-container-highest text-on-surface rounded-full flex items-center justify-center text-3xl font-bold font-headline shrink-0">02</div>
+<div class="flex-1">
+<h3 class="text-2xl font-bold font-headline mb-2">카피라이팅 설계</h3>
+<p class="text-on-surface-variant font-body leading-relaxed">인터뷰 내용을 바탕으로 고관여 소비자를 설득하는 후킹 문구와 섹션별 카피를 자동 생성합니다.</p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="flex flex-col md:flex-row gap-12 items-center">
+<div class="w-20 h-20 bg-surface-container-highest text-on-surface rounded-full flex items-center justify-center text-3xl font-bold font-headline shrink-0">03</div>
+<div class="flex-1">
+<h3 class="text-2xl font-bold font-headline mb-2">비주얼 스타일링</h3>
+<p class="text-on-surface-variant font-body leading-relaxed">브랜드 컬러와 무드에 맞춰 폰트, 배경색, 레이아웃 스타일을 결정합니다.</p>
+</div>
+</div>
+<!-- Step 4 -->
+<div class="flex flex-col md:flex-row gap-12 items-center">
+<div class="w-20 h-20 bg-surface-container-highest text-on-surface rounded-full flex items-center justify-center text-3xl font-bold font-headline shrink-0">04</div>
+<div class="flex-1">
+<h3 class="text-2xl font-bold font-headline mb-2">이미지 매칭 및 생성</h3>
+<p class="text-on-surface-variant font-body leading-relaxed">준비된 제품 사진을 분석하고, 필요한 경우 AI가 보조 비주얼 요소를 생성하여 풍성하게 채웁니다.</p>
+</div>
+</div>
+<!-- Step 5 -->
+<div class="flex flex-col md:flex-row gap-12 items-center">
+<div class="w-20 h-20 bg-primary-container text-on-primary-container rounded-full flex items-center justify-center text-3xl font-bold font-headline shrink-0">05</div>
+<div class="flex-1">
+<h3 class="text-2xl font-bold font-headline mb-2">최종 발행 및 최적화</h3>
+<p class="text-on-surface-variant font-body leading-relaxed">860px 최적화 이미지를 다운로드하거나 코드로 내보냅니다. 마켓플레이스별 가이드를 함께 제공합니다.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA Section -->
+<section class="py-24 px-8">
+<div class="max-w-7xl mx-auto bg-primary rounded-[3rem] p-16 text-center text-on-primary relative overflow-hidden shadow-2xl">
+<div class="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/10 to-transparent pointer-events-none"></div>
+<div class="relative z-10">
+<h2 class="text-4xl md:text-5xl font-extrabold font-headline mb-8 tracking-tight">상세페이지 고민은 <br class="md:hidden"/>이제 DetailMaker에게 맡기세요</h2>
+<p class="text-xl opacity-90 mb-12 max-w-2xl mx-auto font-body">지금 바로 시작하고 첫 번째 페이지를 무료로 제작해보세요.</p>
+<button class="bg-surface-container-lowest text-primary px-10 py-5 rounded-2xl font-bold text-xl hover:scale-105 active:scale-95 transition-all shadow-xl">무료로 시작하기</button>
+<p class="mt-6 text-sm opacity-60 font-label tracking-wide uppercase">신용카드 불필요 • 10,000명 이상의 크리에이터와 함께하세요</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-slate-50 dark:bg-slate-950 w-full py-12 px-8 border-t border-slate-200/50 dark:border-slate-800/50">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-7xl mx-auto">
+<div class="space-y-4">
+<div class="text-lg font-bold text-slate-900 dark:text-slate-100 font-headline">DetailMaker</div>
+<p class="text-slate-500 dark:text-slate-400 font-inter text-xs leading-relaxed">© 2024 DetailMaker. 전문가를 위한 AI 상세페이지 제작 서비스.</p>
+</div>
+<div>
+<h4 class="font-bold mb-4 text-sm font-headline">제품</h4>
+<ul class="space-y-2 font-inter text-xs text-slate-500 dark:text-slate-400">
+<li><a class="hover:text-indigo-500 transition-colors" href="#">주요 기능</a></li>
+<li><a class="hover:text-indigo-500 transition-colors" href="#">템플릿</a></li>
+<li><a class="hover:text-indigo-500 transition-colors" href="#">요금제</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold mb-4 text-sm font-headline">회사</h4>
+<ul class="space-y-2 font-inter text-xs text-slate-500 dark:text-slate-400">
+<li><a class="hover:text-indigo-500 transition-colors" href="#">회사 소개</a></li>
+<li><a class="hover:text-indigo-500 transition-colors" href="#">문의하기</a></li>
+<li><a class="hover:text-indigo-500 transition-colors" href="#">개인정보 처리방침</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold mb-4 text-sm font-headline">지원</h4>
+<ul class="space-y-2 font-inter text-xs text-slate-500 dark:text-slate-400">
+<li><a class="hover:text-indigo-500 transition-colors" href="#">사이트맵</a></li>
+<li><a class="hover:text-indigo-500 transition-colors" href="#">이용약관</a></li>
+<li><a class="hover:text-indigo-500 transition-colors" href="#">쿠키 정책</a></li>
+</ul>
+</div>
+</div>
+</footer>
+</body></html>
