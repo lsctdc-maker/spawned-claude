@@ -15,6 +15,10 @@ export default function Step1ProductInfo() {
   const { productInfo } = state;
   const [keywordInput, setKeywordInput] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [analyzeUrl, setAnalyzeUrl] = useState('');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analyzeError, setAnalyzeError] = useState('');
+  const [analyzeResult, setAnalyzeResult] = useState<{ improvementSuggestions?: string[] } | null>(null);
 
   const handleChange = (field: string, value: string) => {
     dispatch({ type: 'UPDATE_PRODUCT', payload: { [field]: value } });
@@ -55,6 +59,49 @@ export default function Step1ProductInfo() {
     }
   };
 
+  const handleAnalyzeUrl = async () => {
+    if (!analyzeUrl.trim()) return;
+
+    setIsAnalyzing(true);
+    setAnalyzeError('');
+    setAnalyzeResult(null);
+
+    try {
+      const res = await fetch('/api/analyze-page', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: analyzeUrl.trim() }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        setAnalyzeError(data.error || '분석에 실패했습니다.');
+        return;
+      }
+
+      if (data.success && data.data) {
+        const result = data.data;
+        setAnalyzeResult(result);
+
+        const updates: Record<string, string> = {};
+        if (result.productName) updates.name = result.productName;
+        if (result.category) updates.category = result.category;
+        if (result.price) updates.price = result.price;
+        if (result.targetCustomer) updates.targetAudience = result.targetCustomer;
+        if (result.features) updates.shortDescription = result.features;
+
+        if (Object.keys(updates).length > 0) {
+          dispatch({ type: 'UPDATE_PRODUCT', payload: updates });
+        }
+      }
+    } catch {
+      setAnalyzeError('네트워크 오류가 발생했습니다.');
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
     if (!productInfo.name.trim()) newErrors.name = '상품명을 입력해주세요.';
@@ -80,6 +127,46 @@ export default function Step1ProductInfo() {
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">상품 기본 정보</h2>
         <p className="text-gray-500">판매할 상품의 기본 정보를 입력해주세요.</p>
+      </div>
+
+      {/* URL 분석 */}
+      <div className="p-5 rounded-2xl bg-primary-50 border border-primary-100">
+        <label className="block text-sm font-medium text-primary-700 mb-3">
+          기존 상세페이지가 있으신가요? (선택)
+        </label>
+        <div className="flex gap-2">
+          <input
+            type="url"
+            value={analyzeUrl}
+            onChange={(e) => setAnalyzeUrl(e.target.value)}
+            placeholder="https://smartstore.naver.com/..."
+            className="flex-1 px-4 py-2.5 rounded-xl border border-primary-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+          />
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={handleAnalyzeUrl}
+            disabled={!analyzeUrl.trim() || isAnalyzing}
+          >
+            {isAnalyzing ? '분석 중...' : '분석하기'}
+          </Button>
+        </div>
+        {analyzeError && (
+          <p className="mt-2 text-sm text-red-500">{analyzeError}</p>
+        )}
+        {analyzeResult && (
+          <div className="mt-3 p-3 rounded-xl bg-green-50 border border-green-200">
+            <p className="text-sm text-green-700 font-medium">분석 완료! 기본 정보가 자동으로 채워졌습니다.</p>
+            {analyzeResult.improvementSuggestions && analyzeResult.improvementSuggestions.length > 0 && (
+              <div className="mt-2">
+                <p className="text-xs text-gray-600 font-medium mb-1">개선 제안:</p>
+                {analyzeResult.improvementSuggestions.map((s: string, i: number) => (
+                  <p key={i} className="text-xs text-gray-500">• {s}</p>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* 카테고리 선택 */}

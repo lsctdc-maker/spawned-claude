@@ -66,9 +66,8 @@ export default function LandingPage() {
                 AI 기반 자동 생성 서비스
               </div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-6 leading-tight">
-                상세페이지,{' '}
-                <span className="gradient-text">AI가 대신</span>{' '}
-                만들어드립니다
+                <span className="gradient-text">상세페이지 기획내용</span>,{' '}
+                AI가 대신 만들어드립니다
               </h1>
               <p className="text-lg sm:text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
                 상품 정보만 입력하면 한국형 쇼핑몰에 최적화된
