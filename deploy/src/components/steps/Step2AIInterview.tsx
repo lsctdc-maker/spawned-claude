@@ -217,7 +217,7 @@ export default function Step2AIInterview() {
   };
 
   const handleAddUSP = () => {
-    const newUsp: USP = { id: `usp-new-${Date.now()}`, title: '새 USP', description: '여기에 설명을 입력하세요.', icon: '📌' };
+    const newUsp: USP = { id: `usp-new-${Date.now()}`, title: '새 USP', description: '여기에 설명을 입력하세요.' };
     dispatch({ type: 'ADD_USP', payload: newUsp });
     handleEditUSP(newUsp);
   };
@@ -308,7 +308,7 @@ export default function Step2AIInterview() {
                 ) : (
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-start gap-3">
-                      <span className="text-2xl flex-shrink-0">{usp.icon || '📌'}</span>
+                      <div className="w-2 h-2 rounded-full bg-[#c3c0ff]/60 flex-shrink-0 mt-2" />
                       <div>
                         <h4 className="font-semibold text-[#e5e2e1]">{usp.title}</h4>
                         <p className="text-sm text-[#c7c4d8] mt-0.5">{usp.description}</p>

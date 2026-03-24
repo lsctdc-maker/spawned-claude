@@ -1,27 +1,27 @@
 import { CategoryInfo, CategoryKey, ToneInfo, ToneKey, InterviewQuestion } from './types';
 
 export const CATEGORIES: Record<CategoryKey, CategoryInfo> = {
-  food: { label: '식품', primary: '#c3c0ff', secondary: '#1c1b2e', icon: '🍽️' },
-  cosmetics: { label: '화장품', primary: '#bbc3ff', secondary: '#1b1c2e', icon: '💄' },
-  health: { label: '건강기능식품', primary: '#a5a1ff', secondary: '#1a1b2e', icon: '💊' },
-  electronics: { label: '가전', primary: '#c0c1ff', secondary: '#1c1c2e', icon: '⚡' },
-  fashion: { label: '패션', primary: '#dad7ff', secondary: '#1d1c2e', icon: '👔' },
-  living: { label: '생활용품', primary: '#e2dfff', secondary: '#1e1c2e', icon: '🏠' },
-  pets: { label: '반려동물', primary: '#ffd6a5', secondary: '#2e251b', icon: '🐾' },
-  kids: { label: '유아/아동', primary: '#ffadad', secondary: '#2e1b1b', icon: '👶' },
-  sports: { label: '스포츠/아웃도어', primary: '#a0e7e5', secondary: '#1b2e2d', icon: '⛹️' },
-  interior: { label: '인테리어/가구', primary: '#d4a5ff', secondary: '#261b2e', icon: '🛋️' },
-  automotive: { label: '자동차용품', primary: '#b5dead', secondary: '#1b2e1e', icon: '🚗' },
-  stationery: { label: '문구/오피스', primary: '#ffc6ff', secondary: '#2e1b2e', icon: '✏️' },
-  beverages: { label: '주류/음료', primary: '#ffb3b3', secondary: '#2e1b1f', icon: '🍷' },
-  digital: { label: '디지털/SW', primary: '#a5c8ff', secondary: '#1b222e', icon: '💻' },
-  others: { label: '기타', primary: '#c8c8c8', secondary: '#232323', icon: '📦' },
+  food: { label: '식품', primary: '#c3c0ff', secondary: '#1c1b2e' },
+  cosmetics: { label: '화장품', primary: '#bbc3ff', secondary: '#1b1c2e' },
+  health: { label: '건강기능식품', primary: '#a5a1ff', secondary: '#1a1b2e' },
+  electronics: { label: '가전', primary: '#c0c1ff', secondary: '#1c1c2e' },
+  fashion: { label: '패션', primary: '#dad7ff', secondary: '#1d1c2e' },
+  living: { label: '생활용품', primary: '#e2dfff', secondary: '#1e1c2e' },
+  pets: { label: '반려동물', primary: '#ffd6a5', secondary: '#2e251b' },
+  kids: { label: '유아/아동', primary: '#ffadad', secondary: '#2e1b1b' },
+  sports: { label: '스포츠/아웃도어', primary: '#a0e7e5', secondary: '#1b2e2d' },
+  interior: { label: '인테리어/가구', primary: '#d4a5ff', secondary: '#261b2e' },
+  automotive: { label: '자동차용품', primary: '#b5dead', secondary: '#1b2e1e' },
+  stationery: { label: '문구/오피스', primary: '#ffc6ff', secondary: '#2e1b2e' },
+  beverages: { label: '주류/음료', primary: '#ffb3b3', secondary: '#2e1b1f' },
+  digital: { label: '디지털/SW', primary: '#a5c8ff', secondary: '#1b222e' },
+  others: { label: '기타', primary: '#c8c8c8', secondary: '#232323' },
 } as const;
 
 export const TONE_STYLES: Record<ToneKey, ToneInfo> = {
-  trust: { label: '신뢰형', icon: '🎯', desc: '검증된 품질, 확실한 선택 — 데이터와 인증으로 신뢰를 주는 스타일' },
-  emotional: { label: '감성형', icon: '💝', desc: '일상을 바꿔줄 특별한 — 공감과 스토리로 마음을 움직이는 스타일' },
-  impact: { label: '임팩트형', icon: '⚡', desc: '지금 바로, 놓치지 마세요 — 강렬한 카피로 행동을 유도하는 스타일' },
+  trust: { label: '신뢰형', desc: '검증된 품질, 확실한 선택 — 데이터와 인증으로 신뢰를 주는 스타일' },
+  emotional: { label: '감성형', desc: '일상을 바꿔줄 특별한 — 공감과 스토리로 마음을 움직이는 스타일' },
+  impact: { label: '임팩트형', desc: '지금 바로, 놓치지 마세요 — 강렬한 카피로 행동을 유도하는 스타일' },
 } as const;
 
 export const INTERVIEW_QUESTIONS: Record<CategoryKey, InterviewQuestion[]> = {
@@ -139,11 +139,11 @@ export const DEFAULT_INTERVIEW_QUESTIONS: InterviewQuestion[] = [
 ];
 
 export const STEP_LABELS = [
-  { step: 1, label: '상품 정보', icon: '📦' },
-  { step: 2, label: 'AI 인터뷰', icon: '💬' },
-  { step: 3, label: '톤앤매너', icon: '🎨' },
-  { step: 4, label: '미리보기', icon: '👁️' },
-  { step: 5, label: '내보내기', icon: '📥' },
+  { step: 1, label: '상품 정보' },
+  { step: 2, label: 'AI 인터뷰' },
+  { step: 3, label: '톤앤매너' },
+  { step: 4, label: '미리보기' },
+  { step: 5, label: '내보내기' },
 ];
 
 export const DEFAULT_SECTIONS_ORDER: Array<{ type: string; title: string }> = [

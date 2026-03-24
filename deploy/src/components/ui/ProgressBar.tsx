@@ -14,7 +14,7 @@ export default function ProgressBar({ currentStep, totalSteps = 5 }: ProgressBar
   return (
     <div className="w-full">
       {/* Stepper */}
-      <div className="relative flex justify-between items-center mb-4">
+      <div className="relative flex justify-between items-center mb-2">
         {/* Background line */}
         <div className="absolute top-1/2 left-0 w-full stepper-line -translate-y-1/2 z-0" />
         {/* Active line */}
@@ -25,30 +25,30 @@ export default function ProgressBar({ currentStep, totalSteps = 5 }: ProgressBar
           transition={{ duration: 0.5, ease: 'easeInOut' }}
         />
 
-        {STEP_LABELS.map(({ step, label, icon }) => {
+        {STEP_LABELS.map(({ step, label }) => {
           const isActive = step === currentStep;
           const isCompleted = step < currentStep;
 
           return (
-            <div key={step} className="relative z-10 flex flex-col items-center gap-3">
+            <div key={step} className="relative z-10 flex flex-col items-center gap-1">
               <motion.div
                 className={`
-                  w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300
+                  w-7 h-7 rounded-full flex items-center justify-center font-medium text-xs transition-all duration-300
                   ${
                     isCompleted
                       ? 'bg-[#c3c0ff] text-[#0f0069]'
                       : isActive
-                      ? 'bg-[#c3c0ff] text-[#0f0069] shadow-[0_0_20px_rgba(195,192,255,0.4)]'
+                      ? 'bg-[#c3c0ff] text-[#0f0069] shadow-[0_0_14px_rgba(195,192,255,0.4)]'
                       : 'bg-[#2a2a2a] border border-[#464555]/30 text-[#e5e2e1]/50'
                   }
                 `}
-                animate={isActive ? { y: [0, -3, 0] } : {}}
+                animate={isActive ? { y: [0, -2, 0] } : {}}
                 transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
               >
-                {isCompleted ? '✓' : icon}
+                {isCompleted ? '✓' : step}
               </motion.div>
               <span
-                className={`text-sm font-medium hidden sm:block ${
+                className={`text-[10px] font-medium hidden sm:block ${
                   isActive
                     ? 'text-[#c3c0ff] font-semibold'
                     : isCompleted

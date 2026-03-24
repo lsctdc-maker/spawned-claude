@@ -7,6 +7,7 @@ import { exportHTML } from '@/lib/api';
 import { ToneKey } from '@/lib/types';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
+import { CheckCircle2, Globe, ImageIcon } from 'lucide-react';
 
 type ExportFormat = 'html' | 'image';
 
@@ -72,9 +73,9 @@ export default function Step5Export() {
     else handleExportImage();
   };
 
-  const formats: { key: ExportFormat; label: string; icon: string; desc: string }[] = [
-    { key: 'html', label: 'HTML 파일', icon: '🌐', desc: '쇼핑몰에 바로 적용 가능한 HTML 파일' },
-    { key: 'image', label: '이미지 (PNG)', icon: '🖼️', desc: '고화질 이미지로 다운로드' },
+  const formats: { key: ExportFormat; label: string; icon: React.ReactNode; desc: string }[] = [
+    { key: 'html', label: 'HTML 파일', icon: <Globe className="w-7 h-7" />, desc: '쇼핑몰에 바로 적용 가능한 HTML 파일' },
+    { key: 'image', label: '이미지 (PNG)', icon: <ImageIcon className="w-7 h-7" />, desc: '고화질 이미지로 다운로드' },
   ];
 
   return (
@@ -86,7 +87,7 @@ export default function Step5Export() {
 
       <Card variant="elevated" padding="lg">
         <div className="text-center space-y-3">
-          <div className="text-4xl">🎉</div>
+          <div className="flex justify-center"><CheckCircle2 className="w-10 h-10 text-[#c3c0ff]" /></div>
           <h3 className="text-xl font-headline font-bold text-[#e5e2e1]">상세페이지가 완성되었습니다</h3>
           <div className="flex flex-wrap justify-center gap-4 text-sm text-[#c7c4d8]">
             <span>상품: <strong className="text-[#e5e2e1]">{productInfo.name}</strong></span>
@@ -102,7 +103,7 @@ export default function Step5Export() {
           {formats.map((format) => (
             <Card key={format.key} variant="interactive" padding="md" selected={selectedFormat === format.key} onClick={() => { setSelectedFormat(format.key); setExportDone(false); }}>
               <div className="flex items-center gap-3">
-                <span className="text-3xl">{format.icon}</span>
+                <span className="text-[#c3c0ff]/70">{format.icon}</span>
                 <div>
                   <h4 className="font-semibold text-[#e5e2e1]">{format.label}</h4>
                   <p className="text-xs text-[#c7c4d8]">{format.desc}</p>

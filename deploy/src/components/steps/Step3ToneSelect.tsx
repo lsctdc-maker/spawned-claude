@@ -7,6 +7,13 @@ import { ToneKey } from '@/lib/types';
 import { generateSections } from '@/lib/api';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
+import { ShieldCheck, Heart, Zap } from 'lucide-react';
+
+const toneIcons: Record<ToneKey, React.ReactNode> = {
+  trust: <ShieldCheck className="w-8 h-8" />,
+  emotional: <Heart className="w-8 h-8" />,
+  impact: <Zap className="w-8 h-8" />,
+};
 
 const toneExamples: Record<ToneKey, { headline: string; body: string }> = {
   trust: {
@@ -68,7 +75,7 @@ export default function Step3ToneSelect() {
         {(Object.entries(TONE_STYLES) as [ToneKey, typeof TONE_STYLES[ToneKey]][]).map(
           ([key, tone]) => (
             <Card key={key} variant="interactive" padding="lg" selected={selectedTone === key} onClick={() => handleSelectTone(key)} className="text-center">
-              <div className="text-4xl mb-3">{tone.icon}</div>
+              <div className="flex justify-center mb-3 text-[#c3c0ff]/70">{toneIcons[key]}</div>
               <h3 className="text-lg font-headline font-bold text-[#e5e2e1] mb-2">{tone.label}</h3>
               <p className="text-sm text-[#c7c4d8] leading-relaxed">{tone.desc}</p>
             </Card>

@@ -5,7 +5,7 @@ export interface CategoryInfo {
   label: string;
   primary: string;
   secondary: string;
-  icon: string;
+  icon?: string;
 }
 
 // ===== 톤앤매너 =====
@@ -13,7 +13,7 @@ export type ToneKey = 'trust' | 'emotional' | 'impact';
 
 export interface ToneInfo {
   label: string;
-  icon: string;
+  icon?: string;
   desc: string;
 }
 

@@ -33,7 +33,7 @@ export default function CreatePage() {
         <main className="flex-1">
           {/* Progress Bar */}
           <div className="bg-[#131313]/80 backdrop-blur-xl border-b border-[#e5e2e1]/10 sticky top-16 z-40">
-            <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6">
+            <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3">
               <ProgressBar currentStep={state.currentStep} />
             </div>
           </div>
