@@ -1,5 +1,5 @@
 // ===== 카테고리 =====
-export type CategoryKey = 'food' | 'cosmetics' | 'health' | 'electronics' | 'fashion' | 'living';
+export type CategoryKey = 'food' | 'cosmetics' | 'health' | 'electronics' | 'fashion' | 'living' | 'pets' | 'kids' | 'sports' | 'interior' | 'automotive' | 'stationery' | 'beverages' | 'digital' | 'others';
 
 export interface CategoryInfo {
   label: string;
