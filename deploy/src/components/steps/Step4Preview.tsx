@@ -1,98 +1,50 @@
 'use client';
 
-import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useDetailPage } from '@/hooks/useDetailPage';
-import DetailPagePreview from '@/components/preview/DetailPagePreview';
 import Button from '@/components/ui/Button';
-import { ImageIcon, Loader2, Sparkles, Wand2 } from 'lucide-react';
+import { ImageIcon } from 'lucide-react';
+import { ManuscriptSectionType } from '@/lib/types';
+
+const SECTION_ACCENT: Record<ManuscriptSectionType, { bg: string; text: string; border: string }> = {
+  hero:     { bg: 'bg-[#c3c0ff]/8',  text: 'text-[#c3c0ff]',  border: 'border-[#c3c0ff]/20' },
+  features: { bg: 'bg-[#a5c8ff]/8',  text: 'text-[#a5c8ff]',  border: 'border-[#a5c8ff]/20' },
+  detail:   { bg: 'bg-[#bbc3ff]/8',  text: 'text-[#bbc3ff]',  border: 'border-[#bbc3ff]/20' },
+  howto:    { bg: 'bg-[#a0e7e5]/8',  text: 'text-[#a0e7e5]',  border: 'border-[#a0e7e5]/20' },
+  trust:    { bg: 'bg-[#d4a5ff]/8',  text: 'text-[#d4a5ff]',  border: 'border-[#d4a5ff]/20' },
+  cta:      { bg: 'bg-[#ffb3b3]/8',  text: 'text-[#ffb3b3]',  border: 'border-[#ffb3b3]/20' },
+};
+
+const SECTION_LABELS: Record<ManuscriptSectionType, string> = {
+  hero: '히어로 카피',
+  features: '핵심 특장점',
+  detail: '상세 설명',
+  howto: '사용 방법',
+  trust: '신뢰 요소',
+  cta: '구매 유도',
+};
 
 export default function Step4Preview() {
   const { state, dispatch } = useDetailPage();
-  const { generatedSections, imageGenerating, images } = state;
-  const [viewMode, setViewMode] = useState<'desktop' | 'mobile'>('desktop');
-  const [isGeneratingAll, setIsGeneratingAll] = useState(false);
+  const { manuscriptSections, productInfo, productPhotos } = state;
 
-  // 모든 이미지 한 번에 생성
-  const handleGenerateAllImages = useCallback(async () => {
-    if (isGeneratingAll) return;
-    setIsGeneratingAll(true);
+  const visibleSections = [...manuscriptSections]
+    .sort((a, b) => a.order - b.order)
+    .filter((s) => s.visible);
 
-    const imageTypes = [
-      { key: 'hero', type: 'hero' as const },
-      { key: 'product', type: 'background' as const },
-      { key: 'lifestyle', type: 'lifestyle' as const },
-    ];
-
-    // 각 타입별로 이미지 생성
-    for (const { key, type } of imageTypes) {
-      dispatch({ type: 'SET_IMAGE_GENERATING', payload: { key, generating: true } });
-
-      try {
-        const response = await fetch('/api/image', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            type,
-            productName: state.productInfo.name,
-            category: state.productInfo.category,
-            usps: state.extractedUSPs.map((u) => u.title),
-            tone: state.selectedTone,
-          }),
-        });
-
-        const data = await response.json();
-        if (data.success && data.imageUrl) {
-          dispatch({ type: 'SET_IMAGE', payload: { key, url: data.imageUrl } });
-        }
-      } catch (error) {
-        console.error(`${type} image generation failed:`, error);
-      } finally {
-        dispatch({ type: 'SET_IMAGE_GENERATING', payload: { key, generating: false } });
-      }
-    }
-
-    // Detail 섹션의 각 paragraph에 대해 feature 이미지 생성
-    const detailSection = generatedSections.find((s) => s.type === 'detail');
-    if (detailSection) {
-      const detailContent = detailSection.content as { paragraphs: { title: string }[] };
-      const featureUrls: string[] = [];
-
-      for (let i = 0; i < detailContent.paragraphs.length; i++) {
-        const featureKey = `feature-${i}`;
-        dispatch({ type: 'SET_IMAGE_GENERATING', payload: { key: featureKey, generating: true } });
-
-        try {
-          const response = await fetch('/api/image', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              type: 'feature',
-              productName: state.productInfo.name,
-              category: state.productInfo.category,
-              usps: [detailContent.paragraphs[i].title],
-              tone: state.selectedTone,
-            }),
-          });
-
-          const data = await response.json();
-          if (data.success && data.imageUrl) {
-            featureUrls[i] = data.imageUrl;
-            dispatch({ type: 'SET_IMAGE', payload: { key: 'features', url: JSON.stringify(featureUrls) } });
-          }
-        } catch (error) {
-          console.error(`Feature ${i} image generation failed:`, error);
-        } finally {
-          dispatch({ type: 'SET_IMAGE_GENERATING', payload: { key: featureKey, generating: false } });
-        }
-      }
-    }
-
-    setIsGeneratingAll(false);
-  }, [isGeneratingAll, state, dispatch, generatedSections]);
-
-  const hasAnyImage = images.hero || images.product || images.lifestyle || images.features;
-  const isAnyGenerating = Object.values(imageGenerating).some(Boolean);
+  if (visibleSections.length === 0) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -20 }}
+        className="max-w-3xl mx-auto text-center py-16 space-y-4"
+      >
+        <p className="text-[#e5e2e1]/40">미리볼 원고가 없습니다.</p>
+        <Button variant="ghost" onClick={() => dispatch({ type: 'PREV_STEP' })}>이전으로</Button>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
@@ -102,63 +54,83 @@ export default function Step4Preview() {
       className="space-y-6"
     >
       <div className="text-center">
-        <h2 className="text-2xl font-headline font-extrabold text-[#e5e2e1] mb-2">미리보기 & 편집</h2>
-        <p className="text-[#c7c4d8]">섹션을 드래그하여 순서를 변경하고, 클릭하여 내용을 편집할 수 있습니다.</p>
+        <h2 className="text-2xl font-headline font-extrabold text-[#e5e2e1] mb-2">미리보기</h2>
+        <p className="text-[#c7c4d8]">원고와 이미지 가이드를 확인하세요. 이미지는 Phase 2에서 제작합니다.</p>
       </div>
 
-      <div className="flex items-center justify-center gap-4 flex-wrap">
-        <div className="inline-flex rounded-full bg-[#201f1f] p-1 border border-[#464555]/15">
-          <button
-            onClick={() => setViewMode('desktop')}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${viewMode === 'desktop' ? 'bg-[#2a2a2a] text-[#e5e2e1] shadow-sm' : 'text-[#e5e2e1]/50 hover:text-[#e5e2e1]'}`}
-          >데스크탑</button>
-          <button
-            onClick={() => setViewMode('mobile')}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${viewMode === 'mobile' ? 'bg-[#2a2a2a] text-[#e5e2e1] shadow-sm' : 'text-[#e5e2e1]/50 hover:text-[#e5e2e1]'}`}
-          >모바일</button>
-        </div>
+      {/* 제품 대표 정보 */}
+      <div className="max-w-[860px] mx-auto">
+        <div className="bg-[#1c1b1b] rounded-2xl overflow-hidden border border-[#464555]/15 shadow-[0_40px_100px_rgba(0,0,0,0.5)]">
 
-        {/* 이미지 일괄 생성 버튼 */}
-        <button
-          onClick={handleGenerateAllImages}
-          disabled={isAnyGenerating || isGeneratingAll}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all bg-gradient-to-r from-[#c3c0ff]/10 to-[#a5a1ff]/10 text-[#c3c0ff] border border-[#c3c0ff]/20 hover:from-[#c3c0ff]/20 hover:to-[#a5a1ff]/20 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isGeneratingAll || isAnyGenerating ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              이미지 생성 중...
-            </>
-          ) : (
-            <>
-              <Wand2 className="w-4 h-4" />
-              {hasAnyImage ? 'AI 이미지 전체 재생성' : 'AI 이미지 전체 생성'}
-            </>
-          )}
-        </button>
-      </div>
+          {/* 상단 메타 바 */}
+          <div className="px-6 py-3 border-b border-[#464555]/10 flex items-center gap-4">
+            {productPhotos.length > 0 && (
+              <img src={productPhotos[0].dataUrl} alt="대표 사진" className="w-8 h-8 rounded-md object-cover" />
+            )}
+            <div>
+              <span className="text-xs font-bold text-[#e5e2e1]">{productInfo.name || '제품명'}</span>
+              {productInfo.price && <span className="ml-2 text-xs text-[#e5e2e1]/40">{productInfo.price}</span>}
+            </div>
+            <div className="ml-auto flex gap-2">
+              {[...Array(Math.min(productPhotos.length, 5))].map((_, i) => (
+                <img key={i} src={productPhotos[i].dataUrl} alt="" className="w-6 h-6 rounded object-cover opacity-60" />
+              ))}
+              {productPhotos.length > 5 && (
+                <span className="text-xs text-[#e5e2e1]/30 self-center">+{productPhotos.length - 5}</span>
+              )}
+            </div>
+          </div>
 
-      <div className="max-w-3xl mx-auto">
-        <div className="flex flex-wrap gap-2 justify-center mb-6">
-          {generatedSections.map((section) => (
-            <button
-              key={section.id}
-              onClick={() => dispatch({ type: 'TOGGLE_SECTION_VISIBILITY', payload: section.id })}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${section.visible ? 'bg-[#c3c0ff]/10 text-[#c3c0ff] border border-[#c3c0ff]/20 hover:bg-[#c3c0ff]/20' : 'bg-[#2a2a2a] text-[#e5e2e1]/30 border border-[#464555]/15 hover:bg-[#353534] line-through'}`}
-            >{section.title}</button>
-          ))}
-        </div>
-      </div>
+          {/* 섹션 미리보기 */}
+          <div className="divide-y divide-[#464555]/8">
+            {visibleSections.map((section) => {
+              const accent = SECTION_ACCENT[section.sectionType] || SECTION_ACCENT.detail;
 
-      <div className={`mx-auto transition-all duration-500 ${viewMode === 'mobile' ? 'max-w-[375px]' : 'max-w-[860px]'}`}>
-        <div className="preview-container">
-          <DetailPagePreview />
+              return (
+                <div key={section.id} className="group">
+                  {/* 섹션 라벨 */}
+                  <div className={`px-6 py-2 flex items-center gap-2 ${accent.bg}`}>
+                    <span className={`text-[10px] uppercase tracking-widest font-label ${accent.text}`}>
+                      {SECTION_LABELS[section.sectionType] || section.sectionType}
+                    </span>
+                    <span className={`text-xs font-semibold text-[#e5e2e1]/70`}>
+                      {section.title}
+                    </span>
+                  </div>
+
+                  <div className="px-6 py-5 grid md:grid-cols-[1fr_200px] gap-5">
+                    {/* 원고 텍스트 */}
+                    <div>
+                      <p className="text-sm text-[#c7c4d8] leading-relaxed whitespace-pre-wrap">
+                        {section.body}
+                      </p>
+                    </div>
+
+                    {/* 이미지 가이드 박스 */}
+                    <div className={`rounded-xl border-2 border-dashed ${accent.border} flex flex-col items-center justify-center py-6 px-4 text-center min-h-[120px]`}>
+                      <ImageIcon className={`w-6 h-6 mb-2 ${accent.text} opacity-50`} />
+                      <p className={`text-[11px] leading-relaxed ${accent.text} opacity-60`}>
+                        {section.imageGuide}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* 하단 워터마크 */}
+          <div className="px-6 py-3 border-t border-[#464555]/10 text-center">
+            <span className="text-[10px] text-[#e5e2e1]/15 tracking-widest uppercase font-label">
+              The Digital Atelier — Phase 1 Draft
+            </span>
+          </div>
         </div>
       </div>
 
       <div className="flex justify-between pt-4 max-w-3xl mx-auto">
         <Button variant="ghost" onClick={() => dispatch({ type: 'PREV_STEP' })}>이전</Button>
-        <Button size="lg" onClick={() => dispatch({ type: 'NEXT_STEP' })}>다음: 익스포트</Button>
+        <Button size="lg" onClick={() => dispatch({ type: 'NEXT_STEP' })}>다음: 내보내기</Button>
       </div>
     </motion.div>
   );

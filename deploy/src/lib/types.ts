@@ -1,3 +1,23 @@
+// ===== 제품 사진 =====
+export interface ProductPhoto {
+  id: string;
+  dataUrl: string;
+  name: string;
+}
+
+// ===== 원고 섹션 =====
+export type ManuscriptSectionType = 'hero' | 'features' | 'detail' | 'howto' | 'trust' | 'cta';
+
+export interface ManuscriptSection {
+  id: string;
+  sectionType: ManuscriptSectionType;
+  title: string;
+  body: string;
+  imageGuide: string;
+  visible: boolean;
+  order: number;
+}
+
 // ===== 카테고리 =====
 export type CategoryKey = 'food' | 'cosmetics' | 'health' | 'electronics' | 'fashion' | 'living' | 'pets' | 'kids' | 'sports' | 'interior' | 'automotive' | 'stationery' | 'beverages' | 'digital' | 'others';
 
@@ -183,11 +203,13 @@ export interface ImageGeneratingState {
 export interface DetailPageState {
   currentStep: number;
   productInfo: ProductInfo;
+  productPhotos: ProductPhoto[];
   interviewMessages: InterviewMessage[];
   interviewCompleted: boolean;
   extractedUSPs: USP[];
   selectedTone: ToneKey | '';
   generatedSections: DetailPageSection[];
+  manuscriptSections: ManuscriptSection[];
   isGenerating: boolean;
   error: string | null;
   images: PageImages;
@@ -202,6 +224,9 @@ export type DetailPageAction =
   | { type: 'NEXT_STEP' }
   | { type: 'PREV_STEP' }
   | { type: 'UPDATE_PRODUCT'; payload: Partial<ProductInfo> }
+  | { type: 'SET_PRODUCT_PHOTOS'; payload: ProductPhoto[] }
+  | { type: 'ADD_PRODUCT_PHOTO'; payload: ProductPhoto }
+  | { type: 'REMOVE_PRODUCT_PHOTO'; payload: string }
   | { type: 'ADD_INTERVIEW_MESSAGE'; payload: InterviewMessage }
   | { type: 'SET_INTERVIEW_COMPLETED'; payload: boolean }
   | { type: 'SET_USPS'; payload: USP[] }
@@ -213,6 +238,12 @@ export type DetailPageAction =
   | { type: 'UPDATE_SECTION'; payload: { id: string; data: Partial<DetailPageSection> } }
   | { type: 'REORDER_SECTIONS'; payload: DetailPageSection[] }
   | { type: 'TOGGLE_SECTION_VISIBILITY'; payload: string }
+  | { type: 'SET_MANUSCRIPT'; payload: ManuscriptSection[] }
+  | { type: 'UPDATE_MANUSCRIPT_SECTION'; payload: { id: string; data: Partial<ManuscriptSection> } }
+  | { type: 'REORDER_MANUSCRIPT'; payload: ManuscriptSection[] }
+  | { type: 'TOGGLE_MANUSCRIPT_VISIBILITY'; payload: string }
+  | { type: 'ADD_MANUSCRIPT_SECTION'; payload: ManuscriptSection }
+  | { type: 'REMOVE_MANUSCRIPT_SECTION'; payload: string }
   | { type: 'SET_GENERATING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
   | { type: 'SET_IMAGE'; payload: { key: string; url: string } }
@@ -239,4 +270,8 @@ export interface GenerateSectionsResponse {
 export interface ExportResponse {
   html: string;
   imageUrl?: string;
+}
+
+export interface GenerateManuscriptResponse {
+  sections: ManuscriptSection[];
 }

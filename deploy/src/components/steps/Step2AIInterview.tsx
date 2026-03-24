@@ -11,7 +11,6 @@ import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 
 const MIN_QUESTIONS = 5;
-const MAX_QUESTIONS = 12;
 
 interface PreviousAnswer {
   question: string;
@@ -20,7 +19,7 @@ interface PreviousAnswer {
 
 export default function Step2AIInterview() {
   const { state, dispatch } = useDetailPage();
-  const { productInfo, interviewMessages, interviewCompleted, extractedUSPs } = state;
+  const { productInfo, productPhotos, interviewMessages, interviewCompleted, extractedUSPs } = state;
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userInput, setUserInput] = useState('');
@@ -68,6 +67,18 @@ export default function Step2AIInterview() {
   // API에서 질문 가져오기
   const fetchQuestion = useCallback(async (answers: PreviousAnswer[]): Promise<{ question: string | null; isComplete: boolean }> => {
     try {
+      // 첫 번째 동적 질문 호출 시 제품 대표 사진 전송
+      const firstPhoto = productPhotos[0];
+      let photoBase64: string | undefined;
+      let photoMimeType: string | undefined;
+      if (firstPhoto && answers.length === 1) {
+        // dataUrl에서 base64 추출 (data:image/jpeg;base64, 부분 제거)
+        const parts = firstPhoto.dataUrl.split(',');
+        photoBase64 = parts[1];
+        const mimeMatch = parts[0].match(/:(.*?);/);
+        photoMimeType = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+      }
+
       const res = await fetch('/api/interview', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -75,6 +86,8 @@ export default function Step2AIInterview() {
           category: productInfo.category,
           productName: productInfo.name,
           previousAnswers: answers,
+          productPhotoBase64: photoBase64,
+          productPhotoMimeType: photoMimeType,
         }),
       });
 
@@ -150,13 +163,7 @@ export default function Step2AIInterview() {
 
     const nextIndex = currentQuestionIndex + 1;
 
-    // 최대 질문 수 도달 시 인터뷰 종료
-    if (nextIndex >= MAX_QUESTIONS) {
-      setIsTyping(true);
-      await new Promise((r) => setTimeout(r, 800));
-      setIsTyping(false);
-      await completeInterview([...interviewMessages, userMsg]);
-    } else {
+    {
       // 다음 질문 동적 생성
       setIsTyping(true);
 
@@ -271,7 +278,7 @@ export default function Step2AIInterview() {
             </div>
             <div className="mt-2 flex items-center justify-between">
               <div className="text-xs text-[#e5e2e1]/30">
-                {currentQuestionIndex + 1} / {MAX_QUESTIONS} 질문 (최소 {MIN_QUESTIONS}개)
+                {currentQuestionIndex + 1}번째 질문 (최소 {MIN_QUESTIONS}개)
               </div>
               {currentQuestionIndex >= MIN_QUESTIONS - 1 && (
                 <button

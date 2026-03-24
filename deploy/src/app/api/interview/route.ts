@@ -21,7 +21,6 @@ const FIRST_QUESTIONS: Record<CategoryKey, string> = {
 };
 
 const MIN_QUESTIONS = 5;
-const MAX_QUESTIONS = 12;
 
 const SYSTEM_PROMPT = `당신은 한국 이커머스 상세페이지 전문 기획자입니다.
 셀러와 인터뷰를 통해 상품의 핵심 셀링포인트를 뽑아내는 것이 목표입니다.
@@ -31,7 +30,7 @@ const SYSTEM_PROMPT = `당신은 한국 이커머스 상세페이지 전문 기�
 2. 이전 답변에서 부족한 정보 있으면 자연스럽게 추가 질문
 3. 셀러가 못 생각한 셀링포인트를 이끌어내기
 4. 왜 이 정보가 중요한지 간단히 설명 포함
-5. 최소 ${MIN_QUESTIONS}개, 최대 ${MAX_QUESTIONS}개 질문 가능. 정보가 충분히 수집되었다고 판단되면 일찍 종료해도 됨
+5. 최소 ${MIN_QUESTIONS}개 이상 질문. 정보가 충분히 수집되었다고 판단되면 isComplete: true로 종료
 6. 한국어로 질문
 
 필수 수집 정보 (반드시 질문해야 함):
@@ -62,10 +61,12 @@ interface PreviousAnswer {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { category, productName, previousAnswers } = body as {
+    const { category, productName, previousAnswers, productPhotoBase64, productPhotoMimeType } = body as {
       category: CategoryKey;
       productName?: string;
       previousAnswers?: PreviousAnswer[];
+      productPhotoBase64?: string;
+      productPhotoMimeType?: string;
     };
 
     const questionIndex = previousAnswers?.length || 0;
@@ -83,7 +84,6 @@ export async function POST(request: NextRequest) {
     const apiKey = process.env.ANTHROPIC_API_KEY;
 
     if (!apiKey) {
-      // API 키 없으면 기존 고정 질문으로 폴백
       const fallbackQuestions = category && INTERVIEW_QUESTIONS[category]
         ? INTERVIEW_QUESTIONS[category]
         : DEFAULT_INTERVIEW_QUESTIONS;
@@ -99,19 +99,43 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ question: null, questionIndex, done: true, isComplete: true });
     }
 
-    // 최대 질문 수 도달 시 종료
-    if (questionIndex >= MAX_QUESTIONS) {
-      return NextResponse.json({ question: null, questionIndex, done: true, isComplete: true });
+    // 대화 히스토리 구성
+    const conversationHistory: { role: 'user' | 'assistant'; content: unknown }[] = [];
+
+    // 첫 번째 동적 질문 호출 시 제품 사진을 Vision으로 포함 (한 번만)
+    if (questionIndex === 1 && productPhotoBase64) {
+      conversationHistory.push({
+        role: 'user',
+        content: [
+          {
+            type: 'image',
+            source: {
+              type: 'base64',
+              media_type: productPhotoMimeType || 'image/jpeg',
+              data: productPhotoBase64,
+            },
+          },
+          {
+            type: 'text',
+            text: `제품 사진입니다. 이 제품(${productName || '상품'})에 대한 인터뷰를 진행합니다.`,
+          },
+        ],
+      });
+      conversationHistory.push({
+        role: 'assistant',
+        content: '제품 사진 확인했습니다. 인터뷰를 시작하겠습니다.',
+      });
     }
 
-    // Claude API 호출
-    const conversationHistory = previousAnswers?.map((pa) => [
-      { role: 'assistant' as const, content: pa.question },
-      { role: 'user' as const, content: pa.answer },
-    ]).flat() || [];
+    // 이전 답변 대화 추가
+    if (previousAnswers) {
+      for (const pa of previousAnswers) {
+        conversationHistory.push({ role: 'assistant', content: pa.question });
+        conversationHistory.push({ role: 'user', content: pa.answer });
+      }
+    }
 
-    // 수집된 정보 체크를 위한 컨텍스트
-    const collectedInfo = previousAnswers?.map(pa => `Q: ${pa.question}\nA: ${pa.answer}`).join('\n\n') || '';
+    const collectedInfo = previousAnswers?.map((pa) => `Q: ${pa.question}\nA: ${pa.answer}`).join('\n\n') || '';
 
     const claudeResponse = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -123,7 +147,7 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 500,
-        system: `${SYSTEM_PROMPT}\n\n카테고리: ${category || '일반'}\n상품명: ${productName || '미정'}\n현재 ${questionIndex + 1}번째 질문을 생성해야 합니다. (최소 ${MIN_QUESTIONS}개, 최대 ${MAX_QUESTIONS}개)\n\n지금까지 수집된 정보:\n${collectedInfo}\n\n반드시 JSON 형식으로만 응답하세요: {"question": "...", "isComplete": true/false}`,
+        system: `${SYSTEM_PROMPT}\n\n카테고리: ${category || '일반'}\n상품명: ${productName || '미정'}\n현재 ${questionIndex + 1}번째 질문을 생성해야 합니다. (최소 ${MIN_QUESTIONS}개)\n\n지금까지 수집된 정보:\n${collectedInfo}\n\n반드시 JSON 형식으로만 응답하세요: {"question": "...", "isComplete": true/false}`,
         messages: conversationHistory,
       }),
     });
@@ -139,7 +163,6 @@ export async function POST(request: NextRequest) {
       throw new Error('Empty response from Claude API');
     }
 
-    // JSON 파싱 시도
     let question: string;
     let isComplete = false;
 
@@ -148,9 +171,8 @@ export async function POST(request: NextRequest) {
       question = parsed.question;
       isComplete = parsed.isComplete === true;
     } catch {
-      // JSON 파싱 실패 시 텍스트 그대로 사용
       question = rawText;
-      isComplete = questionIndex >= MAX_QUESTIONS - 1;
+      isComplete = false;
     }
 
     // 최소 질문 수 미만이면 isComplete 강제 false
@@ -162,15 +184,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ question: null, questionIndex, done: true, isComplete: true });
     }
 
-    return NextResponse.json({
-      question,
-      questionIndex,
-      isComplete,
-    });
+    return NextResponse.json({ question, questionIndex, isComplete });
   } catch (error) {
     console.error('Interview API error:', error);
 
-    // 에러 시 기존 고정 질문으로 폴백
     try {
       const body = await request.clone().json().catch(() => ({}));
       const { category, previousAnswers } = body as {
@@ -190,7 +207,7 @@ export async function POST(request: NextRequest) {
         });
       }
     } catch {
-      // ignore fallback error
+      // ignore
     }
 
     return NextResponse.json(

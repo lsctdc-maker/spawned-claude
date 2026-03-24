@@ -16,11 +16,13 @@ const initialProductInfo: ProductInfo = {
 export const initialState: DetailPageState = {
   currentStep: 1,
   productInfo: initialProductInfo,
+  productPhotos: [],
   interviewMessages: [],
   interviewCompleted: false,
   extractedUSPs: [],
   selectedTone: '',
   generatedSections: [],
+  manuscriptSections: [],
   isGenerating: false,
   error: null,
   images: {},
@@ -42,6 +44,12 @@ export function detailPageReducer(
       return { ...state, currentStep: Math.max(state.currentStep - 1, 1) };
     case 'UPDATE_PRODUCT':
       return { ...state, productInfo: { ...state.productInfo, ...action.payload } };
+    case 'SET_PRODUCT_PHOTOS':
+      return { ...state, productPhotos: action.payload };
+    case 'ADD_PRODUCT_PHOTO':
+      return { ...state, productPhotos: [...state.productPhotos, action.payload] };
+    case 'REMOVE_PRODUCT_PHOTO':
+      return { ...state, productPhotos: state.productPhotos.filter((p) => p.id !== action.payload) };
     case 'ADD_INTERVIEW_MESSAGE':
       return { ...state, interviewMessages: [...state.interviewMessages, action.payload] };
     case 'SET_INTERVIEW_COMPLETED':
@@ -79,6 +87,28 @@ export function detailPageReducer(
           sec.id === action.payload ? { ...sec, visible: !sec.visible } : sec
         ),
       };
+    case 'SET_MANUSCRIPT':
+      return { ...state, manuscriptSections: action.payload };
+    case 'UPDATE_MANUSCRIPT_SECTION':
+      return {
+        ...state,
+        manuscriptSections: state.manuscriptSections.map((sec) =>
+          sec.id === action.payload.id ? { ...sec, ...action.payload.data } : sec
+        ),
+      };
+    case 'REORDER_MANUSCRIPT':
+      return { ...state, manuscriptSections: action.payload };
+    case 'TOGGLE_MANUSCRIPT_VISIBILITY':
+      return {
+        ...state,
+        manuscriptSections: state.manuscriptSections.map((sec) =>
+          sec.id === action.payload ? { ...sec, visible: !sec.visible } : sec
+        ),
+      };
+    case 'ADD_MANUSCRIPT_SECTION':
+      return { ...state, manuscriptSections: [...state.manuscriptSections, action.payload] };
+    case 'REMOVE_MANUSCRIPT_SECTION':
+      return { ...state, manuscriptSections: state.manuscriptSections.filter((sec) => sec.id !== action.payload) };
     case 'SET_GENERATING':
       return { ...state, isGenerating: action.payload };
     case 'SET_ERROR':

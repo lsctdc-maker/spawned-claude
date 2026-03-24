@@ -1,154 +1,116 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useRef, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useDetailPage } from '@/hooks/useDetailPage';
 import { CATEGORIES } from '@/lib/constants';
-import { CategoryKey } from '@/lib/types';
+import { CategoryKey, ProductPhoto } from '@/lib/types';
 import Input from '@/components/ui/Input';
 import TextArea from '@/components/ui/TextArea';
 import Button from '@/components/ui/Button';
-import { Lightbulb, Upload, Link } from 'lucide-react';
+import { Upload, X, Link, ImageIcon, Lightbulb, ChevronDown, ChevronUp } from 'lucide-react';
+
+const MAX_PHOTOS = 10;
 
 export default function Step1ProductInfo() {
   const { state, dispatch } = useDetailPage();
-  const { productInfo } = state;
+  const { productInfo, productPhotos } = state;
+
   const [keywordInput, setKeywordInput] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isDragging, setIsDragging] = useState(false);
+
+  // 경쟁사 분석 섹션
+  const [showAnalysis, setShowAnalysis] = useState(false);
+  const [analyzeTab, setAnalyzeTab] = useState<'url' | 'image'>('url');
   const [analyzeUrl, setAnalyzeUrl] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analyzeError, setAnalyzeError] = useState('');
   const [analyzeResult, setAnalyzeResult] = useState<any>(null);
-  const [analyzeTab, setAnalyzeTab] = useState<'url' | 'image'>('url');
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string>('');
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [compImageFile, setCompImageFile] = useState<File | null>(null);
+  const [compImagePreview, setCompImagePreview] = useState('');
 
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  const compFileInputRef = useRef<HTMLInputElement>(null);
+
+  // ===== 제품 사진 =====
+  const processImageFiles = useCallback(async (files: FileList | File[]) => {
+    const fileArray = Array.from(files).filter((f) => f.type.startsWith('image/'));
+    const remaining = MAX_PHOTOS - productPhotos.length;
+    const toProcess = fileArray.slice(0, remaining);
+
+    for (const file of toProcess) {
+      const dataUrl = await readFileAsDataUrl(file);
+      const photo: ProductPhoto = {
+        id: `photo-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        dataUrl,
+        name: file.name,
+      };
+      dispatch({ type: 'ADD_PRODUCT_PHOTO', payload: photo });
+    }
+  }, [productPhotos.length, dispatch]);
+
+  const readFileAsDataUrl = (file: File): Promise<string> =>
+    new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target?.result as string);
+      reader.readAsDataURL(file);
+    });
+
+  const handlePhotoInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      processImageFiles(e.target.files);
+      e.target.value = '';
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => setIsDragging(false);
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files) {
+      processImageFiles(e.dataTransfer.files);
+    }
+  };
+
+  const handleRemovePhoto = (id: string) => {
+    dispatch({ type: 'REMOVE_PRODUCT_PHOTO', payload: id });
+  };
+
+  // ===== 기본 정보 =====
   const handleChange = (field: string, value: string) => {
     dispatch({ type: 'UPDATE_PRODUCT', payload: { [field]: value } });
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: '' }));
-    }
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }));
   };
 
   const handleCategorySelect = (key: CategoryKey) => {
     dispatch({ type: 'UPDATE_PRODUCT', payload: { category: key } });
-    if (errors.category) {
-      setErrors((prev) => ({ ...prev, category: '' }));
-    }
+    if (errors.category) setErrors((prev) => ({ ...prev, category: '' }));
   };
 
   const handleAddKeyword = () => {
     const trimmed = keywordInput.trim();
     if (trimmed && !productInfo.keywords.includes(trimmed)) {
-      dispatch({
-        type: 'UPDATE_PRODUCT',
-        payload: { keywords: [...productInfo.keywords, trimmed] },
-      });
+      dispatch({ type: 'UPDATE_PRODUCT', payload: { keywords: [...productInfo.keywords, trimmed] } });
       setKeywordInput('');
     }
   };
 
   const handleRemoveKeyword = (keyword: string) => {
-    dispatch({
-      type: 'UPDATE_PRODUCT',
-      payload: { keywords: productInfo.keywords.filter((k) => k !== keyword) },
-    });
+    dispatch({ type: 'UPDATE_PRODUCT', payload: { keywords: productInfo.keywords.filter((k) => k !== keyword) } });
   };
 
   const handleKeywordKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleAddKeyword();
-    }
+    if (e.key === 'Enter') { e.preventDefault(); handleAddKeyword(); }
   };
 
-  const handleAnalyzeUrl = async () => {
-    if (!analyzeUrl.trim()) return;
-
-    setIsAnalyzing(true);
-    setAnalyzeError('');
-    setAnalyzeResult(null);
-
-    try {
-      const res = await fetch('/api/analyze-page', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: analyzeUrl.trim() }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || data.error) {
-        setAnalyzeError(data.error || '분석에 실패했습니다.');
-        return;
-      }
-
-      if (data.success && data.data) {
-        applyAnalysisResult(data.data);
-      }
-    } catch (err) {
-      setAnalyzeError('네트워크 오류가 발생했습니다.');
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setImageFile(file);
-    const reader = new FileReader();
-    reader.onload = (ev) => setImagePreview(ev.target?.result as string);
-    reader.readAsDataURL(file);
-    setAnalyzeError('');
-    setAnalyzeResult(null);
-  };
-
-  const handleAnalyzeImage = async () => {
-    if (!imageFile) return;
-
-    setIsAnalyzing(true);
-    setAnalyzeError('');
-    setAnalyzeResult(null);
-
-    try {
-      const base64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const result = reader.result as string;
-          resolve(result.split(',')[1]);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(imageFile);
-      });
-
-      const res = await fetch('/api/analyze-page', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          imageBase64: base64,
-          mimeType: imageFile.type,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || data.error) {
-        setAnalyzeError(data.error || '이미지 분석에 실패했습니다.');
-        return;
-      }
-
-      if (data.success && data.data) {
-        applyAnalysisResult(data.data);
-      }
-    } catch (err) {
-      setAnalyzeError('네트워크 오류가 발생했습니다.');
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
-
+  // ===== 경쟁사 분석 =====
   const applyAnalysisResult = (result: any) => {
     setAnalyzeResult(result);
     const updates: Record<string, any> = {};
@@ -162,8 +124,63 @@ export default function Step1ProductInfo() {
     }
   };
 
+  const handleAnalyzeUrl = async () => {
+    if (!analyzeUrl.trim()) return;
+    setIsAnalyzing(true);
+    setAnalyzeError('');
+    setAnalyzeResult(null);
+    try {
+      const res = await fetch('/api/analyze-page', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: analyzeUrl.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) { setAnalyzeError(data.error || '분석에 실패했습니다.'); return; }
+      if (data.success && data.data) applyAnalysisResult(data.data);
+    } catch { setAnalyzeError('네트워크 오류가 발생했습니다.'); }
+    finally { setIsAnalyzing(false); }
+  };
+
+  const handleCompImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setCompImageFile(file);
+    const reader = new FileReader();
+    reader.onload = (ev) => setCompImagePreview(ev.target?.result as string);
+    reader.readAsDataURL(file);
+    setAnalyzeError('');
+    setAnalyzeResult(null);
+  };
+
+  const handleAnalyzeImage = async () => {
+    if (!compImageFile) return;
+    setIsAnalyzing(true);
+    setAnalyzeError('');
+    setAnalyzeResult(null);
+    try {
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve((reader.result as string).split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(compImageFile);
+      });
+      const res = await fetch('/api/analyze-page', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageBase64: base64, mimeType: compImageFile.type }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) { setAnalyzeError(data.error || '분석에 실패했습니다.'); return; }
+      if (data.success && data.data) applyAnalysisResult(data.data);
+    } catch { setAnalyzeError('네트워크 오류가 발생했습니다.'); }
+    finally { setIsAnalyzing(false); }
+  };
+
+  // ===== 유효성 검사 & 다음 단계 =====
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
+    if (productPhotos.length === 0) newErrors.photos = '제품 사진을 1장 이상 업로드해주세요.';
     if (!productInfo.name.trim()) newErrors.name = '상품명을 입력해주세요.';
     if (!productInfo.category) newErrors.category = '카테고리를 선택해주세요.';
     if (!productInfo.shortDescription.trim()) newErrors.shortDescription = '간단한 설명을 입력해주세요.';
@@ -172,9 +189,7 @@ export default function Step1ProductInfo() {
   };
 
   const handleNext = () => {
-    if (validate()) {
-      dispatch({ type: 'NEXT_STEP' });
-    }
+    if (validate()) dispatch({ type: 'NEXT_STEP' });
   };
 
   return (
@@ -184,122 +199,86 @@ export default function Step1ProductInfo() {
       exit={{ opacity: 0, x: -20 }}
       className="max-w-3xl mx-auto"
     >
-      {/* Form Card */}
       <div className="bg-[#201f1f] rounded-xl shadow-[0_40px_100px_rgba(0,0,0,0.4)] p-8 md:p-12 relative overflow-hidden">
-        {/* Subtle glow accent */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-[#c3c0ff]/5 blur-[100px] rounded-full -mr-32 -mt-32" />
 
         <header className="mb-10 relative">
-          <h1 className="font-headline text-3xl font-extrabold tracking-tight text-[#e5e2e1] mb-2">상품 정보 입력</h1>
-          <p className="text-[#c7c4d8]">AI 기획에 필요한 기본 정보를 입력해주세요.</p>
+          <h1 className="font-headline text-3xl font-extrabold tracking-tight text-[#e5e2e1] mb-2">제품 등록</h1>
+          <p className="text-[#c7c4d8]">제품 사진과 기본 정보를 입력해주세요.</p>
         </header>
 
         <div className="space-y-8 relative">
-          {/* 분석 섹션 */}
-          <div className="p-5 rounded-xl bg-[#c3c0ff]/5 border border-[#c3c0ff]/10">
-            <label className="block text-xs uppercase tracking-widest text-[#c3c0ff]/70 mb-3 ml-1 font-label">
-              기존 상세페이지가 있으신가요? (선택)
-            </label>
 
-            {/* 탭 */}
-            <div className="flex gap-1 mb-3">
-              <button
-                onClick={() => { setAnalyzeTab('url'); setAnalyzeError(''); setAnalyzeResult(null); }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${analyzeTab === 'url' ? 'bg-[#c3c0ff]/20 text-[#c3c0ff]' : 'text-[#e5e2e1]/40 hover:text-[#e5e2e1]/70'}`}
-              >
-                <Link className="w-3 h-3" />
-                URL 입력
-              </button>
-              <button
-                onClick={() => { setAnalyzeTab('image'); setAnalyzeError(''); setAnalyzeResult(null); }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${analyzeTab === 'image' ? 'bg-[#c3c0ff]/20 text-[#c3c0ff]' : 'text-[#e5e2e1]/40 hover:text-[#e5e2e1]/70'}`}
-              >
-                <Upload className="w-3 h-3" />
-                이미지 업로드
-              </button>
+          {/* ===== 제품 사진 ===== */}
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <label className="block text-xs uppercase tracking-widest text-[#e5e2e1]/50 ml-1 font-label">
+                제품 사진 * <span className="normal-case text-[#e5e2e1]/30 tracking-normal ml-1">{productPhotos.length}/{MAX_PHOTOS}장</span>
+              </label>
             </div>
 
-            {analyzeTab === 'url' ? (
-              <div className="flex gap-2">
-                <input
-                  type="url"
-                  value={analyzeUrl}
-                  onChange={(e) => setAnalyzeUrl(e.target.value)}
-                  placeholder="https://smartstore.naver.com/..."
-                  className="flex-1 bg-[#1c1b1b] border-0 border-b border-[#464555]/20 py-3 px-2 text-sm text-[#e5e2e1] placeholder:text-[#e5e2e1]/20 focus:outline-none focus:ring-0 focus:border-[#c3c0ff] transition-all"
-                />
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={handleAnalyzeUrl}
-                  disabled={!analyzeUrl.trim() || isAnalyzing}
-                >
-                  {isAnalyzing ? '분석 중...' : '분석하기'}
-                </Button>
-              </div>
-            ) : (
-              <div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="hidden"
-                />
-                {imagePreview ? (
-                  <div className="space-y-2">
-                    <div className="relative">
-                      <img src={imagePreview} alt="업로드된 이미지" className="w-full max-h-40 object-contain rounded-lg border border-[#464555]/20" />
-                      <button
-                        onClick={() => { setImageFile(null); setImagePreview(''); setAnalyzeResult(null); }}
-                        className="absolute top-2 right-2 w-6 h-6 rounded-full bg-[#1c1b1b]/80 text-[#e5e2e1]/60 hover:text-[#e5e2e1] text-xs flex items-center justify-center"
-                      >
-                        &times;
-                      </button>
-                    </div>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={handleAnalyzeImage}
-                      disabled={isAnalyzing}
-                    >
-                      {isAnalyzing ? '분석 중...' : 'AI로 분석하기'}
-                    </Button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => fileInputRef.current?.click()}
-                    className="w-full py-6 border border-dashed border-[#464555]/30 rounded-lg text-center hover:border-[#c3c0ff]/40 transition-all group"
-                  >
-                    <Upload className="w-6 h-6 text-[#e5e2e1]/30 group-hover:text-[#c3c0ff]/60 mx-auto mb-2 transition-colors" />
-                    <p className="text-sm text-[#e5e2e1]/40 group-hover:text-[#e5e2e1]/60 transition-colors">
-                      상세페이지 스크린샷을 업로드하세요
-                    </p>
-                    <p className="text-xs text-[#e5e2e1]/20 mt-1">PNG, JPG, WEBP</p>
-                  </button>
-                )}
+            {/* 드롭존 */}
+            {productPhotos.length < MAX_PHOTOS && (
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onClick={() => photoInputRef.current?.click()}
+                className={`w-full py-8 border-2 border-dashed rounded-xl text-center cursor-pointer transition-all duration-300 ${
+                  isDragging
+                    ? 'border-[#c3c0ff]/60 bg-[#c3c0ff]/10'
+                    : 'border-[#464555]/30 hover:border-[#c3c0ff]/40 hover:bg-[#c3c0ff]/5'
+                }`}
+              >
+                <Upload className="w-7 h-7 text-[#e5e2e1]/30 mx-auto mb-3 transition-colors" />
+                <p className="text-sm text-[#e5e2e1]/50">사진을 드래그하거나 클릭하여 업로드</p>
+                <p className="text-xs text-[#e5e2e1]/25 mt-1">최대 {MAX_PHOTOS}장 · JPG, PNG, WEBP</p>
               </div>
             )}
+            <input
+              ref={photoInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handlePhotoInputChange}
+              className="hidden"
+            />
 
-            {analyzeError && (
-              <p className="mt-2 text-sm text-[#ffb4ab]">{analyzeError}</p>
-            )}
-            {analyzeResult && (
-              <div className="mt-3 p-3 rounded-lg bg-[#2ed573]/10 border border-[#2ed573]/20">
-                <p className="text-sm text-[#2ed573] font-medium">분석 완료! 기본 정보가 자동으로 채워졌습니다.</p>
-                {analyzeResult.improvementSuggestions?.length > 0 && (
-                  <div className="mt-2">
-                    <p className="text-xs text-[#c7c4d8] font-medium mb-1">개선 제안:</p>
-                    {analyzeResult.improvementSuggestions.map((s: string, i: number) => (
-                      <p key={i} className="text-xs text-[#c7c4d8]/70">• {s}</p>
-                    ))}
-                  </div>
-                )}
+            {/* 사진 그리드 */}
+            {productPhotos.length > 0 && (
+              <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 mt-3">
+                <AnimatePresence>
+                  {productPhotos.map((photo, idx) => (
+                    <motion.div
+                      key={photo.id}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      className="relative aspect-square group"
+                    >
+                      {idx === 0 && (
+                        <span className="absolute top-1 left-1 z-10 text-[9px] bg-[#c3c0ff] text-[#0f0069] px-1 py-0.5 rounded font-bold leading-tight">대표</span>
+                      )}
+                      <img
+                        src={photo.dataUrl}
+                        alt={photo.name}
+                        className="w-full h-full object-cover rounded-lg border border-[#464555]/20"
+                      />
+                      <button
+                        onClick={() => handleRemovePhoto(photo.id)}
+                        className="absolute top-1 right-1 w-5 h-5 rounded-full bg-[#1c1b1b]/80 text-[#e5e2e1]/60 hover:text-white hover:bg-[#93000a]/80 transition-all opacity-0 group-hover:opacity-100 flex items-center justify-center"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
               </div>
             )}
+            {errors.photos && <p className="mt-2 text-sm text-[#ffb4ab]">{errors.photos}</p>}
           </div>
 
-          {/* Product Name */}
+          {/* ===== 상품명 ===== */}
           <Input
             label="상품명 *"
             placeholder="예: 시그니처 세라믹 화병"
@@ -308,37 +287,33 @@ export default function Step1ProductInfo() {
             error={errors.name}
           />
 
-          {/* Category Grid - 15 categories */}
+          {/* ===== 카테고리 ===== */}
           <div>
             <label className="block text-xs uppercase tracking-widest text-[#e5e2e1]/50 mb-4 ml-1 font-label">카테고리 *</label>
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
-              {(Object.entries(CATEGORIES) as [CategoryKey, typeof CATEGORIES[CategoryKey]][]).map(
-                ([key, cat]) => {
-                  const isSelected = productInfo.category === key;
-                  return (
-                    <motion.button
-                      key={key}
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
-                      onClick={() => handleCategorySelect(key)}
-                      className={`flex flex-col items-center justify-center gap-1 py-3 px-2 rounded-lg transition-all duration-300 ${
-                        isSelected
-                          ? 'bg-[#c3c0ff]/5 border border-[#c3c0ff]/40 shadow-[0_0_15px_rgba(195,192,255,0.1)]'
-                          : 'bg-[#2a2a2a] border border-[#464555]/15 hover:border-[#c3c0ff]/50 hover:bg-[#353534]'
-                      }`}
-                    >
-                      <span className={`text-[11px] font-medium leading-tight text-center ${isSelected ? 'text-[#c3c0ff]' : 'text-[#e5e2e1]'}`}>{cat.label}</span>
-                    </motion.button>
-                  );
-                }
-              )}
+              {(Object.entries(CATEGORIES) as [CategoryKey, typeof CATEGORIES[CategoryKey]][]).map(([key, cat]) => {
+                const isSelected = productInfo.category === key;
+                return (
+                  <motion.button
+                    key={key}
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => handleCategorySelect(key)}
+                    className={`flex flex-col items-center justify-center gap-1 py-3 px-2 rounded-lg transition-all duration-300 ${
+                      isSelected
+                        ? 'bg-[#c3c0ff]/5 border border-[#c3c0ff]/40 shadow-[0_0_15px_rgba(195,192,255,0.1)]'
+                        : 'bg-[#2a2a2a] border border-[#464555]/15 hover:border-[#c3c0ff]/50 hover:bg-[#353534]'
+                    }`}
+                  >
+                    <span className={`text-[11px] font-medium leading-tight text-center ${isSelected ? 'text-[#c3c0ff]' : 'text-[#e5e2e1]'}`}>{cat.label}</span>
+                  </motion.button>
+                );
+              })}
             </div>
-            {errors.category && (
-              <p className="mt-2 text-sm text-[#ffb4ab]">{errors.category}</p>
-            )}
+            {errors.category && <p className="mt-2 text-sm text-[#ffb4ab]">{errors.category}</p>}
           </div>
 
-          {/* Price */}
+          {/* ===== 가격 ===== */}
           <Input
             label="판매 가격"
             placeholder="예: 29,900원"
@@ -346,7 +321,7 @@ export default function Step1ProductInfo() {
             onChange={(e) => handleChange('price', e.target.value)}
           />
 
-          {/* Target Audience */}
+          {/* ===== 타겟 고객 ===== */}
           <Input
             label="타겟 고객"
             placeholder="예: 라이프스타일에 가치를 두는 30~40대 전문직"
@@ -354,7 +329,7 @@ export default function Step1ProductInfo() {
             onChange={(e) => handleChange('targetAudience', e.target.value)}
           />
 
-          {/* Short Description */}
+          {/* ===== 간단 설명 ===== */}
           <TextArea
             label="상품 간단 설명 *"
             placeholder="제품의 핵심 특징과 차별점을 간결하게 설명해주세요..."
@@ -364,7 +339,7 @@ export default function Step1ProductInfo() {
             rows={3}
           />
 
-          {/* Keyword Tags */}
+          {/* ===== 키워드 ===== */}
           <div>
             <label className="block text-xs uppercase tracking-widest text-[#e5e2e1]/50 mb-3 ml-1 font-label">키워드 태그</label>
             <div className="flex gap-2 mb-3">
@@ -374,7 +349,7 @@ export default function Step1ProductInfo() {
                 onChange={(e) => setKeywordInput(e.target.value)}
                 onKeyDown={handleKeywordKeyDown}
                 placeholder="키워드 입력 후 Enter"
-                className="flex-1 bg-[#1c1b1b] border-0 border-b border-[#464555]/20 py-3 px-2 text-sm text-[#e5e2e1] placeholder:text-[#e5e2e1]/20 focus:outline-none focus:ring-0 focus:border-[#c3c0ff] transition-all"
+                className="flex-1 bg-[#1c1b1b] border-0 border-b border-[#464555]/20 py-3 px-2 text-sm text-[#e5e2e1] placeholder:text-[#e5e2e1]/20 focus:outline-none focus:border-[#c3c0ff] transition-all"
               />
               <Button variant="secondary" size="sm" onClick={handleAddKeyword}>추가</Button>
             </div>
@@ -390,22 +365,112 @@ export default function Step1ProductInfo() {
             )}
           </div>
 
-          {/* Action Button */}
-          <div className="pt-6">
-            <Button size="lg" fullWidth onClick={handleNext} className="flex items-center justify-center gap-2">
-              다음 단계로
-              <span className="material-symbols-outlined text-xl">arrow_forward</span>
+          {/* ===== 경쟁사/자사 분석 (선택) ===== */}
+          <div className="border border-[#464555]/15 rounded-xl overflow-hidden">
+            <button
+              onClick={() => setShowAnalysis((v) => !v)}
+              className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-[#2a2a2a] transition-colors"
+            >
+              <div>
+                <span className="text-sm font-medium text-[#e5e2e1]/70">기존 상세페이지 분석</span>
+                <span className="ml-2 text-xs text-[#e5e2e1]/30">선택사항</span>
+              </div>
+              {showAnalysis ? <ChevronUp className="w-4 h-4 text-[#e5e2e1]/30" /> : <ChevronDown className="w-4 h-4 text-[#e5e2e1]/30" />}
+            </button>
+
+            {showAnalysis && (
+              <div className="px-5 pb-5 bg-[#c3c0ff]/3 border-t border-[#464555]/10">
+                <p className="text-xs text-[#e5e2e1]/40 mt-3 mb-4">경쟁사 또는 자사 기존 상세페이지를 분석하여 정보를 자동으로 채웁니다.</p>
+
+                {/* 탭 */}
+                <div className="flex gap-1 mb-4">
+                  <button
+                    onClick={() => { setAnalyzeTab('url'); setAnalyzeError(''); setAnalyzeResult(null); }}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${analyzeTab === 'url' ? 'bg-[#c3c0ff]/20 text-[#c3c0ff]' : 'text-[#e5e2e1]/40 hover:text-[#e5e2e1]/70'}`}
+                  >
+                    <Link className="w-3 h-3" /> URL 입력
+                  </button>
+                  <button
+                    onClick={() => { setAnalyzeTab('image'); setAnalyzeError(''); setAnalyzeResult(null); }}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${analyzeTab === 'image' ? 'bg-[#c3c0ff]/20 text-[#c3c0ff]' : 'text-[#e5e2e1]/40 hover:text-[#e5e2e1]/70'}`}
+                  >
+                    <ImageIcon className="w-3 h-3" /> 스크린샷 업로드
+                  </button>
+                </div>
+
+                {analyzeTab === 'url' ? (
+                  <div className="flex gap-2">
+                    <input
+                      type="url"
+                      value={analyzeUrl}
+                      onChange={(e) => setAnalyzeUrl(e.target.value)}
+                      placeholder="https://smartstore.naver.com/..."
+                      className="flex-1 bg-[#1c1b1b] border-0 border-b border-[#464555]/20 py-3 px-2 text-sm text-[#e5e2e1] placeholder:text-[#e5e2e1]/20 focus:outline-none focus:border-[#c3c0ff] transition-all"
+                    />
+                    <Button variant="secondary" size="sm" onClick={handleAnalyzeUrl} disabled={!analyzeUrl.trim() || isAnalyzing}>
+                      {isAnalyzing ? '분석 중...' : '분석하기'}
+                    </Button>
+                  </div>
+                ) : (
+                  <div>
+                    <input ref={compFileInputRef} type="file" accept="image/*" onChange={handleCompImageChange} className="hidden" />
+                    {compImagePreview ? (
+                      <div className="space-y-2">
+                        <div className="relative">
+                          <img src={compImagePreview} alt="분석 이미지" className="w-full max-h-32 object-contain rounded-lg border border-[#464555]/20" />
+                          <button onClick={() => { setCompImageFile(null); setCompImagePreview(''); setAnalyzeResult(null); }} className="absolute top-2 right-2 w-6 h-6 rounded-full bg-[#1c1b1b]/80 text-[#e5e2e1]/60 hover:text-[#e5e2e1] text-xs flex items-center justify-center">
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                        <Button variant="secondary" size="sm" onClick={handleAnalyzeImage} disabled={isAnalyzing}>
+                          {isAnalyzing ? '분석 중...' : 'AI로 분석하기'}
+                        </Button>
+                      </div>
+                    ) : (
+                      <button onClick={() => compFileInputRef.current?.click()} className="w-full py-5 border border-dashed border-[#464555]/30 rounded-lg text-center hover:border-[#c3c0ff]/40 transition-all group">
+                        <Upload className="w-5 h-5 text-[#e5e2e1]/30 mx-auto mb-1.5" />
+                        <p className="text-xs text-[#e5e2e1]/40">상세페이지 스크린샷 업로드</p>
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {analyzeError && <p className="mt-2 text-sm text-[#ffb4ab]">{analyzeError}</p>}
+                {analyzeResult && (
+                  <div className="mt-3 p-3 rounded-lg bg-[#2ed573]/10 border border-[#2ed573]/20">
+                    <p className="text-sm text-[#2ed573] font-medium">분석 완료! 기본 정보가 자동으로 채워졌습니다.</p>
+                    {analyzeResult.improvementSuggestions?.length > 0 && (
+                      <div className="mt-2">
+                        <p className="text-xs text-[#c7c4d8] font-medium mb-1">개선 제안:</p>
+                        {analyzeResult.improvementSuggestions.map((s: string, i: number) => (
+                          <p key={i} className="text-xs text-[#c7c4d8]/70">• {s}</p>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* ===== 다음 버튼 ===== */}
+          <div className="pt-4">
+            <Button size="lg" fullWidth onClick={handleNext}>
+              다음: AI 인터뷰
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Pro Studio Tip */}
-      <div className="mt-8 bg-[#c3c0ff]/5 border border-[#c3c0ff]/10 rounded-xl p-5 flex gap-4">
+      {/* Pro Tip */}
+      <div className="mt-6 bg-[#c3c0ff]/5 border border-[#c3c0ff]/10 rounded-xl p-5 flex gap-4">
         <Lightbulb className="w-5 h-5 text-[#c3c0ff] flex-shrink-0 mt-0.5" />
         <div className="space-y-1">
           <p className="text-xs font-bold text-[#c3c0ff]">Pro Studio Tip</p>
-          <p className="text-[13px] text-[#dad7ff] leading-relaxed">상품명에 &lsquo;유기농&rsquo;, &lsquo;프리미엄&rsquo;, &lsquo;한정판&rsquo; 등 핵심 키워드를 포함하면 AI가 더 정확한 브랜딩 전략을 수립할 수 있습니다.</p>
+          <p className="text-[13px] text-[#dad7ff] leading-relaxed">
+            제품 사진은 흰 배경 제품컷을 1장 이상 포함하면 AI 원고 품질이 높아집니다.
+            다양한 각도와 디테일 컷을 함께 올려주세요.
+          </p>
         </div>
       </div>
     </motion.div>

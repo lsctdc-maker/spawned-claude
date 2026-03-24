@@ -139,9 +139,9 @@ export const DEFAULT_INTERVIEW_QUESTIONS: InterviewQuestion[] = [
 ];
 
 export const STEP_LABELS = [
-  { step: 1, label: '상품 정보' },
+  { step: 1, label: '제품 등록' },
   { step: 2, label: 'AI 인터뷰' },
-  { step: 3, label: '톤앤매너' },
+  { step: 3, label: '원고 작성' },
   { step: 4, label: '미리보기' },
   { step: 5, label: '내보내기' },
 ];

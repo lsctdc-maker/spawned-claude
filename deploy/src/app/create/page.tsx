@@ -8,7 +8,7 @@ import Footer from '@/components/layout/Footer';
 import ProgressBar from '@/components/ui/ProgressBar';
 import Step1ProductInfo from '@/components/steps/Step1ProductInfo';
 import Step2AIInterview from '@/components/steps/Step2AIInterview';
-import Step3ToneSelect from '@/components/steps/Step3ToneSelect';
+import Step3Manuscript from '@/components/steps/Step3Manuscript';
 import Step4Preview from '@/components/steps/Step4Preview';
 import Step5Export from '@/components/steps/Step5Export';
 
@@ -19,7 +19,7 @@ export default function CreatePage() {
     switch (state.currentStep) {
       case 1: return <Step1ProductInfo />;
       case 2: return <Step2AIInterview />;
-      case 3: return <Step3ToneSelect />;
+      case 3: return <Step3Manuscript />;
       case 4: return <Step4Preview />;
       case 5: return <Step5Export />;
       default: return <Step1ProductInfo />;

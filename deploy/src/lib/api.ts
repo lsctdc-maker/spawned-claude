@@ -4,12 +4,45 @@ import {
   USP,
   ToneKey,
   DetailPageSection,
+  ManuscriptSection,
   APIResponse,
   GenerateUSPResponse,
   GenerateSectionsResponse,
+  GenerateManuscriptResponse,
   ExportResponse,
   ImageType,
 } from './types';
+
+// ===== 원고 생성 =====
+export async function generateManuscript(
+  productInfo: ProductInfo,
+  extractedUSPs: USP[],
+  interviewMessages: InterviewMessage[],
+  productPhotoBase64?: string,
+  productPhotoMimeType?: string
+): Promise<APIResponse<GenerateManuscriptResponse>> {
+  try {
+    const response = await fetch('/api/manuscript', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        productInfo,
+        extractedUSPs,
+        interviewMessages,
+        productPhotoBase64,
+        productPhotoMimeType,
+      }),
+    });
+    const data = await response.json();
+    if (data.sections) {
+      return { success: true, data: { sections: data.sections as ManuscriptSection[] } };
+    }
+    throw new Error(data.error || '원고 생성 실패');
+  } catch (error) {
+    console.warn('Manuscript API 호출 실패:', error);
+    return { success: false, error: '원고 생성 중 오류가 발생했습니다.' };
+  }
+}
 
 // ===== USP 추출 =====
 export async function extractUSPs(
