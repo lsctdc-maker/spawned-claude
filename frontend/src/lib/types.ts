@@ -85,6 +85,7 @@ export interface HeroContent {
   subheadline: string;
   ctaText: string;
   backgroundStyle: 'gradient' | 'solid' | 'image';
+  imageUrl?: string;
 }
 
 export interface USPContent {
@@ -92,7 +93,7 @@ export interface USPContent {
 }
 
 export interface DetailContent {
-  paragraphs: { title: string; text: string; imagePosition: 'left' | 'right' }[];
+  paragraphs: { title: string; text: string; imagePosition: 'left' | 'right'; imageUrl?: string }[];
 }
 
 export interface ComparisonContent {
