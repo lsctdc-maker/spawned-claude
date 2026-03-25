@@ -85,6 +85,10 @@ export default function Step2AIInterview() {
         body: JSON.stringify({
           category: productInfo.category,
           productName: productInfo.name,
+          shortDescription: productInfo.shortDescription,
+          price: productInfo.price,
+          targetAudience: productInfo.targetAudience,
+          keywords: productInfo.keywords?.join(', '),
           previousAnswers: answers,
           productPhotoBase64: photoBase64,
           productPhotoMimeType: photoMimeType,
