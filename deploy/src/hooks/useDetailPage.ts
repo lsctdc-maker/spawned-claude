@@ -43,7 +43,7 @@ export function detailPageReducer(
     case 'SET_STEP':
       return { ...state, currentStep: action.payload };
     case 'NEXT_STEP':
-      return { ...state, currentStep: Math.min(state.currentStep + 1, 4) };
+      return { ...state, currentStep: Math.min(state.currentStep + 1, 5) };
     case 'PREV_STEP':
       return { ...state, currentStep: Math.max(state.currentStep - 1, 1) };
     case 'UPDATE_PRODUCT':

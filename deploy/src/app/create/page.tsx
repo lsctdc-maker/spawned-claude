@@ -9,7 +9,8 @@ import ProgressBar from '@/components/ui/ProgressBar';
 import Step1ProductInfo from '@/components/steps/Step1ProductInfo';
 import Step2AIInterview from '@/components/steps/Step2AIInterview';
 import Step3Manuscript from '@/components/steps/Step3Manuscript';
-import Step4Export from '@/components/steps/Step5Export';
+import Step4ImageEditor from '@/components/steps/Step4ImageEditor';
+import Step5Export from '@/components/steps/Step5Export';
 
 export default function CreatePage() {
   const [state, dispatch] = useReducer(detailPageReducer, initialState);
@@ -19,7 +20,8 @@ export default function CreatePage() {
       case 1: return <Step1ProductInfo />;
       case 2: return <Step2AIInterview />;
       case 3: return <Step3Manuscript />;
-      case 4: return <Step4Export />;
+      case 4: return <Step4ImageEditor />;
+      case 5: return <Step5Export />;
       default: return <Step1ProductInfo />;
     }
   };
@@ -32,7 +34,7 @@ export default function CreatePage() {
           {/* Progress Bar */}
           <div className="bg-[#131313]/80 backdrop-blur-xl border-b border-[#e5e2e1]/10 sticky top-16 z-40">
             <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3">
-              <ProgressBar currentStep={state.currentStep} />
+              <ProgressBar currentStep={state.currentStep} totalSteps={5} />
             </div>
           </div>
           {/* Step Content */}

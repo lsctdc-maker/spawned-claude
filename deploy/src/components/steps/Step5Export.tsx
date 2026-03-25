@@ -5,9 +5,9 @@ import { motion } from 'framer-motion';
 import { useDetailPage } from '@/hooks/useDetailPage';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
-import { CheckCircle2, FileText, FileJson } from 'lucide-react';
+import { CheckCircle2, FileText, FileJson, ImageIcon, ArrowLeft } from 'lucide-react';
 
-type ExportFormat = 'text' | 'json';
+type ExportFormat = 'text' | 'json' | 'image';
 
 export default function Step5Export() {
   const { state, dispatch } = useDetailPage();
@@ -58,6 +58,12 @@ export default function Step5Export() {
   };
 
   const handleExport = () => {
+    if (selectedFormat === 'image') {
+      // Navigate back to image editor
+      dispatch({ type: 'SET_STEP', payload: 4 });
+      return;
+    }
+
     const fileName = `${productInfo.name || '상세페이지'}_원고`;
     let content: string;
     let mimeType: string;
@@ -85,7 +91,13 @@ export default function Step5Export() {
     setExportDone(true);
   };
 
-  const formats: { key: ExportFormat; label: string; icon: React.ReactNode; desc: string }[] = [
+  const formats: {
+    key: ExportFormat;
+    label: string;
+    icon: React.ReactNode;
+    desc: string;
+    action?: string;
+  }[] = [
     {
       key: 'text',
       label: '텍스트 파일',
@@ -98,10 +110,22 @@ export default function Step5Export() {
       icon: <FileJson className="w-7 h-7" />,
       desc: '구조화된 데이터 형식으로 다운로드 (개발/연동용)',
     },
+    {
+      key: 'image',
+      label: '이미지 (PNG)',
+      icon: <ImageIcon className="w-7 h-7" />,
+      desc: '섹션별 PNG 또는 전체 1장 이미지 — 이미지 에디터(Step 4)에서 다운로드',
+      action: 'Step 4로 이동',
+    },
   ];
 
   return (
-    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="max-w-2xl mx-auto space-y-8">
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      className="max-w-2xl mx-auto space-y-8"
+    >
       <div className="text-center">
         <h2 className="text-2xl font-headline font-extrabold text-[#e5e2e1] mb-2">내보내기</h2>
         <p className="text-[#c7c4d8]">완성된 원고를 원하는 형식으로 다운로드하세요.</p>
@@ -116,27 +140,42 @@ export default function Step5Export() {
           <div className="flex flex-wrap justify-center gap-4 text-sm text-[#c7c4d8]">
             <span>상품: <strong className="text-[#e5e2e1]">{productInfo.name || '—'}</strong></span>
             <span>섹션: <strong className="text-[#e5e2e1]">{visibleSections.length}개</strong></span>
-            {productInfo.price && <span>가격: <strong className="text-[#e5e2e1]">{productInfo.price}</strong></span>}
+            {productInfo.price && (
+              <span>가격: <strong className="text-[#e5e2e1]">{productInfo.price}</strong></span>
+            )}
           </div>
         </div>
       </Card>
 
       <div>
-        <h3 className="text-[10px] uppercase tracking-widest text-[#e5e2e1]/50 mb-3 ml-1 font-label">내보내기 형식</h3>
-        <div className="grid sm:grid-cols-2 gap-3">
+        <h3 className="text-[10px] uppercase tracking-widest text-[#e5e2e1]/50 mb-3 ml-1 font-label">
+          내보내기 형식
+        </h3>
+        <div className="grid sm:grid-cols-3 gap-3">
           {formats.map((format) => (
             <Card
               key={format.key}
               variant="interactive"
               padding="md"
               selected={selectedFormat === format.key}
-              onClick={() => { setSelectedFormat(format.key); setExportDone(false); }}
+              onClick={() => {
+                setSelectedFormat(format.key);
+                setExportDone(false);
+              }}
             >
-              <div className="flex items-center gap-3">
-                <span className="text-[#c3c0ff]/70">{format.icon}</span>
+              <div className="flex flex-col gap-3">
+                <span className={`${selectedFormat === format.key ? 'text-[#c3c0ff]' : 'text-[#c3c0ff]/60'}`}>
+                  {format.icon}
+                </span>
                 <div>
-                  <h4 className="font-semibold text-[#e5e2e1]">{format.label}</h4>
-                  <p className="text-xs text-[#c7c4d8]">{format.desc}</p>
+                  <h4 className="font-semibold text-[#e5e2e1] text-sm">{format.label}</h4>
+                  <p className="text-xs text-[#c7c4d8] mt-1 leading-relaxed">{format.desc}</p>
+                  {format.action && selectedFormat === format.key && (
+                    <p className="text-xs text-[#c3c0ff]/70 mt-2 flex items-center gap-1">
+                      <ArrowLeft className="w-3 h-3" />
+                      {format.action}
+                    </p>
+                  )}
                 </div>
               </div>
             </Card>
@@ -150,16 +189,20 @@ export default function Step5Export() {
           animate={{ opacity: 1, scale: 1 }}
           className="p-4 rounded-xl bg-[#c3c0ff]/10 border border-[#c3c0ff]/20 text-[#c3c0ff] text-sm text-center"
         >
-          다운로드가 완료되었습니다!
+          다운로드가 완료되었습니다.
         </motion.div>
       )}
 
       <div className="flex justify-between pt-4">
-        <Button variant="ghost" onClick={() => dispatch({ type: 'PREV_STEP' })}>이전 (원고 확인)</Button>
+        <Button variant="ghost" onClick={() => dispatch({ type: 'PREV_STEP' })}>
+          이전 (이미지 에디터)
+        </Button>
         <div className="flex gap-3">
-          <Button variant="outline" onClick={() => dispatch({ type: 'RESET' })}>새로 만들기</Button>
+          <Button variant="outline" onClick={() => dispatch({ type: 'RESET' })}>
+            새로 만들기
+          </Button>
           <Button size="lg" onClick={handleExport}>
-            다운로드
+            {selectedFormat === 'image' ? 'Step 4로 이동' : '다운로드'}
           </Button>
         </div>
       </div>
