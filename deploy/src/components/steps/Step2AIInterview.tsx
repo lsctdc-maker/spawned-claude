@@ -37,11 +37,13 @@ export default function Step2AIInterview() {
     ? INTERVIEW_QUESTIONS[productInfo.category as CategoryKey] || DEFAULT_INTERVIEW_QUESTIONS
     : DEFAULT_INTERVIEW_QUESTIONS;
 
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
+  // 페이지 전체가 아닌 채팅 컨테이너 안에서만 스크롤
   const scrollToBottom = useCallback(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const el = chatContainerRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
   }, []);
 
   // 인터뷰 완료 처리 함수
@@ -250,7 +252,7 @@ export default function Step2AIInterview() {
       </div>
 
       <div className="bg-[#201f1f] rounded-xl border border-[#464555]/10 overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.4)]">
-        <div className="h-[400px] overflow-y-auto p-4 custom-scrollbar">
+        <div ref={chatContainerRef} className="h-[400px] overflow-y-auto p-4 custom-scrollbar">
           <AnimatePresence>
             {interviewMessages.map((msg) => (
               <ChatBubble key={msg.id} role={msg.role} content={msg.content} />
@@ -259,7 +261,6 @@ export default function Step2AIInterview() {
           {isTyping && (
             <ChatBubble role="ai" content="AI가 다음 질문을 준비하고 있습니다..." isTyping />
           )}
-          <div ref={chatEndRef} />
         </div>
 
         {!interviewCompleted && (
@@ -334,7 +335,7 @@ export default function Step2AIInterview() {
               </Card>
             ))}
           </div>
-          <div className="flex justify-between pt-4">
+          <div className="flex justify-between pt-4 sticky bottom-0 bg-[#131313] py-4 border-t border-[#464555]/10 -mx-4 px-4">
             <Button variant="ghost" onClick={() => dispatch({ type: 'PREV_STEP' })}>이전</Button>
             <Button size="lg" onClick={handleNext}>다음: 원고 작성</Button>
           </div>

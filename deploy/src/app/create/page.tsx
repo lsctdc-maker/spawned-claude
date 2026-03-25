@@ -4,7 +4,6 @@ import { useReducer } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { DetailPageContext, detailPageReducer, initialState } from '@/hooks/useDetailPage';
 import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
 import ProgressBar from '@/components/ui/ProgressBar';
 import Step1ProductInfo from '@/components/steps/Step1ProductInfo';
 import Step2AIInterview from '@/components/steps/Step2AIInterview';
@@ -28,16 +27,19 @@ export default function CreatePage() {
 
   return (
     <DetailPageContext.Provider value={{ state, dispatch }}>
-      <div className="min-h-screen flex flex-col bg-[#131313]">
+      {/* h-screen flex-col: 페이지 전체 스크롤 없애고 내부 스크롤로 처리 */}
+      <div className="h-screen flex flex-col bg-[#131313]">
         <Header />
-        <main className="flex-1">
-          {/* Progress Bar */}
-          <div className="bg-[#131313]/80 backdrop-blur-xl border-b border-[#e5e2e1]/10 sticky top-16 z-40">
-            <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3">
-              <ProgressBar currentStep={state.currentStep} totalSteps={5} />
-            </div>
+
+        {/* 스텝 진행바 — flex 아이템으로 항상 표시 (sticky 불필요) */}
+        <div className="bg-[#131313]/80 backdrop-blur-xl border-b border-[#e5e2e1]/10 flex-shrink-0 z-40">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3">
+            <ProgressBar currentStep={state.currentStep} totalSteps={5} />
           </div>
-          {/* Step Content */}
+        </div>
+
+        {/* 콘텐츠 영역 — 이 안에서만 스크롤 */}
+        <main className="flex-1 overflow-y-auto">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
             <AnimatePresence mode="wait">
               <div key={state.currentStep}>
@@ -46,7 +48,6 @@ export default function CreatePage() {
             </AnimatePresence>
           </div>
         </main>
-        <Footer />
       </div>
     </DetailPageContext.Provider>
   );

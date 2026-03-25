@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDetailPage } from '@/hooks/useDetailPage';
 import { TONE_STYLES } from '@/lib/constants';
@@ -41,6 +41,18 @@ export default function Step3Manuscript() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
   const dragIdRef = useRef<string | null>(null);
+  const editingTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // 편집 시작 시 페이지 스크롤 없이 포커스
+  useEffect(() => {
+    if (editingId) {
+      // 렌더 후 포커스 (preventScroll: 페이지/컨테이너가 textarea로 스크롤하지 않음)
+      const timer = setTimeout(() => {
+        editingTextareaRef.current?.focus({ preventScroll: true });
+      }, 30);
+      return () => clearTimeout(timer);
+    }
+  }, [editingId]);
 
   // ===== 원고 생성 =====
   const handleGenerate = async () => {
@@ -447,11 +459,11 @@ export default function Step3Manuscript() {
               <div className="p-4 space-y-3">
                 {isEditing ? (
                   <textarea
+                    ref={editingTextareaRef}
                     value={section.body}
                     onChange={(e) => handleBodyChange(section.id, e.target.value)}
                     rows={8}
                     className="w-full bg-[#1c1b1b]/60 border border-[#464555]/20 rounded-lg px-4 py-3 text-sm text-[#e5e2e1] placeholder:text-[#e5e2e1]/20 resize-y focus:outline-none focus:border-[#c3c0ff]/50 transition-all leading-relaxed"
-                    autoFocus
                   />
                 ) : (
                   <div
@@ -486,20 +498,15 @@ export default function Step3Manuscript() {
         })}
       </AnimatePresence>
 
-      {/* ===== 네비게이션 버튼 ===== */}
-      {manuscriptSections.length > 0 && (
-        <div className="flex justify-between pt-2">
-          <Button variant="ghost" onClick={() => dispatch({ type: 'PREV_STEP' })}>이전</Button>
+      {/* ===== 네비게이션 버튼 — sticky bottom으로 항상 표시 ===== */}
+      <div className="flex justify-between sticky bottom-0 bg-[#131313] py-4 border-t border-[#464555]/10 -mx-4 px-4 mt-2">
+        <Button variant="ghost" onClick={() => dispatch({ type: 'PREV_STEP' })}>이전</Button>
+        {manuscriptSections.length > 0 && (
           <Button size="lg" onClick={() => dispatch({ type: 'NEXT_STEP' })}>
-            다음: 내보내기
+            다음: 이미지 에디터
           </Button>
-        </div>
-      )}
-      {manuscriptSections.length === 0 && (
-        <div className="flex justify-start pt-2">
-          <Button variant="ghost" onClick={() => dispatch({ type: 'PREV_STEP' })}>이전</Button>
-        </div>
-      )}
+        )}
+      </div>
     </motion.div>
   );
 }
