@@ -6,7 +6,19 @@ export interface ProductPhoto {
 }
 
 // ===== 원고 섹션 =====
-export type ManuscriptSectionType = 'hero' | 'features' | 'detail' | 'howto' | 'trust' | 'cta';
+export type ManuscriptSectionType =
+  | 'hooking'
+  | 'problem'
+  | 'solution'
+  | 'features'
+  | 'howto'
+  | 'social_proof'
+  | 'specs'
+  | 'guarantee'
+  | 'cta'
+  | 'hero'    // legacy alias for hooking
+  | 'detail'  // legacy alias for features/solution
+  | 'trust';  // legacy alias for social_proof/guarantee
 
 export interface ManuscriptSection {
   id: string;

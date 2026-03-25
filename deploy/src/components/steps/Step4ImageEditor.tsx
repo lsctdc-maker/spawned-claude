@@ -128,12 +128,19 @@ interface CanvasColors {
 const CANVAS_W = 860;
 
 const SECTION_LABEL_MAP: Record<ManuscriptSectionType, string> = {
-  hero: '히어로',
-  features: '특장점',
-  detail: '상세 설명',
+  hooking: '후킹',
+  problem: '문제 공감',
+  solution: '솔루션 제시',
+  features: '핵심 특장점',
   howto: '사용 방법',
-  trust: '신뢰 요소',
+  social_proof: '사회적 증거',
+  specs: '스펙/상세',
+  guarantee: '보증/신뢰',
   cta: '구매 유도',
+  // legacy
+  hero: '히어로',
+  detail: '상세 설명',
+  trust: '신뢰 요소',
 };
 
 interface SectionCanvasProps {
@@ -153,55 +160,63 @@ function SectionCanvas({ sectionType, title, body, photoUrl, colors, headlineFon
   const base: React.CSSProperties = { width: CANVAS_W, fontFamily: bf, color: colors.text, boxSizing: 'border-box', overflow: 'hidden' };
 
   switch (sectionType) {
+    case 'hooking':
     case 'hero': {
       const lines = body.split('\n').filter(l => l.trim());
       const headline = title || lines[0] || '메인 타이틀';
-      const sub = lines.slice(0, 3).join(' ').slice(0, 140);
+      const sub = lines.filter(l => !l.startsWith('서브카피:')).slice(0, 3).join(' ').slice(0, 160)
+        || lines.slice(0, 3).join(' ').replace(/^서브카피:\s*/i, '').slice(0, 160);
       return (
         <div
           ref={canvasRef}
           style={{
             ...base,
-            minHeight: 480,
-            background: `linear-gradient(140deg, ${colors.bg} 0%, ${darken(colors.bg, 0.18)} 100%)`,
+            minHeight: 520,
+            background: `linear-gradient(155deg, ${darken(colors.bg, 0.22)} 0%, ${colors.bg} 55%, ${darken(colors.bg, 0.1)} 100%)`,
             display: 'flex',
+            position: 'relative',
+            overflow: 'hidden',
           }}
         >
+          {/* Decorative accent bar */}
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${colors.accent}, ${hexToRgba(colors.accent, 0)})` }} />
           {/* Left text */}
-          <div style={{ flex: '0 0 54%', padding: '60px 36px 60px 56px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 18 }}>
-            <div style={{ fontSize: 10, letterSpacing: 6, textTransform: 'uppercase', color: colors.accent, fontWeight: 700, fontFamily: bf }}>
-              HERO SECTION
+          <div style={{ flex: '0 0 54%', padding: '72px 36px 72px 60px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 20 }}>
+            <div style={{ fontSize: 9, letterSpacing: 7, textTransform: 'uppercase', color: colors.accent, fontWeight: 800, fontFamily: bf, opacity: 0.85 }}>
+              FIRST IMPRESSION
             </div>
-            <div style={{ fontFamily: hf, fontSize: 38, fontWeight: 900, color: colors.text, lineHeight: 1.22, wordBreak: 'keep-all' }}>
+            <div style={{ fontFamily: hf, fontSize: 42, fontWeight: 900, color: colors.text, lineHeight: 1.18, wordBreak: 'keep-all', letterSpacing: -1 }}>
               {headline}
             </div>
-            <div style={{ fontSize: 15, color: hexToRgba(colors.text, 0.65), lineHeight: 1.7, wordBreak: 'keep-all', maxWidth: 370 }}>
+            <div style={{ width: 36, height: 3, background: colors.accent, borderRadius: 2 }} />
+            <div style={{ fontSize: 15, color: hexToRgba(colors.text, 0.7), lineHeight: 1.75, wordBreak: 'keep-all', maxWidth: 360 }}>
               {sub}
             </div>
             <div style={{
               display: 'inline-flex',
               background: colors.accent,
-              color: '#fff',
-              padding: '13px 28px',
+              color: darken(colors.accent, 0.6),
+              padding: '14px 32px',
               borderRadius: 8,
               fontSize: 14,
-              fontWeight: 700,
+              fontWeight: 800,
               width: 'fit-content',
               marginTop: 8,
-              letterSpacing: 0.4,
+              letterSpacing: 0.5,
               fontFamily: bf,
+              boxShadow: `0 4px 20px ${hexToRgba(colors.accent, 0.4)}`,
             }}>
               지금 구매하기
             </div>
           </div>
           {/* Right image */}
-          <div style={{ flex: '0 0 46%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 48px 40px 16px', position: 'relative' }}>
+          <div style={{ flex: '0 0 46%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 52px 40px 16px', position: 'relative' }}>
             <div style={{
               position: 'absolute',
-              width: 300,
-              height: 300,
+              width: 320,
+              height: 320,
               borderRadius: '50%',
-              background: hexToRgba(colors.accent, 0.07),
+              background: hexToRgba(colors.accent, 0.06),
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
@@ -211,10 +226,10 @@ function SectionCanvas({ sectionType, title, body, photoUrl, colors, headlineFon
                 src={photoUrl}
                 alt="product"
                 crossOrigin="anonymous"
-                style={{ maxWidth: 280, maxHeight: 360, objectFit: 'contain', position: 'relative', zIndex: 1, filter: 'drop-shadow(0 20px 36px rgba(0,0,0,0.45))' }}
+                style={{ maxWidth: 290, maxHeight: 380, objectFit: 'contain', position: 'relative', zIndex: 1, filter: 'drop-shadow(0 24px 40px rgba(0,0,0,0.5))' }}
               />
             ) : (
-              <div style={{ width: 200, height: 260, border: `2px dashed ${hexToRgba(colors.accent, 0.25)}`, borderRadius: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: hexToRgba(colors.accent, 0.4), fontSize: 12, gap: 8 }}>
+              <div style={{ width: 200, height: 260, border: `2px dashed ${hexToRgba(colors.accent, 0.22)}`, borderRadius: 16, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: hexToRgba(colors.accent, 0.35), fontSize: 12, gap: 8 }}>
                 <span style={{ fontSize: 32, opacity: 0.5 }}>[ ]</span>
                 <span>제품 이미지</span>
               </div>
@@ -537,6 +552,253 @@ function SectionCanvas({ sectionType, title, body, photoUrl, colors, headlineFon
             boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
           }}>
             구매하기
+          </div>
+        </div>
+      );
+    }
+
+    case 'problem': {
+      const paras = body.split(/\n\n+/).filter(p => p.trim()).slice(0, 3);
+      const bgProblem = darken(colors.bg, 0.18);
+      return (
+        <div ref={canvasRef} style={{ ...base, background: bgProblem }}>
+          {/* Header */}
+          <div style={{ padding: '52px 56px 36px', textAlign: 'center' }}>
+            <div style={{ fontSize: 9, letterSpacing: 6, textTransform: 'uppercase', color: hexToRgba(colors.accent, 0.6), fontWeight: 700, fontFamily: bf, marginBottom: 16 }}>
+              PAIN POINT
+            </div>
+            <div style={{ fontFamily: hf, fontSize: 28, fontWeight: 800, color: colors.text, wordBreak: 'keep-all', lineHeight: 1.35 }}>
+              {title || '혹시 이런 고민 있으신가요?'}
+            </div>
+          </div>
+          {/* Problem cards */}
+          <div style={{ padding: '0 56px 60px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {paras.map((para, i) => {
+              const lines = para.trim().split('\n');
+              const pTitle = lines[0].replace(/^[-•*]\s*/, '').trim();
+              const pDesc = lines.slice(1).join(' ').trim();
+              return (
+                <div key={i} style={{
+                  background: hexToRgba(colors.accent, 0.05),
+                  border: `1px solid ${hexToRgba(colors.accent, 0.12)}`,
+                  borderLeft: `3px solid ${hexToRgba(colors.accent, 0.4)}`,
+                  borderRadius: '0 12px 12px 0',
+                  padding: '24px 28px',
+                  display: 'flex',
+                  gap: 20,
+                  alignItems: 'flex-start',
+                }}>
+                  <div style={{ fontSize: 28, fontWeight: 900, color: hexToRgba(colors.accent, 0.2), fontFamily: hf, lineHeight: 1, flexShrink: 0, width: 32 }}>
+                    {i + 1}
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <div style={{ fontFamily: hf, fontSize: 16, fontWeight: 700, color: colors.text, wordBreak: 'keep-all' }}>
+                      {pTitle}
+                    </div>
+                    {pDesc && (
+                      <div style={{ fontSize: 13, color: hexToRgba(colors.text, 0.58), lineHeight: 1.7, wordBreak: 'keep-all' }}>
+                        {pDesc}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    case 'solution': {
+      const lines = body.split('\n').filter(l => l.trim());
+      const subText = lines.slice(1).join(' ').slice(0, 200);
+      return (
+        <div ref={canvasRef} style={{ ...base, background: colors.bg, minHeight: 420 }}>
+          <div style={{
+            display: 'flex',
+            minHeight: 420,
+          }}>
+            {/* Left image */}
+            <div style={{
+              flex: '0 0 44%',
+              background: darken(colors.bg, 0.1),
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 44,
+            }}>
+              {photoUrl ? (
+                <img src={photoUrl} alt="" crossOrigin="anonymous" style={{ maxWidth: '100%', maxHeight: 300, objectFit: 'contain', filter: 'drop-shadow(0 16px 32px rgba(0,0,0,0.4))' }} />
+              ) : (
+                <div style={{ width: 140, height: 180, border: `2px dashed ${hexToRgba(colors.accent, 0.2)}`, borderRadius: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: hexToRgba(colors.accent, 0.3), fontSize: 11, gap: 8 }}>
+                  <span style={{ fontSize: 28, opacity: 0.4 }}>[ ]</span>
+                  <span>제품 이미지</span>
+                </div>
+              )}
+            </div>
+            {/* Right text */}
+            <div style={{ flex: 1, padding: '56px 52px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 20 }}>
+              <div style={{ fontSize: 9, letterSpacing: 6, textTransform: 'uppercase', color: colors.accent, fontWeight: 700, fontFamily: bf }}>
+                SOLUTION
+              </div>
+              <div style={{ fontFamily: hf, fontSize: 26, fontWeight: 800, color: colors.text, wordBreak: 'keep-all', lineHeight: 1.38 }}>
+                {title || '그래서 만들었습니다'}
+              </div>
+              <div style={{ width: 28, height: 3, background: colors.accent, borderRadius: 2 }} />
+              {subText && (
+                <div style={{ fontSize: 14, color: hexToRgba(colors.text, 0.68), lineHeight: 1.82, wordBreak: 'keep-all' }}>
+                  {subText}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    case 'social_proof': {
+      const paras = body.split(/\n\n+/).filter(p => p.trim()).slice(0, 3);
+      return (
+        <div ref={canvasRef} style={{ ...base, background: darken(colors.bg, 0.1) }}>
+          {/* Header */}
+          <div style={{ padding: '52px 56px 40px', textAlign: 'center', borderBottom: `1px solid ${hexToRgba(colors.accent, 0.08)}` }}>
+            <div style={{ fontSize: 9, letterSpacing: 6, textTransform: 'uppercase', color: colors.accent, fontWeight: 700, fontFamily: bf, marginBottom: 14 }}>
+              SOCIAL PROOF
+            </div>
+            <div style={{ fontFamily: hf, fontSize: 26, fontWeight: 800, color: colors.text, wordBreak: 'keep-all', lineHeight: 1.35 }}>
+              {title || '이미 많은 분들이 경험했습니다'}
+            </div>
+          </div>
+          {/* Proof cards */}
+          <div style={{ padding: '40px 56px 56px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+            {paras.map((para, i) => {
+              const lines = para.trim().split('\n');
+              const isQuote = lines[0].trim().startsWith('"') || lines[0].trim().startsWith('"');
+              const pTitle = lines[0].replace(/^[-•*]\s*/, '').trim();
+              const pDesc = lines.slice(1).join(' ').trim();
+              return (
+                <div key={i} style={{
+                  background: isQuote ? hexToRgba(colors.accent, 0.07) : hexToRgba(colors.accent, 0.04),
+                  border: `1px solid ${hexToRgba(colors.accent, isQuote ? 0.18 : 0.1)}`,
+                  borderRadius: 14,
+                  padding: '24px 28px',
+                }}>
+                  {isQuote && (
+                    <div style={{ fontSize: 36, color: hexToRgba(colors.accent, 0.25), fontFamily: hf, lineHeight: 1, marginBottom: 8 }}>
+                      "
+                    </div>
+                  )}
+                  <div style={{ fontFamily: isQuote ? hf : bf, fontSize: isQuote ? 15 : 14, fontWeight: isQuote ? 600 : 700, color: isQuote ? hexToRgba(colors.text, 0.85) : colors.text, lineHeight: 1.65, wordBreak: 'keep-all' }}>
+                    {pTitle}
+                  </div>
+                  {pDesc && (
+                    <div style={{ fontSize: 12, color: hexToRgba(colors.text, 0.5), lineHeight: 1.6, wordBreak: 'keep-all', marginTop: 8, fontFamily: bf }}>
+                      {pDesc}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    case 'specs': {
+      const specLines = body.split('\n').filter(l => l.trim() && l.includes(':'));
+      const otherLines = body.split('\n').filter(l => l.trim() && !l.includes(':'));
+      const rows = specLines.map(l => {
+        const idx = l.indexOf(':');
+        return { key: l.slice(0, idx).replace(/^[-•*\d.\)]\s*/, '').trim(), val: l.slice(idx + 1).trim() };
+      });
+      return (
+        <div ref={canvasRef} style={{ ...base, background: darken(colors.bg, 0.08) }}>
+          {/* Header */}
+          <div style={{ padding: '52px 56px 36px', borderBottom: `1px solid ${hexToRgba(colors.accent, 0.08)}` }}>
+            <div style={{ fontSize: 9, letterSpacing: 6, textTransform: 'uppercase', color: colors.accent, fontWeight: 700, fontFamily: bf, marginBottom: 14 }}>
+              SPECIFICATIONS
+            </div>
+            <div style={{ fontFamily: hf, fontSize: 26, fontWeight: 800, color: colors.text, wordBreak: 'keep-all' }}>
+              {title || '제품 상세 정보'}
+            </div>
+          </div>
+          {/* Spec table */}
+          <div style={{ padding: '0 56px 56px' }}>
+            {rows.length > 0 ? (
+              <div style={{ marginTop: 28, border: `1px solid ${hexToRgba(colors.accent, 0.1)}`, borderRadius: 12, overflow: 'hidden' }}>
+                {rows.map((row, i) => (
+                  <div key={i} style={{
+                    display: 'flex',
+                    borderBottom: i < rows.length - 1 ? `1px solid ${hexToRgba(colors.accent, 0.07)}` : undefined,
+                    background: i % 2 === 0 ? hexToRgba(colors.accent, 0.03) : 'transparent',
+                  }}>
+                    <div style={{ flex: '0 0 35%', padding: '16px 24px', fontSize: 13, fontWeight: 700, color: hexToRgba(colors.text, 0.6), fontFamily: bf, borderRight: `1px solid ${hexToRgba(colors.accent, 0.07)}` }}>
+                      {row.key}
+                    </div>
+                    <div style={{ flex: 1, padding: '16px 24px', fontSize: 13, color: colors.text, fontFamily: bf, lineHeight: 1.5 }}>
+                      {row.val}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div style={{ marginTop: 28 }}>
+                {otherLines.map((line, i) => (
+                  <div key={i} style={{ padding: '12px 0', borderBottom: `1px solid ${hexToRgba(colors.accent, 0.07)}`, fontSize: 13, color: hexToRgba(colors.text, 0.75), fontFamily: bf }}>
+                    {line.replace(/^[-•*\d.\)]\s*/, '')}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    case 'guarantee': {
+      const paras = body.split(/\n\n+/).filter(p => p.trim()).slice(0, 4);
+      const icons = ['[배송]', '[환불]', '[인증]', '[서비스]'];
+      return (
+        <div ref={canvasRef} style={{ ...base, background: colors.bg }}>
+          {/* Header */}
+          <div style={{ padding: '52px 56px 40px', textAlign: 'center', borderBottom: `1px solid ${hexToRgba(colors.accent, 0.08)}` }}>
+            <div style={{ fontSize: 9, letterSpacing: 6, textTransform: 'uppercase', color: colors.accent, fontWeight: 700, fontFamily: bf, marginBottom: 14 }}>
+              GUARANTEE
+            </div>
+            <div style={{ fontFamily: hf, fontSize: 26, fontWeight: 800, color: colors.text, wordBreak: 'keep-all' }}>
+              {title || '안심하고 구매하세요'}
+            </div>
+          </div>
+          {/* Guarantee grid */}
+          <div style={{ padding: '36px 56px 56px', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
+            {paras.map((para, i) => {
+              const lines = para.trim().split('\n');
+              const pTitle = lines[0].replace(/^[-•*]\s*/, '').trim();
+              const pDesc = lines.slice(1).join(' ').trim();
+              return (
+                <div key={i} style={{
+                  background: hexToRgba(colors.accent, 0.05),
+                  border: `1px solid ${hexToRgba(colors.accent, 0.12)}`,
+                  borderRadius: 14,
+                  padding: '28px 24px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 12,
+                }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: hexToRgba(colors.accent, 0.6), fontFamily: bf }}>
+                    {icons[i] || '[보장]'}
+                  </div>
+                  <div style={{ fontFamily: hf, fontSize: 15, fontWeight: 700, color: colors.text, wordBreak: 'keep-all', lineHeight: 1.4 }}>
+                    {pTitle}
+                  </div>
+                  {pDesc && (
+                    <div style={{ fontSize: 12, color: hexToRgba(colors.text, 0.58), lineHeight: 1.7, wordBreak: 'keep-all' }}>
+                      {pDesc}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       );

@@ -11,21 +11,35 @@ import Card from '@/components/ui/Card';
 import { Wand2, ChevronUp, ChevronDown, Plus, Trash2, Eye, EyeOff, ImageIcon, Palette, Type, Lightbulb, BarChart2 } from 'lucide-react';
 
 const SECTION_LABELS: Record<ManuscriptSectionType, string> = {
-  hero: '히어로 카피',
+  hooking: '후킹',
+  problem: '문제 공감',
+  solution: '솔루션 제시',
   features: '핵심 특장점',
-  detail: '상세 설명',
   howto: '사용 방법',
-  trust: '신뢰 요소',
+  social_proof: '사회적 증거',
+  specs: '스펙/상세',
+  guarantee: '보증/신뢰',
   cta: '구매 유도',
+  // legacy
+  hero: '히어로 카피',
+  detail: '상세 설명',
+  trust: '신뢰 요소',
 };
 
 const SECTION_COLORS: Record<ManuscriptSectionType, string> = {
-  hero: 'border-[#c3c0ff]/30 bg-[#c3c0ff]/5',
+  hooking: 'border-[#c3c0ff]/30 bg-[#c3c0ff]/5',
+  problem: 'border-[#ffb3b3]/30 bg-[#ffb3b3]/5',
+  solution: 'border-[#a0e7e5]/30 bg-[#a0e7e5]/5',
   features: 'border-[#a5c8ff]/30 bg-[#a5c8ff]/5',
-  detail: 'border-[#bbc3ff]/30 bg-[#bbc3ff]/5',
   howto: 'border-[#a0e7e5]/30 bg-[#a0e7e5]/5',
-  trust: 'border-[#d4a5ff]/30 bg-[#d4a5ff]/5',
+  social_proof: 'border-[#d4a5ff]/30 bg-[#d4a5ff]/5',
+  specs: 'border-[#bbc3ff]/30 bg-[#bbc3ff]/5',
+  guarantee: 'border-[#a5ffcc]/30 bg-[#a5ffcc]/5',
   cta: 'border-[#ffb3b3]/30 bg-[#ffb3b3]/5',
+  // legacy
+  hero: 'border-[#c3c0ff]/30 bg-[#c3c0ff]/5',
+  detail: 'border-[#bbc3ff]/30 bg-[#bbc3ff]/5',
+  trust: 'border-[#d4a5ff]/30 bg-[#d4a5ff]/5',
 };
 
 const TONE_ACCENT: Record<ToneKey, { border: string; bg: string; text: string }> = {

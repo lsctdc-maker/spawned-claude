@@ -7,21 +7,35 @@ import { ImageIcon } from 'lucide-react';
 import { ManuscriptSectionType } from '@/lib/types';
 
 const SECTION_ACCENT: Record<ManuscriptSectionType, { bg: string; text: string; border: string }> = {
+  hooking:      { bg: 'bg-[#c3c0ff]/8',  text: 'text-[#c3c0ff]',  border: 'border-[#c3c0ff]/20' },
+  problem:      { bg: 'bg-[#ffb3b3]/8',  text: 'text-[#ffb3b3]',  border: 'border-[#ffb3b3]/20' },
+  solution:     { bg: 'bg-[#a0e7e5]/8',  text: 'text-[#a0e7e5]',  border: 'border-[#a0e7e5]/20' },
+  features:     { bg: 'bg-[#a5c8ff]/8',  text: 'text-[#a5c8ff]',  border: 'border-[#a5c8ff]/20' },
+  howto:        { bg: 'bg-[#a0e7e5]/8',  text: 'text-[#a0e7e5]',  border: 'border-[#a0e7e5]/20' },
+  social_proof: { bg: 'bg-[#d4a5ff]/8',  text: 'text-[#d4a5ff]',  border: 'border-[#d4a5ff]/20' },
+  specs:        { bg: 'bg-[#bbc3ff]/8',  text: 'text-[#bbc3ff]',  border: 'border-[#bbc3ff]/20' },
+  guarantee:    { bg: 'bg-[#a5ffcc]/8',  text: 'text-[#a5ffcc]',  border: 'border-[#a5ffcc]/20' },
+  cta:          { bg: 'bg-[#ffb3b3]/8',  text: 'text-[#ffb3b3]',  border: 'border-[#ffb3b3]/20' },
+  // legacy
   hero:     { bg: 'bg-[#c3c0ff]/8',  text: 'text-[#c3c0ff]',  border: 'border-[#c3c0ff]/20' },
-  features: { bg: 'bg-[#a5c8ff]/8',  text: 'text-[#a5c8ff]',  border: 'border-[#a5c8ff]/20' },
   detail:   { bg: 'bg-[#bbc3ff]/8',  text: 'text-[#bbc3ff]',  border: 'border-[#bbc3ff]/20' },
-  howto:    { bg: 'bg-[#a0e7e5]/8',  text: 'text-[#a0e7e5]',  border: 'border-[#a0e7e5]/20' },
   trust:    { bg: 'bg-[#d4a5ff]/8',  text: 'text-[#d4a5ff]',  border: 'border-[#d4a5ff]/20' },
-  cta:      { bg: 'bg-[#ffb3b3]/8',  text: 'text-[#ffb3b3]',  border: 'border-[#ffb3b3]/20' },
 };
 
 const SECTION_LABELS: Record<ManuscriptSectionType, string> = {
-  hero: '히어로 카피',
+  hooking: '후킹',
+  problem: '문제 공감',
+  solution: '솔루션 제시',
   features: '핵심 특장점',
-  detail: '상세 설명',
   howto: '사용 방법',
-  trust: '신뢰 요소',
+  social_proof: '사회적 증거',
+  specs: '스펙/상세',
+  guarantee: '보증/신뢰',
   cta: '구매 유도',
+  // legacy
+  hero: '히어로 카피',
+  detail: '상세 설명',
+  trust: '신뢰 요소',
 };
 
 export default function Step4Preview() {
