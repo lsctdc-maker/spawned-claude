@@ -336,7 +336,7 @@ export default function Step2AIInterview() {
           </div>
           <div className="flex justify-between pt-4">
             <Button variant="ghost" onClick={() => dispatch({ type: 'PREV_STEP' })}>이전</Button>
-            <Button size="lg" onClick={handleNext}>다음: 톤앤매너 선택</Button>
+            <Button size="lg" onClick={handleNext}>다음: 원고 작성</Button>
           </div>
         </motion.div>
       )}

@@ -184,6 +184,24 @@ export type SectionContent =
   | PackageContent
   | CTAContent;
 
+// ===== 색상/폰트 추천 =====
+export interface ColorInfo {
+  hex: string;
+  label: string;
+}
+
+export interface ColorPalette {
+  colors: ColorInfo[];  // main 3 colors
+  accent: ColorInfo;
+  rationale: string;
+}
+
+export interface FontRecommendation {
+  headline: string;
+  body: string;
+  mood: string;
+}
+
 // ===== 이미지 =====
 export type ImageType = 'hero' | 'background' | 'lifestyle' | 'feature';
 
@@ -210,6 +228,8 @@ export interface DetailPageState {
   selectedTone: ToneKey | '';
   generatedSections: DetailPageSection[];
   manuscriptSections: ManuscriptSection[];
+  colorPalette: ColorPalette | null;
+  fontRecommendation: FontRecommendation | null;
   isGenerating: boolean;
   error: string | null;
   images: PageImages;
@@ -244,6 +264,8 @@ export type DetailPageAction =
   | { type: 'TOGGLE_MANUSCRIPT_VISIBILITY'; payload: string }
   | { type: 'ADD_MANUSCRIPT_SECTION'; payload: ManuscriptSection }
   | { type: 'REMOVE_MANUSCRIPT_SECTION'; payload: string }
+  | { type: 'SET_COLOR_PALETTE'; payload: ColorPalette | null }
+  | { type: 'SET_FONT_RECOMMENDATION'; payload: FontRecommendation | null }
   | { type: 'SET_GENERATING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
   | { type: 'SET_IMAGE'; payload: { key: string; url: string } }
@@ -274,4 +296,6 @@ export interface ExportResponse {
 
 export interface GenerateManuscriptResponse {
   sections: ManuscriptSection[];
+  colorPalette?: ColorPalette | null;
+  fontRecommendation?: FontRecommendation | null;
 }

@@ -18,6 +18,7 @@ export async function generateManuscript(
   productInfo: ProductInfo,
   extractedUSPs: USP[],
   interviewMessages: InterviewMessage[],
+  selectedTone?: ToneKey | '',
   productPhotoBase64?: string,
   productPhotoMimeType?: string
 ): Promise<APIResponse<GenerateManuscriptResponse>> {
@@ -29,13 +30,21 @@ export async function generateManuscript(
         productInfo,
         extractedUSPs,
         interviewMessages,
+        selectedTone,
         productPhotoBase64,
         productPhotoMimeType,
       }),
     });
     const data = await response.json();
     if (data.sections) {
-      return { success: true, data: { sections: data.sections as ManuscriptSection[] } };
+      return {
+        success: true,
+        data: {
+          sections: data.sections as ManuscriptSection[],
+          colorPalette: data.colorPalette || null,
+          fontRecommendation: data.fontRecommendation || null,
+        },
+      };
     }
     throw new Error(data.error || '원고 생성 실패');
   } catch (error) {

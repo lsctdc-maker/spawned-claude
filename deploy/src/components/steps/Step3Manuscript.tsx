@@ -3,11 +3,12 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDetailPage } from '@/hooks/useDetailPage';
+import { TONE_STYLES } from '@/lib/constants';
 import { generateManuscript } from '@/lib/api';
-import { ManuscriptSection, ManuscriptSectionType } from '@/lib/types';
+import { ManuscriptSection, ManuscriptSectionType, ToneKey } from '@/lib/types';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
-import { Loader2, Wand2, ChevronUp, ChevronDown, Plus, Trash2, Eye, EyeOff, ImageIcon } from 'lucide-react';
+import { Loader2, Wand2, ChevronUp, ChevronDown, Plus, Trash2, Eye, EyeOff, ImageIcon, Palette, Type } from 'lucide-react';
 
 const SECTION_LABELS: Record<ManuscriptSectionType, string> = {
   hero: '히어로 카피',
@@ -27,9 +28,15 @@ const SECTION_COLORS: Record<ManuscriptSectionType, string> = {
   cta: 'border-[#ffb3b3]/30 bg-[#ffb3b3]/5',
 };
 
+const TONE_ACCENT: Record<ToneKey, { border: string; bg: string; text: string }> = {
+  trust:     { border: 'border-[#a5c8ff]/40', bg: 'bg-[#a5c8ff]/10', text: 'text-[#a5c8ff]' },
+  emotional: { border: 'border-[#d4a5ff]/40', bg: 'bg-[#d4a5ff]/10', text: 'text-[#d4a5ff]' },
+  impact:    { border: 'border-[#ffb3b3]/40', bg: 'bg-[#ffb3b3]/10', text: 'text-[#ffb3b3]' },
+};
+
 export default function Step3Manuscript() {
   const { state, dispatch } = useDetailPage();
-  const { productInfo, productPhotos, extractedUSPs, interviewMessages, manuscriptSections, isGenerating } = state;
+  const { productInfo, productPhotos, extractedUSPs, interviewMessages, manuscriptSections, selectedTone, colorPalette, fontRecommendation, isGenerating } = state;
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
@@ -56,12 +63,19 @@ export default function Step3Manuscript() {
         productInfo,
         extractedUSPs,
         interviewMessages,
+        selectedTone,
         photoBase64,
         photoMimeType
       );
 
       if (result.success && result.data) {
         dispatch({ type: 'SET_MANUSCRIPT', payload: result.data.sections });
+        if (result.data.colorPalette) {
+          dispatch({ type: 'SET_COLOR_PALETTE', payload: result.data.colorPalette });
+        }
+        if (result.data.fontRecommendation) {
+          dispatch({ type: 'SET_FONT_RECOMMENDATION', payload: result.data.fontRecommendation });
+        }
       } else {
         dispatch({ type: 'SET_ERROR', payload: result.error || '원고 생성에 실패했습니다.' });
       }
@@ -165,10 +179,37 @@ export default function Step3Manuscript() {
     >
       <div className="text-center">
         <h2 className="text-2xl font-headline font-extrabold text-[#e5e2e1] mb-2">원고 확인 / 수정</h2>
-        <p className="text-[#c7c4d8]">AI가 인터뷰 내용을 바탕으로 섹션별 원고를 작성합니다.</p>
+        <p className="text-[#c7c4d8]">톤앤매너를 선택하고 AI가 인터뷰 내용을 바탕으로 원고를 작성합니다.</p>
       </div>
 
-      {/* 생성 버튼 / 재생성 */}
+      {/* ===== 톤앤매너 선택 ===== */}
+      <div>
+        <h3 className="text-[10px] uppercase tracking-widest text-[#e5e2e1]/50 mb-3 ml-1 font-label">톤앤매너</h3>
+        <div className="grid grid-cols-3 gap-3">
+          {(Object.entries(TONE_STYLES) as [ToneKey, typeof TONE_STYLES[ToneKey]][]).map(([key, tone]) => {
+            const accent = TONE_ACCENT[key];
+            const isSelected = selectedTone === key;
+            return (
+              <button
+                key={key}
+                onClick={() => dispatch({ type: 'SET_TONE', payload: key })}
+                className={`rounded-xl border px-4 py-3 text-left transition-all duration-200 ${
+                  isSelected
+                    ? `${accent.border} ${accent.bg} ring-1 ring-inset ${accent.border}`
+                    : 'border-[#464555]/20 bg-[#1c1b1b]/60 hover:border-[#464555]/40'
+                }`}
+              >
+                <div className={`text-sm font-semibold mb-1 ${isSelected ? accent.text : 'text-[#e5e2e1]'}`}>
+                  {tone.label}
+                </div>
+                <div className="text-[11px] text-[#c7c4d8]/70 leading-relaxed">{tone.desc}</div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ===== 생성 버튼 / 재생성 ===== */}
       {manuscriptSections.length === 0 ? (
         <Card variant="elevated" padding="lg">
           <div className="text-center py-4 space-y-4">
@@ -207,7 +248,81 @@ export default function Step3Manuscript() {
         </div>
       )}
 
-      {/* 섹션 목록 */}
+      {/* ===== 색상 팔레트 + 폰트 추천 ===== */}
+      {manuscriptSections.length > 0 && (colorPalette || fontRecommendation) && (
+        <div className="grid sm:grid-cols-2 gap-3">
+          {/* 색상 팔레트 */}
+          {colorPalette && (
+            <div className="rounded-xl border border-[#464555]/20 bg-[#1c1b1b]/60 p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <Palette className="w-4 h-4 text-[#c3c0ff]/70" />
+                <span className="text-[10px] uppercase tracking-widest text-[#e5e2e1]/50 font-label">추천 색상 팔레트</span>
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                {colorPalette.colors.map((c, i) => (
+                  <div key={i} className="flex flex-col items-center gap-1">
+                    <div
+                      className="w-9 h-9 rounded-lg border border-white/10 shadow-sm"
+                      style={{ backgroundColor: c.hex }}
+                    />
+                    <span className="text-[9px] text-[#e5e2e1]/40 font-mono">{c.hex}</span>
+                  </div>
+                ))}
+                <div className="flex flex-col items-center gap-1">
+                  <div
+                    className="w-9 h-9 rounded-lg border-2 border-dashed border-white/20 shadow-sm"
+                    style={{ backgroundColor: colorPalette.accent.hex }}
+                  />
+                  <span className="text-[9px] text-[#e5e2e1]/40 font-mono">{colorPalette.accent.hex}</span>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                {colorPalette.colors.map((c, i) => (
+                  <div key={i} className="text-[10px] text-[#c7c4d8]/60 leading-tight hidden">{c.label}</div>
+                ))}
+              </div>
+              <p className="text-[11px] text-[#c7c4d8]/60 leading-relaxed">{colorPalette.rationale}</p>
+              <div className="space-y-1">
+                {colorPalette.colors.map((c, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-sm flex-shrink-0" style={{ backgroundColor: c.hex }} />
+                    <span className="text-[10px] text-[#e5e2e1]/50">{c.label}</span>
+                  </div>
+                ))}
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-sm flex-shrink-0 border border-dashed border-white/30" style={{ backgroundColor: colorPalette.accent.hex }} />
+                  <span className="text-[10px] text-[#e5e2e1]/50">{colorPalette.accent.label} (포인트)</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 폰트 추천 */}
+          {fontRecommendation && (
+            <div className="rounded-xl border border-[#464555]/20 bg-[#1c1b1b]/60 p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <Type className="w-4 h-4 text-[#c3c0ff]/70" />
+                <span className="text-[10px] uppercase tracking-widest text-[#e5e2e1]/50 font-label">추천 폰트 스타일</span>
+              </div>
+              <div className="space-y-2.5">
+                <div className="space-y-0.5">
+                  <div className="text-[10px] uppercase tracking-wider text-[#e5e2e1]/30 font-label">제목</div>
+                  <p className="text-[11px] text-[#c7c4d8] leading-relaxed">{fontRecommendation.headline}</p>
+                </div>
+                <div className="space-y-0.5">
+                  <div className="text-[10px] uppercase tracking-wider text-[#e5e2e1]/30 font-label">본문</div>
+                  <p className="text-[11px] text-[#c7c4d8] leading-relaxed">{fontRecommendation.body}</p>
+                </div>
+                <div className="pt-1 border-t border-[#464555]/15">
+                  <p className="text-[11px] text-[#e5e2e1]/40 italic">{fontRecommendation.mood}</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ===== 섹션 목록 ===== */}
       <AnimatePresence>
         {sortedSections.map((section, idx) => {
           const colorClass = SECTION_COLORS[section.sectionType] || 'border-[#464555]/20 bg-[#2a2a2a]';
@@ -285,7 +400,7 @@ export default function Step3Manuscript() {
                   </div>
                 )}
 
-                {/* 이미지 가이드 */}
+                {/* 이미지 + 색상/폰트 가이드 */}
                 <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg bg-black/20 border border-white/5">
                   <ImageIcon className="w-3.5 h-3.5 text-[#e5e2e1]/30 flex-shrink-0 mt-0.5" />
                   <p className="text-xs text-[#e5e2e1]/40 leading-relaxed">
@@ -309,12 +424,12 @@ export default function Step3Manuscript() {
         })}
       </AnimatePresence>
 
-      {/* 네비게이션 버튼 */}
+      {/* ===== 네비게이션 버튼 ===== */}
       {manuscriptSections.length > 0 && (
         <div className="flex justify-between pt-2">
           <Button variant="ghost" onClick={() => dispatch({ type: 'PREV_STEP' })}>이전</Button>
           <Button size="lg" onClick={() => dispatch({ type: 'NEXT_STEP' })}>
-            다음: 미리보기
+            다음: 내보내기
           </Button>
         </div>
       )}

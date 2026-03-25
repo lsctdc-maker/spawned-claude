@@ -23,6 +23,8 @@ export const initialState: DetailPageState = {
   selectedTone: '',
   generatedSections: [],
   manuscriptSections: [],
+  colorPalette: null,
+  fontRecommendation: null,
   isGenerating: false,
   error: null,
   images: {},
@@ -39,7 +41,7 @@ export function detailPageReducer(
     case 'SET_STEP':
       return { ...state, currentStep: action.payload };
     case 'NEXT_STEP':
-      return { ...state, currentStep: Math.min(state.currentStep + 1, 5) };
+      return { ...state, currentStep: Math.min(state.currentStep + 1, 4) };
     case 'PREV_STEP':
       return { ...state, currentStep: Math.max(state.currentStep - 1, 1) };
     case 'UPDATE_PRODUCT':
@@ -109,6 +111,10 @@ export function detailPageReducer(
       return { ...state, manuscriptSections: [...state.manuscriptSections, action.payload] };
     case 'REMOVE_MANUSCRIPT_SECTION':
       return { ...state, manuscriptSections: state.manuscriptSections.filter((sec) => sec.id !== action.payload) };
+    case 'SET_COLOR_PALETTE':
+      return { ...state, colorPalette: action.payload };
+    case 'SET_FONT_RECOMMENDATION':
+      return { ...state, fontRecommendation: action.payload };
     case 'SET_GENERATING':
       return { ...state, isGenerating: action.payload };
     case 'SET_ERROR':

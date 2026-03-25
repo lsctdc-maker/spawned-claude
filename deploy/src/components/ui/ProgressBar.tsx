@@ -8,7 +8,7 @@ interface ProgressBarProps {
   totalSteps?: number;
 }
 
-export default function ProgressBar({ currentStep, totalSteps = 5 }: ProgressBarProps) {
+export default function ProgressBar({ currentStep, totalSteps = 4 }: ProgressBarProps) {
   const activeWidth = totalSteps > 1 ? ((currentStep - 1) / (totalSteps - 1)) * 100 : 0;
 
   return (

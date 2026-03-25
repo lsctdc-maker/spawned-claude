@@ -155,7 +155,7 @@ export default function Step5Export() {
       )}
 
       <div className="flex justify-between pt-4">
-        <Button variant="ghost" onClick={() => dispatch({ type: 'PREV_STEP' })}>이전 (미리보기)</Button>
+        <Button variant="ghost" onClick={() => dispatch({ type: 'PREV_STEP' })}>이전 (원고 확인)</Button>
         <div className="flex gap-3">
           <Button variant="outline" onClick={() => dispatch({ type: 'RESET' })}>새로 만들기</Button>
           <Button size="lg" onClick={handleExport}>

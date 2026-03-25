@@ -9,8 +9,7 @@ import ProgressBar from '@/components/ui/ProgressBar';
 import Step1ProductInfo from '@/components/steps/Step1ProductInfo';
 import Step2AIInterview from '@/components/steps/Step2AIInterview';
 import Step3Manuscript from '@/components/steps/Step3Manuscript';
-import Step4Preview from '@/components/steps/Step4Preview';
-import Step5Export from '@/components/steps/Step5Export';
+import Step4Export from '@/components/steps/Step5Export';
 
 export default function CreatePage() {
   const [state, dispatch] = useReducer(detailPageReducer, initialState);
@@ -20,8 +19,7 @@ export default function CreatePage() {
       case 1: return <Step1ProductInfo />;
       case 2: return <Step2AIInterview />;
       case 3: return <Step3Manuscript />;
-      case 4: return <Step4Preview />;
-      case 5: return <Step5Export />;
+      case 4: return <Step4Export />;
       default: return <Step1ProductInfo />;
     }
   };
