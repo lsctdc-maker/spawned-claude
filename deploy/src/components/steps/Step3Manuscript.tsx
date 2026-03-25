@@ -8,7 +8,7 @@ import { generateManuscript } from '@/lib/api';
 import { ManuscriptSection, ManuscriptSectionType, ToneKey } from '@/lib/types';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
-import { Loader2, Wand2, ChevronUp, ChevronDown, Plus, Trash2, Eye, EyeOff, ImageIcon, Palette, Type } from 'lucide-react';
+import { Wand2, ChevronUp, ChevronDown, Plus, Trash2, Eye, EyeOff, ImageIcon, Palette, Type, Lightbulb, BarChart2 } from 'lucide-react';
 
 const SECTION_LABELS: Record<ManuscriptSectionType, string> = {
   hero: '히어로 카피',
@@ -36,7 +36,7 @@ const TONE_ACCENT: Record<ToneKey, { border: string; bg: string; text: string }>
 
 export default function Step3Manuscript() {
   const { state, dispatch } = useDetailPage();
-  const { productInfo, productPhotos, extractedUSPs, interviewMessages, manuscriptSections, selectedTone, colorPalette, fontRecommendation, isGenerating } = state;
+  const { productInfo, productPhotos, extractedUSPs, interviewMessages, manuscriptSections, selectedTone, colorPalette, fontRecommendation, layoutRationale, referenceGuide, isGenerating } = state;
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
@@ -70,12 +70,10 @@ export default function Step3Manuscript() {
 
       if (result.success && result.data) {
         dispatch({ type: 'SET_MANUSCRIPT', payload: result.data.sections });
-        if (result.data.colorPalette) {
-          dispatch({ type: 'SET_COLOR_PALETTE', payload: result.data.colorPalette });
-        }
-        if (result.data.fontRecommendation) {
-          dispatch({ type: 'SET_FONT_RECOMMENDATION', payload: result.data.fontRecommendation });
-        }
+        dispatch({ type: 'SET_COLOR_PALETTE', payload: result.data.colorPalette ?? null });
+        dispatch({ type: 'SET_FONT_RECOMMENDATION', payload: result.data.fontRecommendation ?? null });
+        dispatch({ type: 'SET_LAYOUT_RATIONALE', payload: result.data.layoutRationale ?? null });
+        dispatch({ type: 'SET_REFERENCE_GUIDE', payload: result.data.referenceGuide ?? null });
       } else {
         dispatch({ type: 'SET_ERROR', payload: result.error || '원고 생성에 실패했습니다.' });
       }
@@ -248,6 +246,17 @@ export default function Step3Manuscript() {
         </div>
       )}
 
+      {/* ===== AI 추천 레이아웃 근거 ===== */}
+      {manuscriptSections.length > 0 && layoutRationale && (
+        <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-[#c3c0ff]/8 border border-[#c3c0ff]/15">
+          <Lightbulb className="w-4 h-4 text-[#c3c0ff]/70 flex-shrink-0 mt-0.5" />
+          <div>
+            <span className="text-[10px] uppercase tracking-widest text-[#c3c0ff]/50 font-label">AI 추천 레이아웃 근거</span>
+            <p className="text-sm text-[#c7c4d8] mt-0.5 leading-relaxed">{layoutRationale}</p>
+          </div>
+        </div>
+      )}
+
       {/* ===== 색상 팔레트 + 폰트 추천 ===== */}
       {manuscriptSections.length > 0 && (colorPalette || fontRecommendation) && (
         <div className="grid sm:grid-cols-2 gap-3">
@@ -319,6 +328,59 @@ export default function Step3Manuscript() {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* ===== 추천 레퍼런스 가이드 ===== */}
+      {manuscriptSections.length > 0 && referenceGuide && (
+        <div className="rounded-xl border border-[#464555]/20 bg-[#1c1b1b]/60 overflow-hidden">
+          {/* 헤더 */}
+          <div className="flex items-center gap-2 px-4 py-3 border-b border-[#464555]/10">
+            <BarChart2 className="w-4 h-4 text-[#c3c0ff]/70" />
+            <span className="text-[10px] uppercase tracking-widest text-[#e5e2e1]/50 font-label">추천 레퍼런스 가이드</span>
+          </div>
+          <div className="p-4 space-y-4">
+            <p className="text-xs text-[#c7c4d8]/70 leading-relaxed">{referenceGuide.summary}</p>
+
+            {/* 레이아웃 다이어그램 */}
+            <div className="space-y-1.5">
+              {referenceGuide.sections.map((sec, i) => {
+                const hue = [195, 220, 260, 170, 340, 30][i % 6];
+                const barColor = `hsl(${hue} 60% 65% / 0.25)`;
+                const textColor = `hsl(${hue} 60% 72%)`;
+                return (
+                  <div key={i} className="flex items-center gap-3">
+                    {/* 비율 바 */}
+                    <div className="flex-1 flex items-center gap-2">
+                      <div
+                        className="h-7 rounded-md flex items-center px-2.5 transition-all"
+                        style={{
+                          width: `${Math.max(sec.percentage, 8)}%`,
+                          backgroundColor: barColor,
+                          minWidth: '3rem',
+                        }}
+                      >
+                        <span className="text-[11px] font-semibold whitespace-nowrap" style={{ color: textColor }}>
+                          {sec.percentage}%
+                        </span>
+                      </div>
+                      <div className="min-w-0">
+                        <span className="text-xs font-medium text-[#e5e2e1]/80">{sec.label}</span>
+                        <span className="text-[11px] text-[#e5e2e1]/35 ml-2">— {sec.tip}</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* 비율 합계 */}
+            <div className="flex justify-end">
+              <span className="text-[10px] text-[#e5e2e1]/25 font-mono">
+                합계: {referenceGuide.sections.reduce((s, r) => s + r.percentage, 0)}%
+              </span>
+            </div>
+          </div>
         </div>
       )}
 

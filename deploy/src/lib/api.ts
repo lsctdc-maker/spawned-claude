@@ -43,6 +43,8 @@ export async function generateManuscript(
           sections: data.sections as ManuscriptSection[],
           colorPalette: data.colorPalette || null,
           fontRecommendation: data.fontRecommendation || null,
+          layoutRationale: data.layoutRationale || null,
+          referenceGuide: data.referenceGuide || null,
         },
       };
     }

@@ -25,6 +25,8 @@ export const initialState: DetailPageState = {
   manuscriptSections: [],
   colorPalette: null,
   fontRecommendation: null,
+  layoutRationale: null,
+  referenceGuide: null,
   isGenerating: false,
   error: null,
   images: {},
@@ -115,6 +117,10 @@ export function detailPageReducer(
       return { ...state, colorPalette: action.payload };
     case 'SET_FONT_RECOMMENDATION':
       return { ...state, fontRecommendation: action.payload };
+    case 'SET_LAYOUT_RATIONALE':
+      return { ...state, layoutRationale: action.payload };
+    case 'SET_REFERENCE_GUIDE':
+      return { ...state, referenceGuide: action.payload };
     case 'SET_GENERATING':
       return { ...state, isGenerating: action.payload };
     case 'SET_ERROR':

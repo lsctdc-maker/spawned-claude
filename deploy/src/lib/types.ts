@@ -184,6 +184,18 @@ export type SectionContent =
   | PackageContent
   | CTAContent;
 
+// ===== 레이아웃 레퍼런스 =====
+export interface ReferenceSection {
+  label: string;
+  percentage: number;
+  tip: string;
+}
+
+export interface ReferenceGuide {
+  summary: string;
+  sections: ReferenceSection[];
+}
+
 // ===== 색상/폰트 추천 =====
 export interface ColorInfo {
   hex: string;
@@ -230,6 +242,8 @@ export interface DetailPageState {
   manuscriptSections: ManuscriptSection[];
   colorPalette: ColorPalette | null;
   fontRecommendation: FontRecommendation | null;
+  layoutRationale: string | null;
+  referenceGuide: ReferenceGuide | null;
   isGenerating: boolean;
   error: string | null;
   images: PageImages;
@@ -266,6 +280,8 @@ export type DetailPageAction =
   | { type: 'REMOVE_MANUSCRIPT_SECTION'; payload: string }
   | { type: 'SET_COLOR_PALETTE'; payload: ColorPalette | null }
   | { type: 'SET_FONT_RECOMMENDATION'; payload: FontRecommendation | null }
+  | { type: 'SET_LAYOUT_RATIONALE'; payload: string | null }
+  | { type: 'SET_REFERENCE_GUIDE'; payload: ReferenceGuide | null }
   | { type: 'SET_GENERATING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
   | { type: 'SET_IMAGE'; payload: { key: string; url: string } }
@@ -298,4 +314,6 @@ export interface GenerateManuscriptResponse {
   sections: ManuscriptSection[];
   colorPalette?: ColorPalette | null;
   fontRecommendation?: FontRecommendation | null;
+  layoutRationale?: string | null;
+  referenceGuide?: ReferenceGuide | null;
 }

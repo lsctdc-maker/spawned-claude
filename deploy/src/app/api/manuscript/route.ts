@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ProductInfo, USP, InterviewMessage, ManuscriptSection, ManuscriptSectionType, ToneKey, ColorPalette, FontRecommendation } from '@/lib/types';
+import { ProductInfo, USP, InterviewMessage, ManuscriptSection, ManuscriptSectionType, ToneKey, ColorPalette, FontRecommendation, ReferenceGuide } from '@/lib/types';
 
 const SYSTEM_PROMPT = `당신은 한국 이커머스 상세페이지 전문 카피라이터입니다.
 상품 정보, USP, 인터뷰 내용을 바탕으로 상세페이지 원고를 작성합니다.
@@ -50,48 +50,35 @@ ${uspText || '없음'}
 [인터뷰 답변 요약]
 ${interviewText || '없음'}
 
-아래 JSON 형식으로 응답하세요. sections 6개 + 색상 팔레트 + 폰트 추천을 모두 포함해야 합니다.
+[레이아웃 결정 원칙]
+모든 제품이 같은 구조일 필요는 없습니다. 제품의 카테고리, 가격대, 타겟 고객, 인터뷰에서 드러난 핵심 셀링포인트를 분석하여 이 제품에 가장 효과적인 섹션 순서와 구성을 자유롭게 결정하세요.
+
+사용 가능한 섹션 타입 (필요한 것만 선택, 4~7개):
+- hero: 히어로 카피 (헤드라인, 서브카피, CTA) — 항상 첫 번째
+- features: 핵심 특장점 (USP 중심, 3가지 특장점)
+- detail: 상세 설명 (심층적인 제품 설명, 3~4단락)
+- howto: 사용 방법 (단계별 사용법)
+- trust: 신뢰 요소 (인증, 임상 결과, 고객 후기)
+- cta: 구매 유도 (최종 구매 유도 카피) — 항상 마지막
+
+예시 판단:
+- 가격이 높은 제품 → trust 섹션을 features 바로 뒤에 배치해 신뢰 확보
+- 사용법이 복잡한 기기 → howto를 features 앞에 두어 이해를 선행
+- B2B/전문가용 제품 → detail 섹션을 두껍게, howto는 생략 가능
 
 각 섹션의 imageGuide에는 반드시 "추천 색상 톤"과 "폰트 스타일" 힌트를 포함하세요.
 예시: "제품 메인 사진 (흰 배경 제품컷). 색상 톤: 크림 베이지 배경에 딥 브라운 텍스트. 폰트: 세리프 계열 제목으로 고급스러운 느낌 권장."
 
+아래 JSON 형식으로 응답하세요 (sections + colorPalette + fontRecommendation + layoutRationale + referenceGuide 모두 포함):
+
 {
+  "layoutRationale": "이 순서로 구성한 이유 — 제품 특성 기반 한 줄 설명 (40자 이내)",
   "sections": [
     {
       "sectionType": "hero",
       "title": "히어로 카피",
       "body": "헤드라인: (15자 이내의 강렬한 카피)\\n서브카피: (30자 이내의 보조 설명)\\nCTA: (구매 유도 버튼 텍스트 8자 이내)",
       "imageGuide": "이미지 설명. 색상 톤: (배경색/텍스트색 권장). 폰트: (제목/본문 폰트 스타일 권장)."
-    },
-    {
-      "sectionType": "features",
-      "title": "핵심 특장점",
-      "body": "1. (특장점 제목)\\n(특장점 설명 2~3줄)\\n\\n2. (특장점 제목)\\n(특장점 설명 2~3줄)\\n\\n3. (특장점 제목)\\n(특장점 설명 2~3줄)",
-      "imageGuide": "이미지 설명. 색상 톤: (권장). 폰트: (권장)."
-    },
-    {
-      "sectionType": "detail",
-      "title": "상세 설명",
-      "body": "(제품에 대한 심층적인 설명. 3~4단락. 각 단락 소제목 포함)",
-      "imageGuide": "이미지 설명. 색상 톤: (권장). 폰트: (권장)."
-    },
-    {
-      "sectionType": "howto",
-      "title": "사용 방법",
-      "body": "1단계: (제목)\\n(설명)\\n\\n2단계: (제목)\\n(설명)\\n\\n3단계: (제목)\\n(설명)",
-      "imageGuide": "이미지 설명. 색상 톤: (권장). 폰트: (권장)."
-    },
-    {
-      "sectionType": "trust",
-      "title": "신뢰 요소",
-      "body": "(인증, 검사 결과, 고객 만족도, 수상 이력 등 신뢰를 높이는 내용. 인터뷰에서 언급된 내용 활용)",
-      "imageGuide": "이미지 설명. 색상 톤: (권장). 폰트: (권장)."
-    },
-    {
-      "sectionType": "cta",
-      "title": "구매 유도",
-      "body": "메인 카피: (구매를 이끌어내는 강렬한 문장)\\n서브 카피: (혜택 또는 긴급성 강조)\\n버튼 텍스트: (행동 유도 텍스트)",
-      "imageGuide": "이미지 설명. 색상 톤: (권장). 폰트: (권장)."
     }
   ],
   "colorPalette": {
@@ -107,9 +94,17 @@ ${interviewText || '없음'}
     "headline": "제목 폰트 추천 (예: 세리프 계열 / Noto Serif KR — 이유)",
     "body": "본문 폰트 추천 (예: 산세리프 계열 / Pretendard — 이유)",
     "mood": "전체 타이포그래피 분위기 (20자 이내)"
+  },
+  "referenceGuide": {
+    "summary": "${productInfo.category} 카테고리에서 전환율이 높은 상세페이지 구조 분석 (30자 이내)",
+    "sections": [
+      {"label": "섹션명", "percentage": 20, "tip": "이 섹션에서 핵심 포인트 (20자 이내)"},
+      {"label": "섹션명", "percentage": 35, "tip": "이 섹션에서 핵심 포인트 (20자 이내)"}
+    ]
   }
 }
 
+referenceGuide.sections의 percentage 합계는 반드시 100이어야 합니다.
 JSON만 응답하세요.`;
 }
 
@@ -223,7 +218,7 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 5000,
+        max_tokens: 6000,
         system: SYSTEM_PROMPT,
         messages: [{ role: 'user', content: userContent }],
       }),
@@ -258,8 +253,10 @@ export async function POST(request: NextRequest) {
 
     const colorPalette: ColorPalette | null = parsed.colorPalette || null;
     const fontRecommendation: FontRecommendation | null = parsed.fontRecommendation || null;
+    const layoutRationale: string | null = parsed.layoutRationale || null;
+    const referenceGuide: ReferenceGuide | null = parsed.referenceGuide || null;
 
-    return NextResponse.json({ sections, colorPalette, fontRecommendation });
+    return NextResponse.json({ sections, colorPalette, fontRecommendation, layoutRationale, referenceGuide });
   } catch (error) {
     console.error('Manuscript API error:', error);
     // 에러 시 폴백
