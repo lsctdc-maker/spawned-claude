@@ -89,11 +89,14 @@ function parseFeatures(body: string): Array<{ title: string; desc: string }> {
   });
 }
 
-function parseSteps(body: string): Array<{ num: number; title: string }> {
+function parseSteps(body: string): Array<{ num: number; title: string; desc: string }> {
   const stepLine = Array.from(body.matchAll(/^\s*(\d+)[단계\.\)]\s*[:\s]?([^\n]+)/gm));
-  if (stepLine.length >= 2) return stepLine.slice(0, 6).map((m, i) => ({ num: i + 1, title: m[2].trim() }));
+  if (stepLine.length >= 2) return stepLine.slice(0, 6).map((m, i) => ({ num: i + 1, title: m[2].trim(), desc: '' }));
   const paras = body.split(/\n\n+/).filter(p => p.trim()).slice(0, 5);
-  return paras.map((p, i) => ({ num: i + 1, title: p.trim().split('\n')[0].replace(/^[-*•]\s*/, '').trim() }));
+  return paras.map((p, i) => {
+    const lines = p.trim().split('\n');
+    return { num: i + 1, title: lines[0].replace(/^[-*•]\s*/, '').trim(), desc: lines.slice(1).join(' ').trim() };
+  });
 }
 
 function parseTrustItems(body: string): string[] {
@@ -223,110 +226,149 @@ function SectionCanvas({ sectionType, title, body, photoUrl, colors, headlineFon
 
     case 'features': {
       const items = parseFeatures(body);
+      const summaryItems = items.slice(0, 3);
+      const detailItems = items.slice(0, 3);
+      const bgDark = darken(colors.bg, 0.12);
+      const bgAlt = darken(colors.bg, 0.22);
       return (
-        <div ref={canvasRef} style={{ ...base, background: darken(colors.bg, 0.12), padding: '60px 56px 64px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 44 }}>
+        <div ref={canvasRef} style={{ ...base, background: bgDark, minHeight: 'auto' }}>
+          {/* Section header */}
+          <div style={{ textAlign: 'center', padding: '56px 56px 44px', background: bgDark }}>
             <div style={{ fontSize: 10, letterSpacing: 6, textTransform: 'uppercase', color: colors.accent, fontWeight: 700, marginBottom: 14, fontFamily: bf }}>
               FEATURES
             </div>
-            <div style={{ fontFamily: hf, fontSize: 28, fontWeight: 800, color: colors.text, wordBreak: 'keep-all' }}>
+            <div style={{ fontFamily: hf, fontSize: 30, fontWeight: 800, color: colors.text, wordBreak: 'keep-all', lineHeight: 1.3 }}>
               {title}
             </div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(items.length, 3)}, 1fr)`, gap: 20 }}>
-            {items.slice(0, 3).map((item, i) => (
-              <div
-                key={i}
-                style={{
-                  background: hexToRgba(colors.accent, 0.06),
-                  border: `1px solid ${hexToRgba(colors.accent, 0.16)}`,
-                  borderRadius: 16,
-                  padding: '28px 22px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 14,
-                }}
-              >
-                <div style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: '50%',
-                  background: colors.accent,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 20,
-                  fontWeight: 900,
-                  color: darken(colors.accent, 0.5),
-                  fontFamily: hf,
-                }}>
-                  {i + 1}
+          {/* 3-card summary row */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0, borderTop: `1px solid ${hexToRgba(colors.accent, 0.1)}`, borderBottom: `1px solid ${hexToRgba(colors.accent, 0.1)}` }}>
+            {summaryItems.map((item, i) => (
+              <div key={i} style={{
+                padding: '28px 30px',
+                borderRight: i < 2 ? `1px solid ${hexToRgba(colors.accent, 0.1)}` : undefined,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 10,
+                background: i % 2 === 1 ? hexToRgba(colors.accent, 0.04) : 'transparent',
+              }}>
+                <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 3, color: colors.accent, fontFamily: bf }}>
+                  0{i + 1}
                 </div>
-                <div style={{ fontFamily: hf, fontSize: 16, fontWeight: 700, color: colors.text, wordBreak: 'keep-all', lineHeight: 1.35 }}>
+                <div style={{ fontFamily: hf, fontSize: 15, fontWeight: 700, color: colors.text, wordBreak: 'keep-all', lineHeight: 1.4 }}>
                   {item.title || `특장점 ${i + 1}`}
                 </div>
                 {item.desc && (
-                  <div style={{ fontSize: 13, color: hexToRgba(colors.text, 0.62), lineHeight: 1.65, wordBreak: 'keep-all' }}>
-                    {item.desc}
+                  <div style={{ fontSize: 12, color: hexToRgba(colors.text, 0.55), lineHeight: 1.65, wordBreak: 'keep-all' }}>
+                    {item.desc.split(' ').slice(0, 18).join(' ')}{item.desc.split(' ').length > 18 ? '…' : ''}
                   </div>
                 )}
               </div>
             ))}
           </div>
+          {/* Large alternating detail blocks */}
+          {detailItems.map((item, i) => {
+            const isEven = i % 2 === 0;
+            const blockBg = isEven ? bgDark : bgAlt;
+            return (
+              <div key={i} style={{
+                display: 'flex',
+                flexDirection: isEven ? 'row' : 'row-reverse',
+                background: blockBg,
+                borderBottom: `1px solid ${hexToRgba(colors.accent, 0.07)}`,
+                minHeight: 320,
+              }}>
+                {/* Number + text side */}
+                <div style={{ flex: '0 0 50%', padding: '52px 52px 52px 56px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 20 }}>
+                  <div style={{ fontSize: 80, fontWeight: 900, lineHeight: 1, color: hexToRgba(colors.accent, 0.18), fontFamily: hf, letterSpacing: -4 }}>
+                    0{i + 1}
+                  </div>
+                  <div style={{ width: 32, height: 3, background: colors.accent, borderRadius: 2 }} />
+                  <div style={{ fontFamily: hf, fontSize: 22, fontWeight: 800, color: colors.text, wordBreak: 'keep-all', lineHeight: 1.4 }}>
+                    {item.title || `특장점 ${i + 1}`}
+                  </div>
+                  {item.desc && (
+                    <div style={{ fontSize: 14, color: hexToRgba(colors.text, 0.65), lineHeight: 1.8, wordBreak: 'keep-all', maxWidth: 340 }}>
+                      {item.desc}
+                    </div>
+                  )}
+                </div>
+                {/* Image side */}
+                <div style={{
+                  flex: '0 0 50%',
+                  background: isEven ? darken(blockBg, 0.08) : lighten(blockBg, 0.04),
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minHeight: 320,
+                  padding: 40,
+                }}>
+                  {photoUrl && i === 0 ? (
+                    <img src={photoUrl} alt="" crossOrigin="anonymous" style={{ maxWidth: '100%', maxHeight: 240, objectFit: 'contain', filter: 'drop-shadow(0 12px 28px rgba(0,0,0,0.35))' }} />
+                  ) : (
+                    <div style={{ width: 120, height: 120, border: `2px dashed ${hexToRgba(colors.accent, 0.2)}`, borderRadius: 16, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: hexToRgba(colors.accent, 0.3), fontSize: 11, gap: 8 }}>
+                      <span style={{ fontSize: 28, opacity: 0.4 }}>[ ]</span>
+                      <span>이미지</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
       );
     }
 
     case 'detail': {
-      const paragraphs = body.split(/\n\n+/).filter(p => p.trim()).slice(0, 3);
+      const paragraphs = body.split(/\n\n+/).filter(p => p.trim()).slice(0, 4);
       return (
         <div ref={canvasRef} style={{ ...base, background: colors.bg }}>
-          <div style={{ padding: '48px 56px 32px', textAlign: 'center', borderBottom: `1px solid ${hexToRgba(colors.accent, 0.08)}` }}>
+          {/* Section header */}
+          <div style={{ padding: '56px 56px 40px', textAlign: 'center', borderBottom: `1px solid ${hexToRgba(colors.accent, 0.08)}` }}>
             <div style={{ fontSize: 10, letterSpacing: 6, textTransform: 'uppercase', color: colors.accent, fontWeight: 700, marginBottom: 14, fontFamily: bf }}>
               DETAIL
             </div>
-            <div style={{ fontFamily: hf, fontSize: 26, fontWeight: 800, color: colors.text, wordBreak: 'keep-all' }}>
+            <div style={{ fontFamily: hf, fontSize: 28, fontWeight: 800, color: colors.text, wordBreak: 'keep-all', lineHeight: 1.3 }}>
               {title}
             </div>
           </div>
+          {/* Full-width stacked blocks: image top, text below */}
           {paragraphs.map((para, i) => {
             const lines = para.trim().split('\n');
             const paraTitle = lines[0].replace(/^[-*•\d.\)]\s*/, '').trim();
             const paraBody = lines.slice(1).join(' ').trim();
-            const isEven = i % 2 === 0;
+            const blockBg = i % 2 === 0 ? colors.bg : darken(colors.bg, 0.1);
             return (
-              <div
-                key={i}
-                style={{
-                  display: 'flex',
-                  flexDirection: isEven ? 'row' : 'row-reverse',
-                  borderBottom: i < paragraphs.length - 1 ? `1px solid ${hexToRgba(colors.accent, 0.06)}` : undefined,
-                }}
-              >
+              <div key={i} style={{ background: blockBg, borderBottom: `1px solid ${hexToRgba(colors.accent, 0.06)}` }}>
+                {/* Full-width image zone */}
                 <div style={{
-                  flex: '0 0 42%',
-                  background: darken(colors.bg, 0.1),
+                  width: '100%',
+                  height: 380,
+                  background: darken(blockBg, 0.1),
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  minHeight: 200,
-                  padding: 24,
+                  overflow: 'hidden',
                 }}>
-                  {photoUrl ? (
-                    <img src={photoUrl} alt="" crossOrigin="anonymous" style={{ maxWidth: '100%', maxHeight: 160, objectFit: 'contain' }} />
+                  {photoUrl && i === 0 ? (
+                    <img src={photoUrl} alt="" crossOrigin="anonymous" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }} />
                   ) : (
-                    <div style={{ width: 80, height: 80, border: `1px dashed ${hexToRgba(colors.accent, 0.2)}`, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: hexToRgba(colors.accent, 0.3), fontSize: 11 }}>
-                      이미지
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, color: hexToRgba(colors.accent, 0.25) }}>
+                      <span style={{ fontSize: 44 }}>[ ]</span>
+                      <span style={{ fontSize: 12, letterSpacing: 2 }}>이미지 영역</span>
                     </div>
                   )}
                 </div>
-                <div style={{ flex: 1, padding: '32px 40px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 12 }}>
-                  <div style={{ width: 28, height: 3, background: colors.accent, borderRadius: 2 }} />
-                  <div style={{ fontFamily: hf, fontSize: 18, fontWeight: 700, color: colors.text, wordBreak: 'keep-all', lineHeight: 1.4 }}>
+                {/* Text below image */}
+                <div style={{ padding: '40px 80px 48px', maxWidth: 640, margin: '0 auto' }}>
+                  <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 3, color: colors.accent, fontFamily: bf, marginBottom: 16 }}>
+                    0{i + 1}
+                  </div>
+                  <div style={{ fontFamily: hf, fontSize: 22, fontWeight: 800, color: colors.text, wordBreak: 'keep-all', lineHeight: 1.4, marginBottom: 16 }}>
                     {paraTitle}
                   </div>
                   {paraBody && (
-                    <div style={{ fontSize: 13, color: hexToRgba(colors.text, 0.62), lineHeight: 1.7, wordBreak: 'keep-all' }}>
+                    <div style={{ fontSize: 14, color: hexToRgba(colors.text, 0.65), lineHeight: 1.85, wordBreak: 'keep-all' }}>
                       {paraBody}
                     </div>
                   )}
@@ -341,51 +383,68 @@ function SectionCanvas({ sectionType, title, body, photoUrl, colors, headlineFon
     case 'howto': {
       const steps = parseSteps(body);
       return (
-        <div ref={canvasRef} style={{ ...base, background: `linear-gradient(160deg, ${darken(colors.bg, 0.06)} 0%, ${colors.bg} 100%)`, padding: '56px 56px 64px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 52 }}>
+        <div ref={canvasRef} style={{ ...base, background: colors.bg }}>
+          {/* Section header */}
+          <div style={{ textAlign: 'center', padding: '56px 56px 44px', background: darken(colors.bg, 0.08), borderBottom: `1px solid ${hexToRgba(colors.accent, 0.08)}` }}>
             <div style={{ fontSize: 10, letterSpacing: 6, textTransform: 'uppercase', color: colors.accent, fontWeight: 700, marginBottom: 14, fontFamily: bf }}>
               HOW TO USE
             </div>
-            <div style={{ fontFamily: hf, fontSize: 26, fontWeight: 800, color: colors.text, wordBreak: 'keep-all' }}>
+            <div style={{ fontFamily: hf, fontSize: 28, fontWeight: 800, color: colors.text, wordBreak: 'keep-all', lineHeight: 1.3 }}>
               {title}
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 16, position: 'relative' }}>
-            {steps.length > 1 && (
-              <div style={{
-                position: 'absolute',
-                top: 27,
-                left: `calc(${50 / steps.length}%)`,
-                right: `calc(${50 / steps.length}%)`,
-                height: 1,
-                background: `linear-gradient(90deg, ${hexToRgba(colors.accent, 0.25)}, ${hexToRgba(colors.accent, 0.25)})`,
-                zIndex: 0,
-              }} />
-            )}
-            {steps.map((step, i) => (
-              <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, padding: '0 8px', position: 'relative', zIndex: 1 }}>
+          {/* Vertical steps */}
+          {steps.map((step, i) => {
+            const isLast = i === steps.length - 1;
+            const stepBg = i % 2 === 0 ? colors.bg : darken(colors.bg, 0.08);
+            return (
+              <div key={i} style={{
+                display: 'flex',
+                background: stepBg,
+                borderBottom: isLast ? undefined : `1px solid ${hexToRgba(colors.accent, 0.06)}`,
+                minHeight: 220,
+              }}>
+                {/* Left: big number column */}
                 <div style={{
-                  width: 54,
-                  height: 54,
-                  borderRadius: '50%',
-                  background: i === 0 ? colors.accent : hexToRgba(colors.accent, 0.15),
-                  border: `2px solid ${hexToRgba(colors.accent, 0.35)}`,
+                  flex: '0 0 160px',
                   display: 'flex',
+                  flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: 19,
-                  fontWeight: 800,
-                  color: i === 0 ? darken(colors.accent, 0.5) : colors.accent,
-                  fontFamily: hf,
+                  borderRight: `1px solid ${hexToRgba(colors.accent, 0.1)}`,
+                  padding: '40px 20px',
+                  gap: 6,
+                  background: darken(stepBg, 0.06),
                 }}>
-                  {step.num}
+                  <div style={{ fontSize: 72, fontWeight: 900, color: hexToRgba(colors.accent, 0.25), fontFamily: hf, lineHeight: 1 }}>
+                    {String(step.num).padStart(2, '0')}
+                  </div>
+                  <div style={{ fontSize: 9, letterSpacing: 3, fontWeight: 700, color: colors.accent, fontFamily: bf, textTransform: 'uppercase' }}>
+                    STEP
+                  </div>
                 </div>
-                <div style={{ textAlign: 'center', fontSize: 13, fontWeight: 600, color: colors.text, wordBreak: 'keep-all', lineHeight: 1.5, fontFamily: bf }}>
-                  {step.title || `Step ${step.num}`}
+                {/* Right: content */}
+                <div style={{ flex: 1, padding: '40px 52px', display: 'flex', alignItems: 'center', gap: 40 }}>
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                    <div style={{ fontFamily: hf, fontSize: 20, fontWeight: 800, color: colors.text, wordBreak: 'keep-all', lineHeight: 1.4 }}>
+                      {step.title || `Step ${step.num}`}
+                    </div>
+                    {step.desc && (
+                      <div style={{ fontSize: 13, color: hexToRgba(colors.text, 0.62), lineHeight: 1.8, wordBreak: 'keep-all', maxWidth: 440 }}>
+                        {step.desc}
+                      </div>
+                    )}
+                  </div>
+                  {/* Product image for first step */}
+                  {i === 0 && photoUrl && (
+                    <div style={{ flex: '0 0 160px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <img src={photoUrl} alt="" crossOrigin="anonymous" style={{ maxWidth: 140, maxHeight: 160, objectFit: 'contain', filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.3))' }} />
+                    </div>
+                  )}
                 </div>
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
       );
     }
