@@ -146,6 +146,17 @@ export const STEP_LABELS = [
   { step: 5, label: '내보내기' },
 ];
 
+export const PLAN_STEP_LABELS = [
+  { step: 1, label: '제품 등록' },
+  { step: 2, label: 'AI 인터뷰' },
+  { step: 3, label: '원고 완성' },
+];
+
+export const DESIGN_STEP_LABELS = [
+  { step: 4, label: '이미지 에디터' },
+  { step: 5, label: '내보내기' },
+];
+
 export const DEFAULT_SECTIONS_ORDER: Array<{ type: string; title: string }> = [
   { type: 'hero', title: '히어로 배너' },
   { type: 'usp', title: 'USP 포인트' },

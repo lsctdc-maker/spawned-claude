@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import '@/styles/globals.css';
+import ClientProviders from '@/components/layout/ClientProviders';
 
 export const metadata: Metadata = {
   title: 'DetailMaker — AI 상세페이지 아틀리에',
@@ -27,7 +28,7 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased bg-[#131313] text-[#e5e2e1]">
-        {children}
+        <ClientProviders>{children}</ClientProviders>
       </body>
     </html>
   );

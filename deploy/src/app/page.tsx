@@ -5,21 +5,27 @@ import { motion } from 'framer-motion';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 
-const features = [
-  { icon: '💬', title: 'AI 브랜드 인터뷰', description: '제품에 대한 심층 인터뷰를 통해 핵심 USP를 도출합니다. 대충 쓴 설명이 아닌, 전략적 카피를 생성합니다.' },
-  { icon: '🎨', title: '톤앤매너 설계', description: '신뢰형, 감성형, 임팩트형 — 브랜드 아이덴티티에 맞는 톤을 선택하면 전체 카피가 일관되게 조율됩니다.' },
-  { icon: '📐', title: '860px 한국형 레이아웃', description: '쿠팡, 네이버 스마트스토어 등 국내 주요 플랫폼에 최적화된 상세페이지 규격을 기본 제공합니다.' },
-  { icon: '✏️', title: '실시간 에디터', description: '생성된 상세페이지를 실시간으로 편집하고, 드래그 앤 드롭으로 섹션 순서를 자유롭게 재배치할 수 있습니다.' },
-  { icon: '📥', title: 'HTML & 이미지 익스포트', description: '완성된 상세페이지를 HTML 파일 또는 고해상도 이미지로 즉시 다운로드하여 쇼핑몰에 바로 적용합니다.' },
-  { icon: '🚀', title: '5분 완성 워크플로우', description: '상품 정보 입력부터 최종 다운로드까지, 5단계 프로세스로 전문가 수준의 결과물을 빠르게 완성합니다.' },
+const planFeatures = [
+  { title: 'AI 브랜드 인터뷰', description: '제품에 대한 심층 인터뷰를 통해 핵심 USP를 도출합니다. 전략적 카피를 생성합니다.' },
+  { title: '한국형 9단계 구조', description: '후킹 → 문제 공감 → 솔루션 → 특장점 → 사회적 증거 → CTA, 검증된 흐름으로 원고를 작성합니다.' },
+  { title: 'SEO 키워드 자동 추출', description: '네이버/쿠팡 검색에 최적화된 키워드를 원고 생성과 동시에 자동으로 추출합니다.' },
 ];
 
-const steps = [
-  { num: '01', title: '상품 정보 입력', desc: '카테고리, 상품명, 가격, 이미지 등 제품의 기본 프로필을 구성합니다.' },
+const designFeatures = [
+  { title: '860px 한국형 레이아웃', description: '쿠팡, 네이버 스마트스토어 등 국내 주요 플랫폼에 최적화된 상세페이지 규격을 기본 제공합니다.' },
+  { title: '배경 제거 + 이미지 편집', description: '제품 사진 배경을 자동으로 제거하고 섹션별 이미지를 교체하여 완성도 높은 시각물을 만듭니다.' },
+  { title: 'PNG 다운로드', description: '섹션별 또는 전체 1장으로 고해상도(2x) PNG를 즉시 다운로드하여 쇼핑몰에 바로 적용합니다.' },
+];
+
+const planSteps = [
+  { num: '01', title: '제품 등록', desc: '카테고리, 상품명, 이미지 등 제품의 기본 프로필을 구성합니다.' },
   { num: '02', title: 'AI 브랜드 인터뷰', desc: 'AI가 제품에 대해 전문적인 질문을 던지고, 답변에서 핵심 셀링포인트를 추출합니다.' },
-  { num: '03', title: '톤앤매너 선택', desc: '브랜드에 맞는 카피 스타일을 선택하면 전체 상세페이지의 톤이 일관되게 조율됩니다.' },
-  { num: '04', title: '미리보기 & 편집', desc: '생성된 상세페이지를 실시간으로 확인하고, 섹션별 편집과 순서 재배치를 진행합니다.' },
-  { num: '05', title: '익스포트', desc: 'HTML 파일 또는 고해상도 이미지로 다운로드하여 쇼핑몰에 바로 적용합니다.' },
+  { num: '03', title: '원고 확인/수정', desc: '생성된 9단계 원고를 섹션별로 검토하고 수정합니다.' },
+];
+
+const designSteps = [
+  { num: '04', title: '이미지 에디터', desc: '원고 기반 섹션 이미지를 생성하고, 폰트/색상/레이아웃을 커스터마이징합니다.' },
+  { num: '05', title: '내보내기', desc: '섹션별 PNG 또는 전체 1장 이미지로 다운로드합니다.' },
 ];
 
 export default function LandingPage() {
@@ -29,18 +35,13 @@ export default function LandingPage() {
       <main className="flex-1">
         {/* 히어로 */}
         <section className="relative overflow-hidden bg-[#131313]">
-          {/* Decorative blur blob */}
           <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-primary/5 blur-[150px] rounded-full -z-10" />
-
           <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-24 sm:py-32 text-center">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-              {/* Badge */}
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-8">
                 <span className="ai-pulse">•</span>
                 The Digital Atelier
               </div>
-
-              {/* Headline */}
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-headline font-extrabold tracking-tight mb-6 leading-[1.1]">
                 <span className="gradient-text">팔리는 상세페이지를</span>
                 <br />
@@ -48,88 +49,155 @@ export default function LandingPage() {
                 <br />
                 <span className="text-[#e5e2e1]">AI 기획자</span>
               </h1>
-
-              {/* Subtext */}
               <p className="text-lg text-[#e5e2e1]/60 mb-12 max-w-2xl mx-auto leading-relaxed">
                 상품 정보만 알려주세요. AI가 기획자처럼 질문하고, 카테고리에 최적화된 상세페이지를 설계합니다.
               </p>
-
-              {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/create" className="inline-flex items-center justify-center primary-gradient text-[#0f0069] px-10 py-5 rounded-full font-headline font-extrabold text-lg shadow-cta hover:scale-[1.02] active:scale-[0.98] transition-all">
-                  아틀리에 입장하기
+                <Link href="/plan" className="inline-flex items-center justify-center primary-gradient text-[#0f0069] px-10 py-5 rounded-full font-headline font-extrabold text-lg shadow-cta hover:scale-[1.02] active:scale-[0.98] transition-all">
+                  AI 기획 시작하기
                 </Link>
-                <a href="#how-it-works" className="inline-flex items-center justify-center border border-outline-variant/20 text-[#e5e2e1]/70 px-8 py-4 rounded-full font-medium hover:bg-surface-container-high transition-all">
-                  작동 원리 보기
-                </a>
+                <Link href="/design" className="inline-flex items-center justify-center border border-outline-variant/20 text-[#e5e2e1]/70 px-8 py-4 rounded-full font-medium hover:bg-surface-container-high transition-all">
+                  이미지 제작 바로가기
+                </Link>
               </div>
             </motion.div>
           </div>
         </section>
 
-        {/* 기능 소개 */}
-        <section className="bg-[#131313] py-32">
+        {/* 두 서비스 소개 */}
+        <section className="bg-[#131313] py-24 border-t border-[#e5e2e1]/5">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl font-headline font-extrabold text-[#e5e2e1] mb-4">왜 DetailMaker인가요?</h2>
-              <p className="text-[#e5e2e1]/50">이커머스 전문가를 위해 설계된 AI 상세페이지 아틀리에</p>
+            <div className="text-center mb-14">
+              <h2 className="text-3xl font-headline font-extrabold text-[#e5e2e1] mb-3">두 가지 전문 서비스</h2>
+              <p className="text-[#e5e2e1]/50">AI 기획과 이미지 제작을 독립적으로, 또는 연속으로 활용하세요.</p>
             </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {features.map((feature, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="p-8 rounded-xl bg-surface-container border border-outline-variant/10 hover:border-primary/30 hover:bg-surface-container-high transition-all duration-300 group"
-                >
-                  <div className="text-3xl mb-6">{feature.icon}</div>
-                  <h3 className="text-lg font-headline font-bold text-[#e5e2e1] mb-2 group-hover:text-primary transition-colors">{feature.title}</h3>
-                  <p className="text-sm text-[#e5e2e1]/50 leading-relaxed">{feature.description}</p>
-                </motion.div>
-              ))}
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* AI 기획 */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="p-8 rounded-2xl bg-[#c3c0ff]/5 border border-[#c3c0ff]/15 hover:border-[#c3c0ff]/30 transition-all"
+              >
+                <div className="text-[10px] uppercase tracking-widest text-[#c3c0ff] font-bold mb-4">AI 기획</div>
+                <h3 className="text-xl font-headline font-bold text-[#e5e2e1] mb-3">원고를 설계합니다</h3>
+                <p className="text-sm text-[#e5e2e1]/50 mb-6 leading-relaxed">
+                  AI 인터뷰 → 한국형 9단계 원고 자동 생성. 후킹부터 CTA까지 전략적으로.
+                </p>
+                <ul className="space-y-2 mb-8">
+                  {planFeatures.map((f, i) => (
+                    <li key={i} className="flex gap-2 text-sm text-[#e5e2e1]/60">
+                      <span className="text-[#c3c0ff] flex-shrink-0 mt-0.5">—</span>
+                      <span><strong className="text-[#e5e2e1]/80">{f.title}:</strong> {f.description}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/plan" className="inline-flex items-center justify-center w-full py-3 rounded-xl bg-[#c3c0ff]/15 border border-[#c3c0ff]/25 text-[#c3c0ff] font-bold text-sm hover:bg-[#c3c0ff]/20 transition-all">
+                  AI 기획 시작하기
+                </Link>
+              </motion.div>
+
+              {/* 이미지 제작 */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="p-8 rounded-2xl bg-[#a0e7e5]/5 border border-[#a0e7e5]/15 hover:border-[#a0e7e5]/30 transition-all"
+              >
+                <div className="text-[10px] uppercase tracking-widest text-[#a0e7e5] font-bold mb-4">이미지 제작</div>
+                <h3 className="text-xl font-headline font-bold text-[#e5e2e1] mb-3">이미지로 완성합니다</h3>
+                <p className="text-sm text-[#e5e2e1]/50 mb-6 leading-relaxed">
+                  원고를 시각화. 배경 제거 + 섹션 이미지 편집 + PNG 다운로드까지.
+                </p>
+                <ul className="space-y-2 mb-8">
+                  {designFeatures.map((f, i) => (
+                    <li key={i} className="flex gap-2 text-sm text-[#e5e2e1]/60">
+                      <span className="text-[#a0e7e5] flex-shrink-0 mt-0.5">—</span>
+                      <span><strong className="text-[#e5e2e1]/80">{f.title}:</strong> {f.description}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/design" className="inline-flex items-center justify-center w-full py-3 rounded-xl bg-[#a0e7e5]/15 border border-[#a0e7e5]/25 text-[#a0e7e5] font-bold text-sm hover:bg-[#a0e7e5]/20 transition-all">
+                  이미지 제작 시작하기
+                </Link>
+              </motion.div>
             </div>
           </div>
         </section>
 
         {/* 5단계 프로세스 */}
-        <section id="how-it-works" className="bg-[#131313] py-32">
+        <section id="how-it-works" className="bg-[#131313] py-24 border-t border-[#e5e2e1]/5">
           <div className="max-w-4xl mx-auto px-4 sm:px-6">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl font-headline font-extrabold text-[#e5e2e1] mb-4">5단계로 완성하는 프리미엄 상세페이지</h2>
-              <p className="text-[#e5e2e1]/50">복잡한 제작 과정을 직관적인 워크플로우로 재설계했습니다.</p>
+            <div className="text-center mb-14">
+              <h2 className="text-3xl font-headline font-extrabold text-[#e5e2e1] mb-3">5단계 완성 워크플로우</h2>
+              <p className="text-[#e5e2e1]/50">AI 기획 3단계 + 이미지 제작 2단계</p>
             </div>
-            <div className="space-y-0">
-              {steps.map((step, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.15 }}
-                  className="flex gap-6 items-start relative pb-12 last:pb-0"
-                >
-                  {idx < steps.length - 1 && <div className="absolute left-7 top-14 w-0.5 h-full bg-primary/20 -ml-px" />}
-                  <div className="w-14 h-14 rounded-2xl primary-gradient text-[#0f0069] font-headline font-extrabold text-lg flex items-center justify-center shadow-cta flex-shrink-0 z-10">{step.num}</div>
-                  <div className="pt-2">
-                    <h3 className="text-xl font-headline font-bold text-[#e5e2e1] mb-1">{step.title}</h3>
-                    <p className="text-[#e5e2e1]/50">{step.desc}</p>
-                  </div>
-                </motion.div>
-              ))}
+            <div className="grid md:grid-cols-2 gap-12">
+              <div>
+                <p className="text-[10px] uppercase tracking-widest text-[#c3c0ff] font-bold mb-6">AI 기획</p>
+                <div className="space-y-0">
+                  {planSteps.map((step, idx) => (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, x: -16 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: idx * 0.1 }}
+                      className="flex gap-4 items-start relative pb-8 last:pb-0"
+                    >
+                      {idx < planSteps.length - 1 && <div className="absolute left-5 top-10 w-0.5 h-full bg-[#c3c0ff]/15" />}
+                      <div className="w-10 h-10 rounded-xl bg-[#c3c0ff]/15 border border-[#c3c0ff]/25 text-[#c3c0ff] font-headline font-bold text-sm flex items-center justify-center flex-shrink-0 z-10">
+                        {step.num}
+                      </div>
+                      <div className="pt-1.5">
+                        <h3 className="font-bold text-[#e5e2e1] text-sm mb-0.5">{step.title}</h3>
+                        <p className="text-xs text-[#e5e2e1]/45 leading-relaxed">{step.desc}</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase tracking-widest text-[#a0e7e5] font-bold mb-6">이미지 제작</p>
+                <div className="space-y-0">
+                  {designSteps.map((step, idx) => (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, x: 16 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: idx * 0.1 }}
+                      className="flex gap-4 items-start relative pb-8 last:pb-0"
+                    >
+                      {idx < designSteps.length - 1 && <div className="absolute left-5 top-10 w-0.5 h-full bg-[#a0e7e5]/15" />}
+                      <div className="w-10 h-10 rounded-xl bg-[#a0e7e5]/15 border border-[#a0e7e5]/25 text-[#a0e7e5] font-headline font-bold text-sm flex items-center justify-center flex-shrink-0 z-10">
+                        {step.num}
+                      </div>
+                      <div className="pt-1.5">
+                        <h3 className="font-bold text-[#e5e2e1] text-sm mb-0.5">{step.title}</h3>
+                        <p className="text-xs text-[#e5e2e1]/45 leading-relaxed">{step.desc}</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
         {/* CTA */}
-        <section className="primary-gradient py-24">
+        <section className="primary-gradient py-20">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-            <h2 className="text-3xl sm:text-4xl font-headline font-extrabold text-[#0f0069] mb-6">지금, 아틀리에에 입장하세요</h2>
-            <p className="text-[#0f0069]/70 text-lg mb-10 max-w-xl mx-auto">회원가입 없이 무료로 프리미엄 상세페이지를 경험할 수 있습니다.</p>
-            <Link href="/create" className="inline-flex items-center justify-center bg-[#0f0069] text-primary px-10 py-5 rounded-full font-headline font-bold text-lg hover:shadow-2xl transition-all hover:-translate-y-1">
-              무료로 시작하기
-            </Link>
+            <h2 className="text-3xl sm:text-4xl font-headline font-extrabold text-[#0f0069] mb-5">지금, 아틀리에에 입장하세요</h2>
+            <p className="text-[#0f0069]/70 text-lg mb-8 max-w-xl mx-auto">회원가입 없이 무료로 AI 기획과 이미지 제작을 경험할 수 있습니다.</p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/plan" className="inline-flex items-center justify-center bg-[#0f0069] text-primary px-10 py-4 rounded-full font-headline font-bold text-base hover:shadow-2xl transition-all hover:-translate-y-1">
+                AI 기획 시작하기
+              </Link>
+              <Link href="/design" className="inline-flex items-center justify-center bg-[#0f0069]/30 text-[#0f0069] border border-[#0f0069]/40 px-8 py-4 rounded-full font-headline font-bold text-base hover:bg-[#0f0069]/40 transition-all">
+                이미지 제작 바로가기
+              </Link>
+            </div>
           </div>
         </section>
       </main>
