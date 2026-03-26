@@ -27,12 +27,12 @@ function buildPrompt(productInfo: ProductInfo, usps: USP[], interviewMessages: I
   const productText = [
     `상품명: ${productInfo.name}`,
     `카테고리: ${productInfo.category}`,
-    `가격: ${productInfo.price || '미정'}`,
+    productInfo.price ? `가격: ${productInfo.price}` : null,
     `타겟 고객: ${productInfo.targetAudience || '미정'}`,
     `간단 설명: ${productInfo.shortDescription}`,
-    `키워드: ${productInfo.keywords?.join(', ') || ''}`,
+    productInfo.keywords?.length ? `키워드: ${productInfo.keywords.join(', ')}` : null,
     `톤앤매너: ${toneDesc}`,
-  ].join('\n');
+  ].filter(Boolean).join('\n');
 
   const uspText = usps.map((u, i) => `${i + 1}. ${u.title}: ${u.description}`).join('\n');
 
@@ -75,7 +75,17 @@ ${interviewText || '없음'}
 
 각 섹션의 imageGuide에는 반드시 "추천 색상 톤"과 "폰트 스타일" 힌트를 포함하세요.
 
-아래 JSON 형식으로 응답하세요 (sections + colorPalette + fontRecommendation + layoutRationale + referenceGuide 모두 포함):
+[가격/이벤트 배너 처리]
+인터뷰 답변에 구체적인 가격/할인 정보가 있고 본문에 포함한다고 했다면, sections 배열에 "event_banner" 타입 섹션을 cta 바로 앞에 추가하세요:
+- sectionType: "event_banner"
+- body: "정가: (금액)\n할인가: (금액)\n할인율: (%)\\n이벤트 문구: (예: 출시 기념 특가 / 오늘만 특가)"
+가격 정보가 없거나 별도 배너로 만든다고 했으면 event_banner 섹션 생략.
+
+[SEO 키워드 자동 추출]
+제품명, 카테고리, 원고 내용을 종합하여 네이버/쿠팡 검색에 유효한 SEO 키워드 5~10개를 추출하세요.
+예: ["국산 보습크림", "민감성 피부 크림", "수분 크림 추천", ...]
+
+아래 JSON 형식으로 응답하세요 (sections + colorPalette + fontRecommendation + layoutRationale + referenceGuide + keywords 모두 포함):
 
 {
   "layoutRationale": "이 순서로 구성한 이유 — 제품 특성 기반 한 줄 설명 (40자 이내)",
@@ -107,7 +117,8 @@ ${interviewText || '없음'}
       {"label": "섹션명", "percentage": 20, "tip": "이 섹션에서 핵심 포인트 (20자 이내)"},
       {"label": "섹션명", "percentage": 35, "tip": "이 섹션에서 핵심 포인트 (20자 이내)"}
     ]
-  }
+  },
+  "keywords": ["SEO 키워드1", "SEO 키워드2", "SEO 키워드3"]
 }
 
 referenceGuide.sections의 percentage 합계는 반드시 100이어야 합니다.
@@ -288,8 +299,9 @@ export async function POST(request: NextRequest) {
     const fontRecommendation: FontRecommendation | null = parsed.fontRecommendation || null;
     const layoutRationale: string | null = parsed.layoutRationale || null;
     const referenceGuide: ReferenceGuide | null = parsed.referenceGuide || null;
+    const keywords: string[] | null = Array.isArray(parsed.keywords) ? parsed.keywords : null;
 
-    return NextResponse.json({ sections, colorPalette, fontRecommendation, layoutRationale, referenceGuide });
+    return NextResponse.json({ sections, colorPalette, fontRecommendation, layoutRationale, referenceGuide, keywords });
   } catch (error) {
     console.error('Manuscript API error:', error);
     // 에러 시 폴백

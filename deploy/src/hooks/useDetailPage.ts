@@ -12,6 +12,7 @@ const initialProductInfo: ProductInfo = {
   keywords: [],
   imageUrl: '',
 };
+// Note: price and keywords are optional in ProductInfo; initial values kept for compatibility
 
 export const initialState: DetailPageState = {
   currentStep: 1,

@@ -45,6 +45,7 @@ export async function generateManuscript(
           fontRecommendation: data.fontRecommendation || null,
           layoutRationale: data.layoutRationale || null,
           referenceGuide: data.referenceGuide || null,
+          keywords: Array.isArray(data.keywords) ? data.keywords : null,
         },
       };
     }

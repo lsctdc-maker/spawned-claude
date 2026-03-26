@@ -15,6 +15,7 @@ const SECTION_ACCENT: Record<ManuscriptSectionType, { bg: string; text: string; 
   social_proof: { bg: 'bg-[#d4a5ff]/8',  text: 'text-[#d4a5ff]',  border: 'border-[#d4a5ff]/20' },
   specs:        { bg: 'bg-[#bbc3ff]/8',  text: 'text-[#bbc3ff]',  border: 'border-[#bbc3ff]/20' },
   guarantee:    { bg: 'bg-[#a5ffcc]/8',  text: 'text-[#a5ffcc]',  border: 'border-[#a5ffcc]/20' },
+  event_banner: { bg: 'bg-[#ffd700]/8',  text: 'text-[#ffd700]',  border: 'border-[#ffd700]/20' },
   cta:          { bg: 'bg-[#ffb3b3]/8',  text: 'text-[#ffb3b3]',  border: 'border-[#ffb3b3]/20' },
   // legacy
   hero:     { bg: 'bg-[#c3c0ff]/8',  text: 'text-[#c3c0ff]',  border: 'border-[#c3c0ff]/20' },
@@ -31,6 +32,7 @@ const SECTION_LABELS: Record<ManuscriptSectionType, string> = {
   social_proof: '사회적 증거',
   specs: '스펙/상세',
   guarantee: '보증/신뢰',
+  event_banner: '이벤트 배너',
   cta: '구매 유도',
   // legacy
   hero: '히어로 카피',

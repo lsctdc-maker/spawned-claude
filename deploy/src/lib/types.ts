@@ -15,6 +15,7 @@ export type ManuscriptSectionType =
   | 'social_proof'
   | 'specs'
   | 'guarantee'
+  | 'event_banner'
   | 'cta'
   | 'hero'    // legacy alias for hooking
   | 'detail'  // legacy alias for features/solution
@@ -53,10 +54,10 @@ export interface ToneInfo {
 export interface ProductInfo {
   name: string;
   category: CategoryKey | '';
-  price: string;
+  price?: string;
   targetAudience: string;
   shortDescription: string;
-  keywords: string[];
+  keywords?: string[];
   imageUrl?: string;
 }
 
@@ -328,4 +329,5 @@ export interface GenerateManuscriptResponse {
   fontRecommendation?: FontRecommendation | null;
   layoutRationale?: string | null;
   referenceGuide?: ReferenceGuide | null;
+  keywords?: string[] | null;
 }

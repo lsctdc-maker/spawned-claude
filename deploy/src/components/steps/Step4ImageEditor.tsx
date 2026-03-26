@@ -136,6 +136,7 @@ const SECTION_LABEL_MAP: Record<ManuscriptSectionType, string> = {
   social_proof: '사회적 증거',
   specs: '스펙/상세',
   guarantee: '보증/신뢰',
+  event_banner: '이벤트 배너',
   cta: '구매 유도',
   // legacy
   hero: '히어로',
@@ -800,6 +801,71 @@ function SectionCanvas({ sectionType, title, body, photoUrl, colors, headlineFon
               );
             })}
           </div>
+        </div>
+      );
+    }
+
+    case 'event_banner': {
+      const lines = body.split('\n').filter(l => l.trim());
+      const priceLines: Record<string, string> = {};
+      for (const l of lines) {
+        const idx = l.indexOf(':');
+        if (idx > 0) {
+          const k = l.slice(0, idx).trim();
+          const v = l.slice(idx + 1).trim();
+          priceLines[k] = v;
+        }
+      }
+      const salePrice = priceLines['할인가'] || priceLines['판매가'] || '';
+      const origPrice = priceLines['정가'] || priceLines['원가'] || '';
+      const eventText = priceLines['이벤트 문구'] || priceLines['이벤트'] || title || '한정 특가';
+      const discountRate = priceLines['할인율'] || '';
+      return (
+        <div ref={canvasRef} style={{
+          ...base,
+          minHeight: 220,
+          background: `linear-gradient(120deg, ${darken(colors.accent, 0.3)} 0%, ${colors.accent} 60%, ${lighten(colors.accent, 0.18)} 100%)`,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '44px 72px',
+          gap: 16,
+          textAlign: 'center',
+          position: 'relative',
+          overflow: 'hidden',
+        }}>
+          {/* Background decoration */}
+          <div style={{ position: 'absolute', top: -40, right: -40, width: 200, height: 200, borderRadius: '50%', background: 'rgba(255,255,255,0.06)' }} />
+          <div style={{ position: 'absolute', bottom: -60, left: -30, width: 240, height: 240, borderRadius: '50%', background: 'rgba(255,255,255,0.04)' }} />
+          {/* Event label */}
+          <div style={{ fontSize: 10, letterSpacing: 5, textTransform: 'uppercase', color: 'rgba(255,255,255,0.65)', fontWeight: 700, fontFamily: bf }}>
+            LIMITED OFFER
+          </div>
+          {/* Event text */}
+          <div style={{ fontFamily: hf, fontSize: 28, fontWeight: 900, color: '#fff', lineHeight: 1.25, wordBreak: 'keep-all', textShadow: '0 2px 12px rgba(0,0,0,0.2)' }}>
+            {eventText}
+          </div>
+          {/* Prices */}
+          {(salePrice || origPrice) && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 4 }}>
+              {origPrice && (
+                <div style={{ fontSize: 16, color: 'rgba(255,255,255,0.5)', textDecoration: 'line-through', fontFamily: bf }}>
+                  {origPrice}
+                </div>
+              )}
+              {salePrice && (
+                <div style={{ fontSize: 32, fontWeight: 900, color: '#fff', fontFamily: hf, letterSpacing: -0.5 }}>
+                  {salePrice}
+                </div>
+              )}
+              {discountRate && (
+                <div style={{ background: '#fff', color: colors.accent, padding: '4px 12px', borderRadius: 6, fontSize: 14, fontWeight: 800, fontFamily: bf }}>
+                  {discountRate} OFF
+                </div>
+              )}
+            </div>
+          )}
         </div>
       );
     }

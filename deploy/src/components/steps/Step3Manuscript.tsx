@@ -19,6 +19,7 @@ const SECTION_LABELS: Record<ManuscriptSectionType, string> = {
   social_proof: '사회적 증거',
   specs: '스펙/상세',
   guarantee: '보증/신뢰',
+  event_banner: '이벤트 배너',
   cta: '구매 유도',
   // legacy
   hero: '히어로 카피',
@@ -35,6 +36,7 @@ const SECTION_COLORS: Record<ManuscriptSectionType, string> = {
   social_proof: 'border-[#d4a5ff]/30 bg-[#d4a5ff]/5',
   specs: 'border-[#bbc3ff]/30 bg-[#bbc3ff]/5',
   guarantee: 'border-[#a5ffcc]/30 bg-[#a5ffcc]/5',
+  event_banner: 'border-[#ffd700]/30 bg-[#ffd700]/5',
   cta: 'border-[#ffb3b3]/30 bg-[#ffb3b3]/5',
   // legacy
   hero: 'border-[#c3c0ff]/30 bg-[#c3c0ff]/5',

@@ -16,7 +16,6 @@ export default function Step1ProductInfo() {
   const { state, dispatch } = useDetailPage();
   const { productInfo, productPhotos } = state;
 
-  const [keywordInput, setKeywordInput] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isDragging, setIsDragging] = useState(false);
 
@@ -92,22 +91,6 @@ export default function Step1ProductInfo() {
   const handleCategorySelect = (key: CategoryKey) => {
     dispatch({ type: 'UPDATE_PRODUCT', payload: { category: key } });
     if (errors.category) setErrors((prev) => ({ ...prev, category: '' }));
-  };
-
-  const handleAddKeyword = () => {
-    const trimmed = keywordInput.trim();
-    if (trimmed && !productInfo.keywords.includes(trimmed)) {
-      dispatch({ type: 'UPDATE_PRODUCT', payload: { keywords: [...productInfo.keywords, trimmed] } });
-      setKeywordInput('');
-    }
-  };
-
-  const handleRemoveKeyword = (keyword: string) => {
-    dispatch({ type: 'UPDATE_PRODUCT', payload: { keywords: productInfo.keywords.filter((k) => k !== keyword) } });
-  };
-
-  const handleKeywordKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') { e.preventDefault(); handleAddKeyword(); }
   };
 
   // ===== 경쟁사 분석 =====
@@ -313,14 +296,6 @@ export default function Step1ProductInfo() {
             {errors.category && <p className="mt-2 text-sm text-[#ffb4ab]">{errors.category}</p>}
           </div>
 
-          {/* ===== 가격 ===== */}
-          <Input
-            label="판매 가격"
-            placeholder="예: 29,900원"
-            value={productInfo.price}
-            onChange={(e) => handleChange('price', e.target.value)}
-          />
-
           {/* ===== 타겟 고객 ===== */}
           <Input
             label="타겟 고객"
@@ -338,32 +313,6 @@ export default function Step1ProductInfo() {
             error={errors.shortDescription}
             rows={3}
           />
-
-          {/* ===== 키워드 ===== */}
-          <div>
-            <label className="block text-xs uppercase tracking-widest text-[#e5e2e1]/50 mb-3 ml-1 font-label">키워드 태그</label>
-            <div className="flex gap-2 mb-3">
-              <input
-                type="text"
-                value={keywordInput}
-                onChange={(e) => setKeywordInput(e.target.value)}
-                onKeyDown={handleKeywordKeyDown}
-                placeholder="키워드 입력 후 Enter"
-                className="flex-1 bg-[#1c1b1b] border-0 border-b border-[#464555]/20 py-3 px-2 text-sm text-[#e5e2e1] placeholder:text-[#e5e2e1]/20 focus:outline-none focus:border-[#c3c0ff] transition-all"
-              />
-              <Button variant="secondary" size="sm" onClick={handleAddKeyword}>추가</Button>
-            </div>
-            {productInfo.keywords.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {productInfo.keywords.map((keyword) => (
-                  <span key={keyword} className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#c3c0ff]/10 text-[#c3c0ff] text-sm border border-[#c3c0ff]/20">
-                    {keyword}
-                    <button onClick={() => handleRemoveKeyword(keyword)} className="text-[#c3c0ff]/50 hover:text-[#c3c0ff] ml-1">&times;</button>
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
 
           {/* ===== 경쟁사/자사 분석 (선택) ===== */}
           <div className="border border-[#464555]/15 rounded-xl overflow-hidden">
