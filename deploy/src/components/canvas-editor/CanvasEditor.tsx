@@ -1,0 +1,532 @@
+'use client';
+
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+// framer-motion not needed here — canvas handles its own rendering
+import { useDetailPage } from '@/hooks/useDetailPage';
+import { useCanvasEditorStore, SECTION_LABEL_MAP } from './state/canvasStore';
+import { useImageGeneration } from './hooks/useImageGeneration';
+import { extractFontName, loadGoogleFont, FONT_OPTIONS } from './utils/fontUtils';
+import { CanvasColors, CanvasFonts } from './templates/types';
+import CanvasWorkspace from './CanvasWorkspace';
+import TextControls from './toolbar/TextControls';
+import ImageControls from './toolbar/ImageControls';
+import Button from '@/components/ui/Button';
+import {
+  Download, RefreshCw, ChevronLeft, ChevronRight, Layers, Type, Palette,
+  Image as ImageIcon, Maximize2, Minimize2,
+} from 'lucide-react';
+
+export default function CanvasEditor() {
+  const { state, dispatch } = useDetailPage();
+  const store = useCanvasEditorStore();
+  const { manuscriptSections, productPhotos, colorPalette, fontRecommendation, productInfo, extractedUSPs, selectedTone } = state;
+
+  const [selectedObj, setSelectedObj] = useState<any>(null);
+  const [isFullscreen, setIsFullscreen] = useState(true); // Default full-screen
+  const [downloading, setDownloading] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState(0);
+  const canvasRef = useRef<React.MutableRefObject<any>>({ current: null });
+
+  // Sorted visible sections
+  const visibleSections = useMemo(() =>
+    [...manuscriptSections].sort((a, b) => a.order - b.order).filter(s => s.visible),
+    [manuscriptSections]
+  );
+
+  // Active section
+  const activeSectionId = store.activeSectionId || visibleSections[0]?.id || '';
+  const activeSection = visibleSections.find(s => s.id === activeSectionId) || visibleSections[0];
+  const activeIdx = visibleSections.findIndex(s => s.id === activeSectionId);
+
+  // Initialize active section
+  useEffect(() => {
+    if (!store.activeSectionId && visibleSections.length > 0) {
+      store.setActiveSectionId(visibleSections[0].id);
+    }
+  }, [visibleSections]);
+
+  // Fonts
+  const [headlineFont, setHeadlineFont] = useState('Noto Sans KR');
+  const [bodyFont, setBodyFont] = useState('Noto Sans KR');
+
+  useEffect(() => {
+    const hl = fontRecommendation ? extractFontName(fontRecommendation.headline) : 'Noto Sans KR';
+    const bd = fontRecommendation ? extractFontName(fontRecommendation.body) : 'Noto Sans KR';
+    setHeadlineFont(hl);
+    setBodyFont(bd);
+    loadGoogleFont(hl);
+    if (bd !== hl) loadGoogleFont(bd);
+    loadGoogleFont('Noto Sans KR');
+  }, [fontRecommendation]);
+
+  // Colors
+  const colors: CanvasColors = useMemo(() => ({
+    bg: colorPalette?.colors[0]?.hex || '#0f1729',
+    bg2: colorPalette?.colors[1]?.hex || '#1a2744',
+    text: colorPalette?.colors[2]?.hex || '#f0f0f0',
+    accent: colorPalette?.accent?.hex || '#c3c0ff',
+  }), [colorPalette]);
+
+  const fonts: CanvasFonts = useMemo(() => ({
+    headline: headlineFont,
+    body: bodyFont,
+  }), [headlineFont, bodyFont]);
+
+  const productPhotoUrl = productPhotos.length > 0 ? productPhotos[0].dataUrl : null;
+
+  // Image generation
+  const { generateAll, regenerateSection } = useImageGeneration({
+    productInfo,
+    extractedUSPs,
+    selectedTone: selectedTone || 'trust',
+  });
+
+  // Auto-generate images on mount
+  useEffect(() => {
+    if (visibleSections.length > 0) {
+      generateAll(visibleSections);
+    }
+  }, []); // Only on mount
+
+  // Handle section switch
+  const switchSection = useCallback((sectionId: string) => {
+    store.setActiveSectionId(sectionId);
+    setSelectedObj(null);
+  }, []);
+
+  // Handle regenerate
+  const handleRegenerate = useCallback(async () => {
+    if (!activeSection) return;
+    const url = await regenerateSection(activeSection);
+    if (url) {
+      // Mark dirty=false so canvas recomposes with new image
+      const saved = store.getCanvasState(activeSection.id);
+      if (saved) {
+        store.saveCanvasState(activeSection.id, '', saved.canvasHeight);
+      }
+      // Force re-mount by toggling section
+      const id = activeSection.id;
+      store.setActiveSectionId('');
+      requestAnimationFrame(() => store.setActiveSectionId(id));
+    }
+  }, [activeSection, regenerateSection]);
+
+  // Fullscreen toggle
+  const toggleFullscreen = useCallback(() => setIsFullscreen(f => !f), []);
+
+  if (visibleSections.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-64 text-[#e5e2e1]/40 text-sm">
+        편집할 섹션이 없습니다. 원고를 먼저 생성해주세요.
+      </div>
+    );
+  }
+
+  const isGenerating = store.generating[activeSectionId] || false;
+  const anyGenerating = store.isAnyGenerating();
+
+  return (
+    <div className={`flex flex-col bg-[#131313] ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
+      {/* ===== Top Bar ===== */}
+      <div className="flex items-center justify-between px-4 py-2.5 bg-[#1a1a1a] border-b border-[#464555]/15 flex-shrink-0">
+        {/* Left: Back + Title */}
+        <div className="flex items-center gap-3">
+          {isFullscreen && (
+            <button
+              onClick={toggleFullscreen}
+              className="p-1.5 rounded-lg text-[#e5e2e1]/50 hover:text-[#e5e2e1] hover:bg-[#2a2a2a] transition-all"
+              title="전체화면 종료"
+            >
+              <Minimize2 className="w-4 h-4" />
+            </button>
+          )}
+          <div>
+            <h1 className="text-sm font-bold text-[#e5e2e1]">이미지 에디터</h1>
+            <p className="text-[10px] text-[#c7c4d8]/50">
+              {anyGenerating ? '이미지 생성 중...' : `${visibleSections.length}개 섹션`}
+            </p>
+          </div>
+        </div>
+
+        {/* Center: Section Nav */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => activeIdx > 0 && switchSection(visibleSections[activeIdx - 1].id)}
+            disabled={activeIdx <= 0}
+            className="p-1.5 rounded-lg border border-[#464555]/20 text-[#e5e2e1]/50 hover:text-[#e5e2e1] disabled:opacity-20 transition-all"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <span className="text-xs text-[#c7c4d8] min-w-[120px] text-center">
+            {activeSection ? `${activeIdx + 1}/${visibleSections.length} ${SECTION_LABEL_MAP[activeSection.sectionType]}` : ''}
+          </span>
+          <button
+            onClick={() => activeIdx < visibleSections.length - 1 && switchSection(visibleSections[activeIdx + 1].id)}
+            disabled={activeIdx >= visibleSections.length - 1}
+            className="p-1.5 rounded-lg border border-[#464555]/20 text-[#e5e2e1]/50 hover:text-[#e5e2e1] disabled:opacity-20 transition-all"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Right: Actions */}
+        <div className="flex items-center gap-2">
+          {/* Regenerate image */}
+          <button
+            onClick={handleRegenerate}
+            disabled={isGenerating}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-[#c7c4d8] bg-[#1c1b1b] border border-[#464555]/20 rounded-lg hover:border-[#c3c0ff]/30 transition-all disabled:opacity-40"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isGenerating ? 'animate-spin' : ''}`} />
+            {isGenerating ? '생성 중...' : '이미지 재생성'}
+          </button>
+
+          {/* Resolution */}
+          <div className="flex items-center gap-0.5 bg-[#1c1b1b] rounded-lg p-0.5 border border-[#464555]/20">
+            {([1, 2] as const).map(r => (
+              <button
+                key={r}
+                onClick={() => store.setResolution(r)}
+                className={`px-2.5 py-1 rounded text-[10px] font-medium transition-all ${
+                  store.resolution === r ? 'bg-[#c3c0ff] text-[#0f0069]' : 'text-[#e5e2e1]/40 hover:text-[#e5e2e1]'
+                }`}
+              >
+                {r}x
+              </button>
+            ))}
+          </div>
+
+          {/* Fullscreen toggle */}
+          {!isFullscreen && (
+            <button
+              onClick={toggleFullscreen}
+              className="p-1.5 rounded-lg text-[#e5e2e1]/50 hover:text-[#e5e2e1] hover:bg-[#2a2a2a] transition-all"
+              title="전체화면"
+            >
+              <Maximize2 className="w-4 h-4" />
+            </button>
+          )}
+
+          {/* Exit to next step */}
+          <Button size="sm" onClick={() => { setIsFullscreen(false); dispatch({ type: 'NEXT_STEP' }); }}>
+            다음: 내보내기
+          </Button>
+        </div>
+      </div>
+
+      {/* ===== Main Area ===== */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Left: Section Sidebar */}
+        <div className="w-44 bg-[#161616] border-r border-[#464555]/10 overflow-y-auto flex-shrink-0">
+          <div className="p-3">
+            <div className="text-[9px] uppercase tracking-widest text-[#e5e2e1]/30 mb-2">
+              섹션 ({visibleSections.length})
+            </div>
+            <div className="space-y-1.5">
+              {visibleSections.map((section, i) => {
+                const sectionState = store.sections[section.id];
+                const isActive = section.id === activeSectionId;
+                const isGen = store.generating[section.id];
+
+                return (
+                  <button
+                    key={section.id}
+                    onClick={() => switchSection(section.id)}
+                    className={`w-full text-left rounded-lg transition-all overflow-hidden ${
+                      isActive
+                        ? 'ring-1 ring-[#c3c0ff]/40'
+                        : 'hover:ring-1 hover:ring-[#464555]/30'
+                    }`}
+                  >
+                    {/* Thumbnail */}
+                    <div className="aspect-[860/520] bg-[#1c1b1b] relative overflow-hidden">
+                      {sectionState?.thumbnail ? (
+                        <img
+                          src={sectionState.thumbnail}
+                          alt=""
+                          className="w-full h-full object-cover"
+                        />
+                      ) : isGen ? (
+                        <div className="flex items-center justify-center h-full">
+                          <RefreshCw className="w-4 h-4 text-[#c3c0ff]/40 animate-spin" />
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center h-full text-[#e5e2e1]/15 text-[8px]">
+                          미리보기
+                        </div>
+                      )}
+                      {/* Number badge */}
+                      <div className={`absolute top-1 left-1 w-4 h-4 rounded-full text-[8px] font-bold flex items-center justify-center ${
+                        isActive ? 'bg-[#c3c0ff] text-[#0f0069]' : 'bg-[#2a2a2a] text-[#e5e2e1]/50'
+                      }`}>
+                        {i + 1}
+                      </div>
+                    </div>
+                    {/* Label */}
+                    <div className={`px-2 py-1.5 ${isActive ? 'bg-[#c3c0ff]/10' : 'bg-[#1c1b1b]'}`}>
+                      <div className={`text-[10px] font-medium truncate ${isActive ? 'text-[#c3c0ff]' : 'text-[#c7c4d8]'}`}>
+                        {SECTION_LABEL_MAP[section.sectionType]}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Center: Canvas */}
+        <div className="flex-1 overflow-auto flex items-start justify-center py-8 px-4 bg-[#0d0d0d]">
+          {activeSection && (
+            <CanvasWorkspace
+              key={activeSectionId}
+              section={activeSection}
+              colors={colors}
+              fonts={fonts}
+              productPhotoUrl={productPhotoUrl}
+              onSelectionChange={setSelectedObj}
+              onCanvasReady={(ref) => { canvasRef.current = ref; }}
+            />
+          )}
+        </div>
+
+        {/* Right: Properties Panel */}
+        <div className="w-56 bg-[#161616] border-l border-[#464555]/10 overflow-y-auto flex-shrink-0">
+          <div className="p-3 space-y-4">
+            {/* Color Palette */}
+            {colorPalette && (
+              <div>
+                <div className="text-[9px] uppercase tracking-widest text-[#e5e2e1]/30 mb-2 flex items-center gap-1.5">
+                  <Palette className="w-3 h-3" />
+                  컬러
+                </div>
+                <div className="flex gap-1.5">
+                  {[...colorPalette.colors, colorPalette.accent].map((c, i) => (
+                    <div key={i} className="flex flex-col items-center gap-1">
+                      <div
+                        style={{ background: c.hex }}
+                        className="w-7 h-7 rounded-lg border border-white/10"
+                        title={c.label}
+                      />
+                      <span className="text-[7px] text-[#e5e2e1]/30">{c.hex}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Font Selector */}
+            <div>
+              <div className="text-[9px] uppercase tracking-widest text-[#e5e2e1]/30 mb-2 flex items-center gap-1.5">
+                <Type className="w-3 h-3" />
+                폰트
+              </div>
+              <div className="space-y-1.5">
+                <div>
+                  <label className="text-[8px] text-[#c7c4d8]/50 block mb-0.5">제목</label>
+                  <select
+                    value={headlineFont}
+                    onChange={e => { setHeadlineFont(e.target.value); loadGoogleFont(e.target.value); }}
+                    className="w-full bg-[#1c1b1b] text-[11px] text-[#c7c4d8] border border-[#464555]/20 rounded-lg px-2 py-1.5 outline-none"
+                  >
+                    {FONT_OPTIONS.map(f => <option key={f.value} value={f.value} className="bg-[#1c1b1b]">{f.label}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-[8px] text-[#c7c4d8]/50 block mb-0.5">본문</label>
+                  <select
+                    value={bodyFont}
+                    onChange={e => { setBodyFont(e.target.value); loadGoogleFont(e.target.value); }}
+                    className="w-full bg-[#1c1b1b] text-[11px] text-[#c7c4d8] border border-[#464555]/20 rounded-lg px-2 py-1.5 outline-none"
+                  >
+                    {FONT_OPTIONS.map(f => <option key={f.value} value={f.value} className="bg-[#1c1b1b]">{f.label}</option>)}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Text Controls */}
+            {selectedObj && (selectedObj.type === 'i-text' || selectedObj.type === 'textbox') && (
+              <TextControls
+                fabricCanvas={canvasRef.current}
+                selectedObj={selectedObj}
+              />
+            )}
+
+            {/* Image Controls */}
+            <ImageControls
+              fabricCanvas={canvasRef.current}
+              selectedObj={selectedObj}
+              sectionId={activeSectionId}
+            />
+
+            {/* Selected Object Info */}
+            {selectedObj && (
+              <div>
+                <div className="text-[9px] uppercase tracking-widest text-[#e5e2e1]/30 mb-2 flex items-center gap-1.5">
+                  <Layers className="w-3 h-3" />
+                  선택된 요소
+                </div>
+                <div className="bg-[#1c1b1b] rounded-lg p-2.5 border border-[#464555]/15 space-y-2">
+                  <div className="text-[10px] text-[#c3c0ff] font-medium">
+                    {selectedObj.name || selectedObj.type || '요소'}
+                  </div>
+                  <div className="grid grid-cols-2 gap-1.5 text-[9px] text-[#c7c4d8]/60">
+                    <div>X: {Math.round(selectedObj.left || 0)}</div>
+                    <div>Y: {Math.round(selectedObj.top || 0)}</div>
+                    <div>W: {Math.round((selectedObj.width || 0) * (selectedObj.scaleX || 1))}</div>
+                    <div>H: {Math.round((selectedObj.height || 0) * (selectedObj.scaleY || 1))}</div>
+                  </div>
+                  {selectedObj.type === 'i-text' && (
+                    <div className="text-[9px] text-[#c7c4d8]/40 mt-1">
+                      더블클릭으로 텍스트 편집
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Export section */}
+            <div>
+              <div className="text-[9px] uppercase tracking-widest text-[#e5e2e1]/30 mb-2 flex items-center gap-1.5">
+                <Download className="w-3 h-3" />
+                내보내기
+              </div>
+              <div className="space-y-1.5">
+                <button
+                  onClick={async () => {
+                    if (!activeSection || !canvasRef.current?.current) return;
+                    setDownloading(true);
+                    try {
+                      await document.fonts.ready;
+                      const canvas = canvasRef.current.current;
+                      const dataUrl = canvas.toDataURL({
+                        format: 'png',
+                        multiplier: store.resolution,
+                        quality: 1,
+                      });
+                      const link = document.createElement('a');
+                      link.download = `${productInfo.name || 'detail'}_${SECTION_LABEL_MAP[activeSection.sectionType]}.png`;
+                      link.href = dataUrl;
+                      link.click();
+                    } finally {
+                      setDownloading(false);
+                    }
+                  }}
+                  disabled={downloading}
+                  className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-[11px] text-[#c3c0ff] bg-[#c3c0ff]/10 border border-[#c3c0ff]/20 rounded-lg hover:bg-[#c3c0ff]/18 transition-all disabled:opacity-40"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  현재 섹션 PNG
+                </button>
+                <button
+                  onClick={async () => {
+                    if (!canvasRef.current?.current) return;
+                    setDownloading(true);
+                    setDownloadProgress(0);
+                    const canvas = canvasRef.current.current;
+                    try {
+                      await document.fonts.ready;
+                      const images: { dataUrl: string; w: number; h: number }[] = [];
+
+                      for (let i = 0; i < visibleSections.length; i++) {
+                        const sec = visibleSections[i];
+                        const saved = store.getCanvasState(sec.id);
+                        setDownloadProgress(Math.round((i / visibleSections.length) * 85));
+
+                        if (saved?.canvasJSON) {
+                          canvas.setDimensions({ width: 860, height: saved.canvasHeight });
+                          await new Promise<void>(r => canvas.loadFromJSON(saved.canvasJSON, () => { canvas.renderAll(); r(); }));
+                          await new Promise(r => setTimeout(r, 200));
+                          const dataUrl = canvas.toDataURL({ format: 'png', multiplier: store.resolution, quality: 1 });
+                          images.push({ dataUrl, w: 860 * store.resolution, h: saved.canvasHeight * store.resolution });
+                        }
+                      }
+
+                      if (images.length > 0) {
+                        setDownloadProgress(90);
+                        const totalH = images.reduce((s, img) => s + img.h, 0);
+                        const merged = document.createElement('canvas');
+                        merged.width = images[0].w;
+                        merged.height = totalH;
+                        const ctx = merged.getContext('2d')!;
+                        let y = 0;
+                        for (const img of images) {
+                          const el = new Image();
+                          el.src = img.dataUrl;
+                          await new Promise(r => { el.onload = r; });
+                          ctx.drawImage(el, 0, y);
+                          y += img.h;
+                        }
+                        setDownloadProgress(100);
+                        const link = document.createElement('a');
+                        link.download = `${productInfo.name || 'detail'}_상세페이지_전체.png`;
+                        link.href = merged.toDataURL('image/png');
+                        link.click();
+                      }
+
+                      // Restore current section
+                      const currentState = store.getCanvasState(activeSectionId);
+                      if (currentState?.canvasJSON) {
+                        canvas.setDimensions({ width: 860, height: currentState.canvasHeight });
+                        canvas.loadFromJSON(currentState.canvasJSON, () => canvas.renderAll());
+                      }
+                    } finally {
+                      setDownloading(false);
+                      setDownloadProgress(0);
+                    }
+                  }}
+                  disabled={downloading}
+                  className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-[11px] text-[#c7c4d8] bg-[#1c1b1b] border border-[#464555]/20 rounded-lg hover:border-[#c3c0ff]/30 transition-all disabled:opacity-40"
+                >
+                  {downloading ? (
+                    <>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      {downloadProgress > 0 ? `${downloadProgress}%` : '준비 중...'}
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-3.5 h-3.5" />
+                      전체 1장 PNG
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Image Guide */}
+            {activeSection?.imageGuide && (
+              <div>
+                <div className="text-[9px] uppercase tracking-widest text-[#e5e2e1]/30 mb-2 flex items-center gap-1.5">
+                  <ImageIcon className="w-3 h-3" />
+                  이미지 가이드
+                </div>
+                <p className="text-[10px] text-[#c7c4d8]/50 leading-relaxed bg-[#1c1b1b] rounded-lg p-2.5 border border-[#464555]/15">
+                  {activeSection.imageGuide}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ===== Bottom Bar ===== */}
+      <div className="flex items-center justify-between px-4 py-2 bg-[#1a1a1a] border-t border-[#464555]/15 flex-shrink-0">
+        <Button variant="ghost" size="sm" onClick={() => { setIsFullscreen(false); dispatch({ type: 'PREV_STEP' }); }}>
+          이전 (원고 수정)
+        </Button>
+        <div className="flex items-center gap-2">
+          {anyGenerating && (
+            <span className="text-[10px] text-[#c3c0ff]/60 flex items-center gap-1.5">
+              <RefreshCw className="w-3 h-3 animate-spin" />
+              이미지 생성 중...
+            </span>
+          )}
+          <span className="text-[10px] text-[#e5e2e1]/25">
+            {store.resolution}x 해상도 · {SECTION_LABEL_MAP[activeSection?.sectionType || 'features']}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}

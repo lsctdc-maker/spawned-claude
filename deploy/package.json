@@ -12,14 +12,16 @@
     "@anthropic-ai/sdk": "^0.30.0",
     "@imgly/background-removal": "^1.4.5",
     "@supabase/supabase-js": "^2.100.0",
+    "fabric": "^6.9.1",
     "file-saver": "^2.0.5",
     "framer-motion": "^11.0.3",
     "html2canvas": "^1.4.1",
     "lucide-react": "^0.469.0",
-    "next": "14.1.0",
+    "next": "^14.2.35",
     "openai": "^4.73.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@types/file-saver": "^2.0.7",

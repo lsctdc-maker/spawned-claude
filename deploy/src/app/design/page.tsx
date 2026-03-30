@@ -6,7 +6,7 @@ import { DetailPageContext, detailPageReducer, initialState } from '@/hooks/useD
 import { DetailPageState } from '@/lib/types';
 import Header from '@/components/layout/Header';
 import ProgressBar from '@/components/ui/ProgressBar';
-import Step4ImageEditor from '@/components/steps/Step4ImageEditor';
+import CanvasEditor from '@/components/canvas-editor/CanvasEditor';
 import Step5Export from '@/components/steps/Step5Export';
 import { DESIGN_STEP_LABELS } from '@/lib/constants';
 
@@ -42,9 +42,9 @@ export default function DesignPage() {
 
   const renderStep = () => {
     switch (state.currentStep) {
-      case 4: return <Step4ImageEditor />;
+      case 4: return <CanvasEditor />;
       case 5: return <Step5Export />;
-      default: return <Step4ImageEditor />;
+      default: return <CanvasEditor />;
     }
   };
 
@@ -53,6 +53,15 @@ export default function DesignPage() {
       <div className="h-screen flex items-center justify-center bg-[#131313]">
         <div className="text-[#e5e2e1]/40 text-sm">불러오는 중...</div>
       </div>
+    );
+  }
+
+  // Step 4 (Canvas Editor) uses its own full-screen layout
+  if (state.currentStep === 4) {
+    return (
+      <DetailPageContext.Provider value={{ state, dispatch }}>
+        {renderStep()}
+      </DetailPageContext.Provider>
     );
   }
 

@@ -4,15 +4,19 @@ const nextConfig = {
   images: {
     domains: ['via.placeholder.com'],
   },
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
     // @imgly/background-removal ships ONNX Runtime as .mjs ESM files.
-    // Tell webpack to treat them as proper ES modules so Terser doesn't choke
-    // on import.meta.url inside them.
     config.module.rules.push({
       test: /\.mjs$/,
       type: 'javascript/esm',
       resolve: { fullySpecified: false },
     });
+
+    // fabric.js uses browser canvas — skip node-canvas on server
+    if (isServer) {
+      config.externals.push('canvas');
+    }
+
     return config;
   },
 };
