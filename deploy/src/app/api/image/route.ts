@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth, isAuthError } from '@/lib/auth-server';
 
 // ===== 카테고리별 프롬프트 스타일 =====
 const categoryStyles: Record<string, string> = {
@@ -75,6 +76,9 @@ function getPlaceholderUrl(type: string, productName: string): string {
 }
 
 export async function POST(request: NextRequest) {
+  const authResult = await requireAuth(request);
+  if (isAuthError(authResult)) return authResult;
+
   try {
     const body = await request.json();
     const {

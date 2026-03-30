@@ -1,4 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth, isAuthError } from '@/lib/auth-server';
+
+function validateUrl(input: string): URL {
+  let parsed: URL;
+  try {
+    parsed = new URL(input);
+  } catch {
+    throw new Error('유효하지 않은 URL입니다.');
+  }
+  if (!['http:', 'https:'].includes(parsed.protocol)) {
+    throw new Error('http 또는 https URL만 허용됩니다.');
+  }
+  const hostname = parsed.hostname.toLowerCase();
+  const forbidden = ['localhost', '127.0.0.1', '0.0.0.0', '169.254.169.254', '[::1]', '::1'];
+  if (forbidden.includes(hostname)) {
+    throw new Error('허용되지 않는 호스트입니다.');
+  }
+  if (/^(10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.)/.test(hostname)) {
+    throw new Error('사설 IP 주소는 허용되지 않습니다.');
+  }
+  return parsed;
+}
 
 const SYSTEM_PROMPT = `다음 상세페이지에서 아래 정보를 추출해주세요:
 - productName: 상품명
@@ -18,6 +40,9 @@ const SYSTEM_PROMPT = `다음 상세페이지에서 아래 정보를 추출해�
 정보가 없는 필드는 빈 문자열, 빈 배열, 또는 0으로 채워주세요.`;
 
 export async function POST(request: NextRequest) {
+  const authResult = await requireAuth(request);
+  if (isAuthError(authResult)) return authResult;
+
   try {
     const body = await request.json();
     const { url, imageBase64, mimeType } = body;
@@ -53,7 +78,8 @@ export async function POST(request: NextRequest) {
       // URL 크롤링 후 텍스트 분석
       let htmlContent = '';
       try {
-        const pageResponse = await fetch(url, {
+        const validatedUrl = validateUrl(url);
+        const pageResponse = await fetch(validatedUrl.toString(), {
           headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
           },

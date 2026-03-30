@@ -6,6 +6,7 @@ import { useDetailPage } from '@/hooks/useDetailPage';
 import { INTERVIEW_QUESTIONS, DEFAULT_INTERVIEW_QUESTIONS } from '@/lib/constants';
 import { CategoryKey, InterviewMessage, InterviewQuestion, USP } from '@/lib/types';
 import { extractUSPs } from '@/lib/api';
+import { authFetch } from '@/lib/auth-fetch';
 import ChatBubble from '@/components/ui/ChatBubble';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
@@ -81,7 +82,7 @@ export default function Step2AIInterview() {
         photoMimeType = mimeMatch ? mimeMatch[1] : 'image/jpeg';
       }
 
-      const res = await fetch('/api/interview', {
+      const res = await authFetch('/api/interview', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -6,6 +6,7 @@ import { CATEGORIES } from '@/lib/constants';
 import { useDetailPage } from '@/hooks/useDetailPage';
 import { ImageIcon, Loader2, Sparkles } from 'lucide-react';
 import EditableText from './EditableText';
+import { authFetch } from '@/lib/auth-fetch';
 
 interface SectionDetailProps {
   content: DetailContent;
@@ -49,7 +50,7 @@ export default function SectionDetail({ content, sectionId }: SectionDetailProps
 
     try {
       const paragraph = content.paragraphs[index];
-      const response = await fetch('/api/image', {
+      const response = await authFetch('/api/image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

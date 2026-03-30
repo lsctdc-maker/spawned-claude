@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth, isAuthError } from '@/lib/auth-server';
 import { ProductInfo, USP } from '@/lib/types';
 import { USP_SYSTEM_PROMPT, USP_EXTRACTION_PROMPT, CATEGORY_USP_GUIDELINES } from '@/lib/prompts';
 
 export async function POST(request: NextRequest) {
+  const authResult = await requireAuth(request);
+  if (isAuthError(authResult)) return authResult;
+
   try {
     const body = await request.json();
     const { productInfo, interviewAnswers } = body as {

@@ -8,6 +8,7 @@ import { CategoryKey, ProductPhoto } from '@/lib/types';
 import Input from '@/components/ui/Input';
 import TextArea from '@/components/ui/TextArea';
 import Button from '@/components/ui/Button';
+import { authFetch } from '@/lib/auth-fetch';
 import { Upload, X, Link, ImageIcon, ChevronDown, ChevronUp, Camera, Type, Tag, Target, ScanSearch } from 'lucide-react';
 
 const MAX_PHOTOS = 10;
@@ -248,7 +249,7 @@ export default function Step1ProductInfo() {
     setAnalyzeError('');
     setAnalyzeResult(null);
     try {
-      const res = await fetch('/api/analyze-page', {
+      const res = await authFetch('/api/analyze-page', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: analyzeUrl.trim() }),
@@ -283,7 +284,7 @@ export default function Step1ProductInfo() {
         reader.onerror = reject;
         reader.readAsDataURL(compImageFile);
       });
-      const res = await fetch('/api/analyze-page', {
+      const res = await authFetch('/api/analyze-page', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ imageBase64: base64, mimeType: compImageFile.type }),

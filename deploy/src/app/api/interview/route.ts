@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth, isAuthError } from '@/lib/auth-server';
 import { INTERVIEW_QUESTIONS, DEFAULT_INTERVIEW_QUESTIONS } from '@/lib/constants';
 import { CategoryKey } from '@/lib/types';
 
@@ -73,6 +74,9 @@ interface PreviousAnswer {
 }
 
 export async function POST(request: NextRequest) {
+  const authResult = await requireAuth(request);
+  if (isAuthError(authResult)) return authResult;
+
   try {
     const body = await request.json();
     const { category, productName, shortDescription, price, targetAudience, keywords, previousAnswers, productPhotoBase64, productPhotoMimeType } = body as {
@@ -155,6 +159,15 @@ export async function POST(request: NextRequest) {
 
     const collectedInfo = previousAnswers?.map((pa) => `Q: ${pa.question}\nA: ${pa.answer}`).join('\n\n') || '';
 
+    const sellerContext = `=== 셀러가 이미 제공한 정보 (절대 다시 묻지 마세요) ===\n카테고리: ${category || '일반'}\n상품명: ${productName || '미정'}${shortDescription ? `\n간단 설명: ${shortDescription}` : ''}${price ? `\n가격대: ${price}` : ''}${targetAudience ? `\n타겟 고객: ${targetAudience}` : ''}${keywords ? `\n주요 키워드/특장점: ${keywords}` : ''}\n\n현재 ${questionIndex + 1}번째 질문을 생성해야 합니다. (최소 ${MIN_QUESTIONS}개)\n\n인터뷰에서 추가로 수집된 정보:\n${collectedInfo || '(아직 없음)'}\n\n반드시 JSON 형식으로만 응답하세요: {"question": "...", "isComplete": true/false}`;
+
+    // Prepend seller context as first user message (not in system prompt)
+    const messagesWithContext: { role: 'user' | 'assistant'; content: unknown }[] = [
+      { role: 'user', content: sellerContext },
+      { role: 'assistant', content: '네, 셀러 정보를 확인했습니다. 이 정보를 바탕으로 인터뷰를 진행하겠습니다.' },
+      ...conversationHistory,
+    ];
+
     const claudeResponse = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -165,8 +178,8 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 500,
-        system: `${SYSTEM_PROMPT}\n\n=== 셀러가 이미 제공한 정보 (절대 다시 묻지 마세요) ===\n카테고리: ${category || '일반'}\n상품명: ${productName || '미정'}${shortDescription ? `\n간단 설명: ${shortDescription}` : ''}${price ? `\n가격대: ${price}` : ''}${targetAudience ? `\n타겟 고객: ${targetAudience}` : ''}${keywords ? `\n주요 키워드/특장점: ${keywords}` : ''}\n\n현재 ${questionIndex + 1}번째 질문을 생성해야 합니다. (최소 ${MIN_QUESTIONS}개)\n\n인터뷰에서 추가로 수집된 정보:\n${collectedInfo || '(아직 없음)'}\n\n반드시 JSON 형식으로만 응답하세요: {"question": "...", "isComplete": true/false}`,
-        messages: conversationHistory,
+        system: SYSTEM_PROMPT,
+        messages: messagesWithContext,
       }),
     });
 

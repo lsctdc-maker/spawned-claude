@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth, isAuthError } from '@/lib/auth-server';
 import {
   DetailPageSection,
   ProductInfo,
@@ -16,6 +17,9 @@ import {
 import { CATEGORIES } from '@/lib/constants';
 
 export async function POST(request: NextRequest) {
+  const authResult = await requireAuth(request);
+  if (isAuthError(authResult)) return authResult;
+
   try {
     const body = await request.json();
     const { sections, productInfo, tone } = body as {

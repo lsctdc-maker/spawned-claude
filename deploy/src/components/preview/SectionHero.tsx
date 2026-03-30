@@ -6,6 +6,7 @@ import { CATEGORIES } from '@/lib/constants';
 import { useDetailPage } from '@/hooks/useDetailPage';
 import { ImageIcon, Loader2, Sparkles } from 'lucide-react';
 import EditableText from './EditableText';
+import { authFetch } from '@/lib/auth-fetch';
 
 interface SectionHeroProps {
   content: HeroContent;
@@ -32,7 +33,7 @@ export default function SectionHero({ content, sectionId }: SectionHeroProps) {
     dispatch({ type: 'SET_IMAGE_GENERATING', payload: { key: 'hero', generating: true } });
 
     try {
-      const response = await fetch('/api/image', {
+      const response = await authFetch('/api/image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

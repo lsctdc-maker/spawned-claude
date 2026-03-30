@@ -12,6 +12,7 @@ import {
   ExportResponse,
   ImageType,
 } from './types';
+import { authFetch } from './auth-fetch';
 
 // ===== 원고 생성 =====
 export async function generateManuscript(
@@ -23,7 +24,7 @@ export async function generateManuscript(
   productPhotoMimeType?: string
 ): Promise<APIResponse<GenerateManuscriptResponse>> {
   try {
-    const response = await fetch('/api/manuscript', {
+    const response = await authFetch('/api/manuscript', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -62,7 +63,7 @@ export async function extractUSPs(
   interviewMessages: InterviewMessage[]
 ): Promise<APIResponse<GenerateUSPResponse>> {
   try {
-    const response = await fetch('/api/usp', {
+    const response = await authFetch('/api/usp', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -93,7 +94,7 @@ export async function generateSections(
   tone: ToneKey
 ): Promise<APIResponse<GenerateSectionsResponse>> {
   try {
-    const response = await fetch('/api/copywriting', {
+    const response = await authFetch('/api/copywriting', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ productInfo, usps, tone }),
@@ -119,7 +120,7 @@ export async function exportHTML(
   tone: ToneKey
 ): Promise<APIResponse<ExportResponse>> {
   try {
-    const response = await fetch('/api/export', {
+    const response = await authFetch('/api/export', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sections, productInfo, tone }),
@@ -146,7 +147,7 @@ export async function generateImage(
   tone: ToneKey | ''
 ): Promise<APIResponse<{ imageUrl: string; isPlaceholder: boolean }>> {
   try {
-    const response = await fetch('/api/image', {
+    const response = await authFetch('/api/image', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -176,7 +177,7 @@ export async function removeBackground(
     const formData = new FormData();
     formData.append('image', imageFile);
 
-    const response = await fetch('/api/image/remove-bg', {
+    const response = await authFetch('/api/image/remove-bg', {
       method: 'POST',
       body: formData,
     });

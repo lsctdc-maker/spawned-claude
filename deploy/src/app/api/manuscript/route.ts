@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth, isAuthError } from '@/lib/auth-server';
 import { ProductInfo, USP, InterviewMessage, ManuscriptSection, ManuscriptSectionType, ToneKey, ColorPalette, FontRecommendation, ReferenceGuide } from '@/lib/types';
 
 const SYSTEM_PROMPT = `당신은 한국 이커머스 상세페이지 전문 카피라이터입니다.
@@ -224,6 +225,9 @@ function buildFallbackSections(productInfo: ProductInfo, usps: USP[]): Manuscrip
 }
 
 export async function POST(request: NextRequest) {
+  const authResult = await requireAuth(request);
+  if (isAuthError(authResult)) return authResult;
+
   try {
     const body = await request.json();
     const { productInfo, extractedUSPs, interviewMessages, selectedTone, productPhotoBase64, productPhotoMimeType } = body as {
