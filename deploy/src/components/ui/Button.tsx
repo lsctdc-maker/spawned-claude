@@ -25,11 +25,12 @@ const sizeStyles: Record<string, string> = {
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'primary', size = 'md', fullWidth = false, loading = false, disabled, children, className = '', ...props }, ref) => {
+  ({ variant = 'primary', size = 'md', fullWidth = false, loading = false, disabled, children, className = '', type = 'button', ...props }, ref) => {
     const isDisabled = disabled || loading;
     return (
       <motion.button
         ref={ref}
+        type={type}
         whileHover={isDisabled ? {} : { scale: 1.02 }}
         whileTap={isDisabled ? {} : { scale: 0.98 }}
         className={`
