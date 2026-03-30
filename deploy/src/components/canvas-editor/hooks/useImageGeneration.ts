@@ -29,16 +29,28 @@ export function useImageGeneration(ctx: GenerationContext) {
     try {
       let data: any = null;
 
-      // Try authenticated fetch first, fallback to direct fetch
+      // Try authenticated fetch first, then check response, fallback to direct fetch
       try {
         const res = await authFetch('/api/image', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: requestBody,
         });
-        data = await res.json();
+        // authFetch returns 401 as normal Response (not throw) — must check status
+        if (res.ok) {
+          data = await res.json();
+        } else {
+          // Auth returned 401/403 — fallback to direct fetch without auth header
+          console.warn(`authFetch returned ${res.status}, falling back to direct fetch`);
+          const res2 = await fetch('/api/image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: requestBody,
+          });
+          data = await res2.json();
+        }
       } catch {
-        // Auth failed — try direct fetch without auth
+        // Network error or supabase client crash — try direct fetch
         try {
           const res = await fetch('/api/image', {
             method: 'POST',

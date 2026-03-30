@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth, isAuthError } from '@/lib/auth-server';
+import { requireAuth } from '@/lib/auth-server';
 
 // ===== 카테고리별 프롬프트 스타일 =====
 const categoryStyles: Record<string, string> = {
@@ -76,16 +76,12 @@ function getPlaceholderUrl(type: string, productName: string): string {
 }
 
 export async function POST(request: NextRequest) {
-  // Auth: require in production with Supabase configured, skip otherwise
+  // Auth: attempt but never block — image generation doesn't need auth
+  // (No login UI exists yet, so requiring auth blocks all requests)
   try {
-    const authResult = await requireAuth(request);
-    if (isAuthError(authResult)) {
-      if (process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_SUPABASE_URL) {
-        return authResult;
-      }
-    }
+    await requireAuth(request);
   } catch {
-    // Auth system failed (Supabase not configured) — allow through
+    // Auth not configured or failed — continue without auth
   }
 
   try {
