@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/auth-server';
+import { requireAuth, isAuthError } from '@/lib/auth-server';
 
 // ===== 카테고리별 프롬프트 스타일 =====
 const categoryStyles: Record<string, string> = {
@@ -76,13 +76,8 @@ function getPlaceholderUrl(type: string, productName: string): string {
 }
 
 export async function POST(request: NextRequest) {
-  // Auth: attempt but never block — image generation doesn't need auth
-  // (No login UI exists yet, so requiring auth blocks all requests)
-  try {
-    await requireAuth(request);
-  } catch {
-    // Auth not configured or failed — continue without auth
-  }
+  const authResult = await requireAuth(request);
+  if (isAuthError(authResult)) return authResult;
 
   try {
     const body = await request.json();
