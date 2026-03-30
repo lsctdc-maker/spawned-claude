@@ -300,42 +300,54 @@ export default function Step2AIInterview() {
         )}
       </div>
 
-      {extractedUSPs.length > 0 && (
+      {interviewCompleted && !isExtracting && (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-8 space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-headline font-bold text-[#e5e2e1]">추출된 USP</h3>
-            <Button variant="outline" size="sm" onClick={handleAddUSP}>+ USP 추가</Button>
-          </div>
-          <div className="grid gap-3">
-            {extractedUSPs.map((usp) => (
-              <Card key={usp.id} variant="bordered" padding="md">
-                {editingUSP === usp.id ? (
-                  <div className="space-y-3">
-                    <input value={newUSPTitle} onChange={(e) => setNewUSPTitle(e.target.value)} className="w-full bg-[#1c1b1b] border-b border-[#464555]/20 px-2 py-2 text-sm font-medium text-[#e5e2e1] focus:outline-none focus:border-[#c3c0ff]" placeholder="USP 제목" />
-                    <textarea value={newUSPDesc} onChange={(e) => setNewUSPDesc(e.target.value)} className="w-full bg-[#1c1b1b] border-b border-[#464555]/20 px-2 py-2 text-sm text-[#e5e2e1] resize-none focus:outline-none focus:border-[#c3c0ff]" rows={2} placeholder="USP 설명" />
-                    <div className="flex gap-2 justify-end">
-                      <Button variant="ghost" size="sm" onClick={() => setEditingUSP(null)}>취소</Button>
-                      <Button size="sm" onClick={() => handleSaveUSP(usp.id)}>저장</Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-start gap-3">
-                      <div className="w-2 h-2 rounded-full bg-[#c3c0ff]/60 flex-shrink-0 mt-2" />
-                      <div>
-                        <h4 className="font-semibold text-[#e5e2e1]">{usp.title}</h4>
-                        <p className="text-sm text-[#c7c4d8] mt-0.5">{usp.description}</p>
+          {extractedUSPs.length > 0 ? (
+            <>
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-headline font-bold text-[#e5e2e1]">추출된 USP</h3>
+                <Button variant="outline" size="sm" onClick={handleAddUSP}>+ USP 추가</Button>
+              </div>
+              <div className="grid gap-3">
+                {extractedUSPs.map((usp) => (
+                  <Card key={usp.id} variant="bordered" padding="md">
+                    {editingUSP === usp.id ? (
+                      <div className="space-y-3">
+                        <input value={newUSPTitle} onChange={(e) => setNewUSPTitle(e.target.value)} className="w-full bg-[#1c1b1b] border-b border-[#464555]/20 px-2 py-2 text-sm font-medium text-[#e5e2e1] focus:outline-none focus:border-[#c3c0ff]" placeholder="USP 제목" />
+                        <textarea value={newUSPDesc} onChange={(e) => setNewUSPDesc(e.target.value)} className="w-full bg-[#1c1b1b] border-b border-[#464555]/20 px-2 py-2 text-sm text-[#e5e2e1] resize-none focus:outline-none focus:border-[#c3c0ff]" rows={2} placeholder="USP 설명" />
+                        <div className="flex gap-2 justify-end">
+                          <Button variant="ghost" size="sm" onClick={() => setEditingUSP(null)}>취소</Button>
+                          <Button size="sm" onClick={() => handleSaveUSP(usp.id)}>저장</Button>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex gap-1 flex-shrink-0">
-                      <button onClick={() => handleEditUSP(usp)} className="p-1.5 rounded-lg hover:bg-[#2a2a2a] text-[#e5e2e1]/40 hover:text-[#c3c0ff] transition-colors" title="수정">&#9998;</button>
-                      <button onClick={() => dispatch({ type: 'REMOVE_USP', payload: usp.id })} className="p-1.5 rounded-lg hover:bg-[#93000a]/20 text-[#e5e2e1]/40 hover:text-[#ffb4ab] transition-colors" title="삭제">&times;</button>
-                    </div>
-                  </div>
-                )}
-              </Card>
-            ))}
-          </div>
+                    ) : (
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-start gap-3">
+                          <div className="w-2 h-2 rounded-full bg-[#c3c0ff]/60 flex-shrink-0 mt-2" />
+                          <div>
+                            <h4 className="font-semibold text-[#e5e2e1]">{usp.title}</h4>
+                            <p className="text-sm text-[#c7c4d8] mt-0.5">{usp.description}</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-1 flex-shrink-0">
+                          <button onClick={() => handleEditUSP(usp)} className="p-1.5 rounded-lg hover:bg-[#2a2a2a] text-[#e5e2e1]/40 hover:text-[#c3c0ff] transition-colors" title="수정">&#9998;</button>
+                          <button onClick={() => dispatch({ type: 'REMOVE_USP', payload: usp.id })} className="p-1.5 rounded-lg hover:bg-[#93000a]/20 text-[#e5e2e1]/40 hover:text-[#ffb4ab] transition-colors" title="삭제">&times;</button>
+                        </div>
+                      </div>
+                    )}
+                  </Card>
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="text-center py-8 px-4 bg-[#201f1f] rounded-xl border border-[#464555]/10">
+              <p className="text-[#e5e2e1]/60 mb-4">USP 자동 추출에 실패했습니다. 직접 추가하거나 다시 시도해주세요.</p>
+              <div className="flex gap-3 justify-center">
+                <Button variant="outline" size="sm" onClick={handleAddUSP}>직접 추가</Button>
+                <Button variant="outline" size="sm" onClick={() => completeInterview(interviewMessages)}>다시 시도</Button>
+              </div>
+            </div>
+          )}
           <div className="flex justify-between pt-4 sticky bottom-0 bg-[#131313] py-4 border-t border-[#464555]/10 -mx-4 px-4">
             <Button variant="ghost" onClick={() => dispatch({ type: 'PREV_STEP' })}>이전</Button>
             <Button size="lg" onClick={handleNext}>다음: 원고 작성</Button>
