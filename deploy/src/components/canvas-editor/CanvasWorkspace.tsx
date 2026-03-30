@@ -45,6 +45,41 @@ export default function CanvasWorkspace({
     }
   }, [ready, onCanvasReady]);
 
+  // Track whether user has manually edited the canvas
+  const userEditedRef = useRef(false);
+  const lastImageUrlRef = useRef<string | null>(null);
+
+  // Compose (or recompose) the canvas
+  const composeCanvas = useCallback(async (imageUrl: string | null) => {
+    const canvas = fabricCanvas.current;
+    const fabricModule = getFabricModule();
+    if (!canvas || !ready || !fabricModule) return;
+
+    await composeSectionCanvas(
+      canvas,
+      fabricModule,
+      section,
+      imageUrl,
+      colors,
+      fonts,
+      productPhotoUrl,
+    );
+    setCanvasHeight(canvas.getHeight());
+
+    // Save state
+    const json = JSON.stringify(canvas.toJSON(['name', 'locked', 'selectable', 'evented']));
+    store.saveCanvasState(sectionId, json, canvas.getHeight());
+    store.pushHistory(sectionId, json);
+
+    // Generate thumbnail
+    try {
+      const thumb = canvas.toDataURL({ format: 'png', multiplier: 0.2, quality: 0.7 });
+      store.setThumbnail(sectionId, thumb);
+    } catch {}
+
+    lastImageUrlRef.current = imageUrl;
+  }, [fabricCanvas, getFabricModule, ready, section, sectionId, colors, fonts, productPhotoUrl]);
+
   // Load or compose canvas when section changes
   useEffect(() => {
     const canvas = fabricCanvas.current;
@@ -53,6 +88,7 @@ export default function CanvasWorkspace({
 
     const loadCanvas = async () => {
       const saved = store.getCanvasState(sectionId);
+      userEditedRef.current = false;
 
       if (saved && saved.canvasJSON && saved.dirty) {
         // Load saved canvas state
@@ -61,33 +97,35 @@ export default function CanvasWorkspace({
         canvas.loadFromJSON(saved.canvasJSON, () => {
           canvas.renderAll();
         });
+        lastImageUrlRef.current = saved.imageUrl;
       } else {
         // Compose new canvas from template + AI image
         const imageUrl = store.sections[sectionId]?.imageUrl || null;
-        await composeSectionCanvas(
-          canvas,
-          fabricModule,
-          section,
-          imageUrl,
-          colors,
-          fonts,
-          productPhotoUrl,
-        );
-        setCanvasHeight(canvas.getHeight());
-
-        // Save initial state
-        const json = JSON.stringify(canvas.toJSON(['name', 'locked', 'selectable', 'evented']));
-        store.saveCanvasState(sectionId, json, canvas.getHeight());
-        store.pushHistory(sectionId, json);
-
-        // Generate thumbnail
-        const thumb = canvas.toDataURL({ format: 'png', multiplier: 0.2, quality: 0.7 });
-        store.setThumbnail(sectionId, thumb);
+        await composeCanvas(imageUrl);
       }
     };
 
     loadCanvas();
   }, [sectionId, ready]);
+
+  // Recompose when AI image URL arrives (fixes race condition)
+  const currentImageUrl = store.sections[sectionId]?.imageUrl || null;
+  useEffect(() => {
+    if (!ready) return;
+    // Only recompose if imageUrl actually changed AND canvas hasn't been user-edited
+    if (currentImageUrl && currentImageUrl !== lastImageUrlRef.current && !userEditedRef.current) {
+      composeCanvas(currentImageUrl);
+    }
+  }, [currentImageUrl, ready, composeCanvas]);
+
+  // Track user edits (so we don't overwrite manual changes)
+  useEffect(() => {
+    const canvas = fabricCanvas.current;
+    if (!canvas || !ready) return;
+    const markEdited = () => { userEditedRef.current = true; };
+    canvas.on('object:modified', markEdited);
+    return () => { canvas.off('object:modified', markEdited); };
+  }, [ready]);
 
   // Wire selection events
   useEffect(() => {

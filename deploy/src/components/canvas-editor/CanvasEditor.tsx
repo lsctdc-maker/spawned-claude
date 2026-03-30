@@ -10,6 +10,7 @@ import { CanvasColors, CanvasFonts } from './templates/types';
 import CanvasWorkspace from './CanvasWorkspace';
 import TextControls from './toolbar/TextControls';
 import ImageControls from './toolbar/ImageControls';
+import LayerPanel from './panels/LayerPanel';
 import Button from '@/components/ui/Button';
 import {
   Download, RefreshCw, ChevronLeft, ChevronRight, Layers, Type, Palette,
@@ -37,6 +38,22 @@ export default function CanvasEditor() {
   const activeSectionId = store.activeSectionId || visibleSections[0]?.id || '';
   const activeSection = visibleSections.find(s => s.id === activeSectionId) || visibleSections[0];
   const activeIdx = visibleSections.findIndex(s => s.id === activeSectionId);
+
+  // Clean stale canvas data on mount — only keep sections that exist in current manuscript
+  useEffect(() => {
+    const validIds = new Set(visibleSections.map(s => s.id));
+    const storedSections = store.sections;
+    let hasStale = false;
+    for (const id of Object.keys(storedSections)) {
+      if (!validIds.has(id)) {
+        hasStale = true;
+        break;
+      }
+    }
+    if (hasStale) {
+      store.reset();
+    }
+  }, []); // Only on mount
 
   // Initialize active section
   useEffect(() => {
@@ -94,21 +111,11 @@ export default function CanvasEditor() {
     setSelectedObj(null);
   }, []);
 
-  // Handle regenerate
+  // Handle regenerate — new image URL triggers recompose via CanvasWorkspace effect
   const handleRegenerate = useCallback(async () => {
     if (!activeSection) return;
-    const url = await regenerateSection(activeSection);
-    if (url) {
-      // Mark dirty=false so canvas recomposes with new image
-      const saved = store.getCanvasState(activeSection.id);
-      if (saved) {
-        store.saveCanvasState(activeSection.id, '', saved.canvasHeight);
-      }
-      // Force re-mount by toggling section
-      const id = activeSection.id;
-      store.setActiveSectionId('');
-      requestAnimationFrame(() => store.setActiveSectionId(id));
-    }
+    await regenerateSection(activeSection);
+    // CanvasWorkspace watches store.sections[sectionId].imageUrl and auto-recomposes
   }, [activeSection, regenerateSection]);
 
   // Fullscreen toggle
@@ -358,6 +365,13 @@ export default function CanvasEditor() {
               fabricCanvas={canvasRef.current}
               selectedObj={selectedObj}
               sectionId={activeSectionId}
+            />
+
+            {/* Layer Panel */}
+            <LayerPanel
+              fabricCanvas={canvasRef.current}
+              ready={!!canvasRef.current?.current}
+              onSelectionChange={setSelectedObj}
             />
 
             {/* Selected Object Info */}

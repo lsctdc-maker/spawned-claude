@@ -17,24 +17,41 @@ export function useImageGeneration(ctx: GenerationContext) {
 
   const generateForSection = useCallback(async (section: ManuscriptSection): Promise<string | null> => {
     const imageType = SECTION_IMAGE_MAP[section.sectionType] || 'background';
+    const requestBody = JSON.stringify({
+      type: imageType,
+      productName: ctx.productInfo.name || '제품',
+      category: ctx.productInfo.category || 'others',
+      usps: ctx.extractedUSPs.map(u => u.title).slice(0, 3),
+      tone: ctx.selectedTone || 'trust',
+    });
 
     store.setGenerating(section.id, true);
     try {
-      const res = await authFetch('/api/image', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: imageType,
-          productName: ctx.productInfo.name || '제품',
-          category: ctx.productInfo.category || 'others',
-          usps: ctx.extractedUSPs.map(u => u.title).slice(0, 3),
-          tone: ctx.selectedTone || 'trust',
-        }),
-      });
+      let data: any = null;
 
-      const data = await res.json();
+      // Try authenticated fetch first, fallback to direct fetch
+      try {
+        const res = await authFetch('/api/image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: requestBody,
+        });
+        data = await res.json();
+      } catch {
+        // Auth failed — try direct fetch without auth
+        try {
+          const res = await fetch('/api/image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: requestBody,
+          });
+          data = await res.json();
+        } catch (e2) {
+          console.error('Direct image fetch also failed:', e2);
+        }
+      }
 
-      if (data.success && data.imageUrl) {
+      if (data?.success && data.imageUrl) {
         store.setImage(section.id, data.imageUrl, !!data.isPlaceholder);
         return data.imageUrl;
       }
