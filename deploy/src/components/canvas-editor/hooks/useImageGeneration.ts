@@ -26,6 +26,7 @@ export function useImageGeneration(ctx: GenerationContext) {
     });
 
     store.setGenerating(section.id, true);
+    store.setGenerateError(section.id, false);
     try {
       let data: any = null;
 
@@ -68,9 +69,11 @@ export function useImageGeneration(ctx: GenerationContext) {
         return data.imageUrl;
       }
 
+      store.setGenerateError(section.id, true);
       return null;
     } catch (e) {
       console.error(`Image generation failed for section ${section.id}:`, e);
+      store.setGenerateError(section.id, true);
       return null;
     } finally {
       store.setGenerating(section.id, false);

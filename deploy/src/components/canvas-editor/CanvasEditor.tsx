@@ -138,6 +138,7 @@ export default function CanvasEditor() {
   }
 
   const isGenerating = store.generating[activeSectionId] || false;
+  const hasError = store.generateError[activeSectionId] || false;
   const anyGenerating = store.isAnyGenerating();
 
   return (
@@ -158,7 +159,7 @@ export default function CanvasEditor() {
           <div>
             <h1 className="text-sm font-bold text-[#e5e2e1]">이미지 에디터</h1>
             <p className="text-[10px] text-[#c7c4d8]/50">
-              {anyGenerating ? '이미지 생성 중...' : `${visibleSections.length}개 섹션`}
+              {anyGenerating ? '이미지 생성 중...' : hasError ? '이미지 생성 실패' : `${visibleSections.length}개 섹션`}
             </p>
           </div>
         </div>
@@ -193,7 +194,7 @@ export default function CanvasEditor() {
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-[#c7c4d8] bg-[#1c1b1b] border border-[#464555]/20 rounded-lg hover:border-[#c3c0ff]/30 transition-all disabled:opacity-40"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isGenerating ? 'animate-spin' : ''}`} />
-            {isGenerating ? '생성 중...' : '이미지 재생성'}
+            {isGenerating ? '생성 중...' : hasError ? '재시도' : '이미지 재생성'}
           </button>
 
           {/* Resolution */}

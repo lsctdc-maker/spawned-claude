@@ -30,7 +30,9 @@ interface CanvasEditorStore {
 
   // Image generation state
   generating: Record<string, boolean>;
+  generateError: Record<string, boolean>;
   setGenerating: (sectionId: string, val: boolean) => void;
+  setGenerateError: (sectionId: string, val: boolean) => void;
   isAnyGenerating: () => boolean;
 
   // History per section
@@ -72,6 +74,7 @@ export const useCanvasEditorStore = create<CanvasEditorStore>()(
       sections: {},
       activeSectionId: '',
       generating: {},
+      generateError: {},
       history: {},
       selectedObjectId: null,
       resolution: 2,
@@ -81,6 +84,9 @@ export const useCanvasEditorStore = create<CanvasEditorStore>()(
 
       setGenerating: (sectionId, val) =>
         set({ generating: { ...get().generating, [sectionId]: val } }),
+
+      setGenerateError: (sectionId, val) =>
+        set({ generateError: { ...get().generateError, [sectionId]: val } }),
 
       isAnyGenerating: () => Object.values(get().generating).some(v => v),
 
@@ -193,6 +199,7 @@ export const useCanvasEditorStore = create<CanvasEditorStore>()(
         sections: {},
         activeSectionId: '',
         generating: {},
+        generateError: {},
         history: {},
         selectedObjectId: null,
       }),
