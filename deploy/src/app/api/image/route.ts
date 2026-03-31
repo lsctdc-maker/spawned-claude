@@ -379,23 +379,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // ===== Step 2: DALL-E 편집 (톤 보정) =====
+    // ===== Step 2: 스톡 이미지 base64 변환 =====
     if (stockUrl) {
-      console.log(`[image] Attempting DALL-E edit for tone: ${tone}`);
-      const editedBase64 = await editWithDallE(stockUrl, tone);
-
-      if (editedBase64) {
-        console.log(`[image] DALL-E edit success → returning edited image`);
-        return NextResponse.json({
-          success: true,
-          imageUrl: editedBase64,
-          isPlaceholder: false,
-          source,
-        });
-      }
-
-      // DALL-E 편집 실패 → 원본 스톡 이미지 그대로 사용
-      console.log(`[image] DALL-E edit failed → using original stock image`);
+      console.log(`[image] Downloading stock image as base64`);
       const stockBase64 = await downloadAsBase64(stockUrl);
       if (stockBase64) {
         return NextResponse.json({
@@ -405,6 +391,7 @@ export async function POST(request: NextRequest) {
           source,
         });
       }
+      console.log(`[image] Stock image download failed`);
     }
 
     // ===== Step 3: DALL-E 3 직접 생성 (최종 fallback) =====
