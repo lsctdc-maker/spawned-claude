@@ -51,9 +51,9 @@ export default function PlanPage() {
 
   return (
     <DetailPageContext.Provider value={{ state, dispatch }}>
-      <div className="h-screen flex flex-col bg-[#131313]">
+      <div className="h-screen flex flex-col bg-[#0a0a0a]">
         <Header />
-        <div className="bg-[#131313]/80 backdrop-blur-xl border-b border-[#e5e2e1]/10 flex-shrink-0 z-40">
+        <div className="bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-[#e5e2e1]/10 flex-shrink-0 z-40">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3">
             <ProgressBar
               currentStep={state.currentStep}

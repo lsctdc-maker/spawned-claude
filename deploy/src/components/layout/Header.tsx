@@ -12,7 +12,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-[#131313]/60 backdrop-blur-xl border-b border-[#e5e2e1]/15 shadow-[0_10px_40px_rgba(229,226,225,0.05)]">
+      <header className="sticky top-0 z-50 bg-[#0a0a0a]/70 backdrop-blur-xl border-b border-[#e5e2e1]/8 shadow-[0_10px_40px_rgba(229,226,225,0.03)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center">
@@ -72,7 +72,7 @@ export default function Header() {
               )}
               <Link
                 href="/plan"
-                className="px-5 py-2.5 rounded-full bg-gradient-to-r from-[#c3c0ff] to-[#e5e2e1] text-[#0f0069] font-headline font-bold text-sm hover:scale-105 active:scale-95 transition-all duration-300"
+                className="px-5 py-2.5 rounded-full bg-gradient-to-r from-[#c3c0ff] to-[#e5e2e1] text-[#0f0069] font-headline font-bold text-sm hover:scale-[1.03] active:scale-[0.97] transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]"
               >
                 시작하기
               </Link>

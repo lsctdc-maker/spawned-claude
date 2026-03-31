@@ -86,7 +86,7 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="이메일"
                   required
-                  className="w-full bg-[#131313] border border-[#464555]/30 rounded-lg py-3 pl-10 pr-4 text-sm text-[#e5e2e1] placeholder:text-[#e5e2e1]/25 focus:outline-none focus:border-[#c3c0ff]/50 transition-all"
+                  className="w-full bg-[#0a0a0a] border border-[#464555]/30 rounded-lg py-3 pl-10 pr-4 text-sm text-[#e5e2e1] placeholder:text-[#e5e2e1]/25 focus:outline-none focus:border-[#c3c0ff]/50 transition-all"
                 />
               </div>
               <div className="relative">
@@ -97,7 +97,7 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="비밀번호"
                   required
-                  className="w-full bg-[#131313] border border-[#464555]/30 rounded-lg py-3 pl-10 pr-4 text-sm text-[#e5e2e1] placeholder:text-[#e5e2e1]/25 focus:outline-none focus:border-[#c3c0ff]/50 transition-all"
+                  className="w-full bg-[#0a0a0a] border border-[#464555]/30 rounded-lg py-3 pl-10 pr-4 text-sm text-[#e5e2e1] placeholder:text-[#e5e2e1]/25 focus:outline-none focus:border-[#c3c0ff]/50 transition-all"
                 />
               </div>
 

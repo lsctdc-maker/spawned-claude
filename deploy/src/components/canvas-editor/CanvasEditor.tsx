@@ -123,7 +123,7 @@ export default function CanvasEditor() {
 
   if (visibleSections.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-[#131313] gap-4">
+      <div className="flex flex-col items-center justify-center h-screen bg-[#0a0a0a] gap-4">
         <p className="text-[#e5e2e1]/40 text-sm">
           편집할 섹션이 없습니다. 원고를 먼저 생성해주세요.
         </p>
@@ -142,7 +142,7 @@ export default function CanvasEditor() {
   const anyGenerating = store.isAnyGenerating();
 
   return (
-    <div className={`flex flex-col bg-[#131313] ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
+    <div className={`flex flex-col bg-[#0a0a0a] ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
       {/* ===== Top Bar ===== */}
       <div className="flex items-center justify-between px-4 py-2.5 bg-[#1a1a1a] border-b border-[#464555]/15 flex-shrink-0">
         {/* Left: Back + Title */}

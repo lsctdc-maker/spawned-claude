@@ -348,7 +348,7 @@ export default function Step2AIInterview() {
               </div>
             </div>
           )}
-          <div className="flex justify-between pt-4 sticky bottom-0 bg-[#131313] py-4 border-t border-[#464555]/10 -mx-4 px-4">
+          <div className="flex justify-between pt-4 sticky bottom-0 bg-[#0a0a0a] py-4 border-t border-[#464555]/10 -mx-4 px-4">
             <Button variant="ghost" onClick={() => dispatch({ type: 'PREV_STEP' })}>이전</Button>
             <Button size="lg" onClick={handleNext}>다음: 원고 작성</Button>
           </div>

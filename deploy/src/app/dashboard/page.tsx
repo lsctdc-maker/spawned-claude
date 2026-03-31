@@ -47,14 +47,14 @@ export default function DashboardPage() {
 
   if (loading || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#131313]">
+      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
         <div className="text-[#e5e2e1]/40 text-sm">로딩 중...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#131313]">
+    <div className="min-h-screen bg-[#0a0a0a]">
       <Header />
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
         <div className="flex items-center justify-between mb-10">

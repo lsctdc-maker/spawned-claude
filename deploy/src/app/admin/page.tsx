@@ -88,7 +88,7 @@ export default function AdminPage() {
 
   if (loading || checking) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#131313]">
+      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
         <div className="text-[#e5e2e1]/40 text-sm">확인 중...</div>
       </div>
     );
@@ -101,7 +101,7 @@ export default function AdminPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#131313]">
+    <div className="min-h-screen bg-[#0a0a0a]">
       <Header />
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
         <div className="flex items-center gap-3 mb-8">
@@ -170,7 +170,7 @@ export default function AdminPage() {
                       <select
                         value={p.role}
                         onChange={(e) => handleRoleChange(p.id, e.target.value)}
-                        className="bg-[#131313] border border-[#464555]/30 rounded text-xs text-[#e5e2e1] px-2 py-1 focus:outline-none"
+                        className="bg-[#0a0a0a] border border-[#464555]/30 rounded text-xs text-[#e5e2e1] px-2 py-1 focus:outline-none"
                       >
                         <option value="user">user</option>
                         <option value="admin">admin</option>

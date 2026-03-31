@@ -176,7 +176,7 @@ export default function SeedPage() {
   }, []);
 
   return (
-    <div className="h-screen flex flex-col items-center justify-center bg-[#131313] text-[#e5e2e1] gap-4">
+    <div className="h-screen flex flex-col items-center justify-center bg-[#0a0a0a] text-[#e5e2e1] gap-4">
       {error ? (
         <>
           <div className="text-red-400 text-lg font-bold">Error</div>

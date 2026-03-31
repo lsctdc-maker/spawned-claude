@@ -6,10 +6,10 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        headline: ['Manrope', 'sans-serif'],
-        body: ['Inter', 'sans-serif'],
-        label: ['Inter', 'sans-serif'],
+        sans: ['Pretendard Variable', 'Pretendard', 'sans-serif'],
+        headline: ['Geist', 'Pretendard Variable', 'sans-serif'],
+        body: ['Pretendard Variable', 'Pretendard', 'sans-serif'],
+        label: ['Pretendard Variable', 'Pretendard', 'sans-serif'],
       },
       colors: {
         // Dark Theme - The Digital Atelier
@@ -36,8 +36,8 @@ module.exports = {
           'fixed-dim': '#c0c1ff',
         },
         surface: {
-          DEFAULT: '#131313',
-          dim: '#131313',
+          DEFAULT: '#0a0a0a',
+          dim: '#0a0a0a',
           bright: '#3a3939',
           container: '#201f1f',
           'container-low': '#1c1b1b',
@@ -82,7 +82,7 @@ module.exports = {
           'on-surface': '#313030',
           primary: '#4d44e3',
         },
-        background: '#131313',
+        background: '#0a0a0a',
         'on-background': '#e5e2e1',
         'on-error': '#690005',
         'on-error-container': '#ffdad6',

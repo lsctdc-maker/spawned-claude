@@ -35,7 +35,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         whileTap={isDisabled ? {} : { scale: 0.98 }}
         className={`
           inline-flex items-center justify-center font-medium transition-all duration-300 rounded-full
-          focus:outline-none focus:ring-2 focus:ring-[#c3c0ff]/30 focus:ring-offset-2 focus:ring-offset-[#131313]
+          focus:outline-none focus:ring-2 focus:ring-[#c3c0ff]/30 focus:ring-offset-2 focus:ring-offset-[#0a0a0a]
           disabled:opacity-50 disabled:cursor-not-allowed
           ${variantStyles[variant]} ${sizeStyles[size]}
           ${fullWidth ? 'w-full' : ''} ${className}
