@@ -15,19 +15,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko" className="dark">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-          rel="stylesheet"
-        />
-        <link
-          rel="stylesheet"
-          crossOrigin=""
-          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
-        />
-      </head>
       <body className="font-body antialiased bg-[#0a0a0a] text-[#e5e2e1]">
         <ClientProviders>{children}</ClientProviders>
       </body>
