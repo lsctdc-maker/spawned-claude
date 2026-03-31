@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { DetailPageState } from '@/lib/types';
 
 const sampleState: DetailPageState = {
@@ -156,6 +157,7 @@ const sampleState: DetailPageState = {
 };
 
 export default function SeedPage() {
+  const router = useRouter();
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -166,14 +168,14 @@ export default function SeedPage() {
       // Write the sample state
       localStorage.setItem('dm_plan_state', JSON.stringify(sampleState));
       setDone(true);
-      // Redirect after a brief delay
+      // Client-side navigation to avoid hydration mismatch
       setTimeout(() => {
-        window.location.href = '/design';
+        router.replace('/design');
       }, 1500);
     } catch (e: any) {
       setError(e.message || 'Failed to seed data');
     }
-  }, []);
+  }, [router]);
 
   return (
     <div className="h-screen flex flex-col items-center justify-center bg-[#0a0a0a] text-[#e5e2e1] gap-4">
