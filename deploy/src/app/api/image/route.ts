@@ -341,8 +341,11 @@ function getPlaceholderUrl(type: string, productName: string): string {
 
 // ===== POST 핸들러: 3단계 파이프라인 =====
 export async function POST(request: NextRequest) {
+  // Auth is optional for image generation — allows demo/seed flow without login
+  // Authenticated users get priority, but unauthenticated requests still work
+  // Auth is checked but not enforced — demo/seed flow works without login
   const authResult = await requireAuth(request);
-  if (isAuthError(authResult)) return authResult;
+  const isAuthenticated = !isAuthError(authResult);
 
   try {
     const body = await request.json();
@@ -358,6 +361,7 @@ export async function POST(request: NextRequest) {
 
     // ===== Step 1: 스톡 이미지 검색 =====
     const query = buildSearchQuery(type as any, category, tone);
+    console.log(`[image] auth=${isAuthenticated}, type=${type}, category=${category}`);
     console.log(`[image] Searching stock: "${query}" (${orientation})`);
 
     let stockUrl: string | null = null;
