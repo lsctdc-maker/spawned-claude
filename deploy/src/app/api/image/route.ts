@@ -27,6 +27,25 @@ const toneModifiers: Record<string, string> = {
   impact: 'bold, energetic, high-contrast, attention-grabbing, dynamic',
 };
 
+// ===== 카테고리 → 영어 라벨 (제품명 대신 사용) =====
+const categoryLabels: Record<string, string> = {
+  food: 'gourmet food',
+  cosmetics: 'luxury cosmetic',
+  health: 'wellness',
+  electronics: 'modern tech',
+  fashion: 'fashion',
+  living: 'home living',
+  pets: 'pet care',
+  kids: "children's",
+  sports: 'sports equipment',
+  interior: 'interior design',
+  automotive: 'automotive',
+  stationery: 'stationery',
+  beverages: 'premium beverage',
+  digital: 'digital product',
+  others: 'consumer',
+};
+
 // ===== type별 프롬프트 생성 =====
 function buildPrompt(
   type: 'hero' | 'background' | 'lifestyle' | 'feature',
@@ -37,7 +56,13 @@ function buildPrompt(
 ): { prompt: string; size: '1792x1024' | '1024x1024' } {
   const style = categoryStyles[category] || categoryStyles.others;
   const toneStyle = toneModifiers[tone] || toneModifiers.trust;
-  const uspText = usps.length > 0 ? usps.slice(0, 3).join(', ') : '';
+  const label = categoryLabels[category] || 'consumer';
+
+  // Filter USPs with numbers — DALL-E renders "25,000ppm" as visible text
+  const safeUsps = usps.filter(u => !/\d/.test(u)).slice(0, 2);
+  const uspMood = safeUsps.length > 0 ? `Mood should evoke: ${safeUsps.join(', ')}.` : '';
+
+  const noText = 'CRITICAL: The image must contain absolutely NO text, NO words, NO letters, NO numbers, NO logos, NO watermarks, NO typography of any kind. Pure visual imagery only.';
 
   let prompt = '';
   let size: '1792x1024' | '1024x1024' = '1024x1024';
@@ -45,16 +70,16 @@ function buildPrompt(
   switch (type) {
     case 'hero':
       size = '1792x1024';
-      prompt = `Wide panoramic hero banner image for "${productName}" product landing page. ${style}. The product should be the center of attention with dramatic presentation. ${toneStyle}. ${uspText ? `Key features: ${uspText}.` : ''} High-end commercial photography, 8k quality, no text or logos in the image.`;
+      prompt = `${noText} Wide panoramic background scene for a ${label} product landing page. ${style}. Dramatic cinematic environment with beautiful lighting. ${toneStyle}. ${uspMood} High-end commercial photography, 8k quality.`;
       break;
     case 'background':
-      prompt = `Beautiful background image suitable for placing "${productName}" product on it. ${style}. No product in the image, just the background/surface/environment. ${toneStyle}. Shallow depth of field, commercial photography, 8k quality, no text.`;
+      prompt = `${noText} Beautiful background surface or environment for ${label} product photography. ${style}. No product in the image, just the background/surface/environment. ${toneStyle}. Shallow depth of field, commercial photography, 8k quality.`;
       break;
     case 'lifestyle':
-      prompt = `Lifestyle product photography showing a person naturally using "${productName}" in daily life. ${style}. ${toneStyle}. Natural, candid moment feel. ${uspText ? `Highlighting: ${uspText}.` : ''} Commercial lifestyle photography, 8k quality, no text or logos.`;
+      prompt = `${noText} Lifestyle scene environment for ${label} products. ${style}. ${toneStyle}. Natural, candid atmosphere with warm ambient feel. ${uspMood} Commercial lifestyle photography, 8k quality.`;
       break;
     case 'feature':
-      prompt = `Close-up detail shot of "${productName}" highlighting its premium quality and craftsmanship. ${style}. ${toneStyle}. ${uspText ? `Focus on features: ${uspText}.` : ''} Macro product photography, studio lighting, 8k quality, no text.`;
+      prompt = `${noText} Abstract close-up texture or material background related to ${label}. ${style}. ${toneStyle}. ${uspMood} Macro photography, studio lighting, 8k quality.`;
       break;
   }
 

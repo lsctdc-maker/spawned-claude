@@ -8,6 +8,7 @@ import { useCanvasEditorStore } from './state/canvasStore';
 import { composeSectionCanvas } from './templates';
 import { ManuscriptSection } from '@/lib/types';
 import { CanvasColors, CanvasFonts } from './templates/types';
+import { Undo2, Redo2, RefreshCw } from 'lucide-react';
 
 const CANVAS_W = 860;
 
@@ -32,6 +33,7 @@ export default function CanvasWorkspace({
   const store = useCanvasEditorStore();
   const sectionId = section.id;
   const [canvasHeight, setCanvasHeight] = useState(520);
+  const [composing, setComposing] = useState(true);
 
   const { fabricCanvas, ready, getFabricModule } = useFabricCanvas(canvasElRef, CANVAS_W, canvasHeight);
   const { undo, redo, canUndo, canRedo } = useCanvasHistory(fabricCanvas, sectionId, ready);
@@ -87,21 +89,29 @@ export default function CanvasWorkspace({
     if (!canvas || !ready || !fabricModule) return;
 
     const loadCanvas = async () => {
-      const saved = store.getCanvasState(sectionId);
-      userEditedRef.current = false;
+      setComposing(true);
+      try {
+        const saved = store.getCanvasState(sectionId);
+        userEditedRef.current = false;
 
-      if (saved && saved.canvasJSON && saved.dirty) {
-        // Load saved canvas state
-        setCanvasHeight(saved.canvasHeight);
-        canvas.setDimensions({ width: CANVAS_W, height: saved.canvasHeight });
-        canvas.loadFromJSON(saved.canvasJSON, () => {
-          canvas.renderAll();
-        });
-        lastImageUrlRef.current = saved.imageUrl;
-      } else {
-        // Compose new canvas from template + AI image
-        const imageUrl = store.sections[sectionId]?.imageUrl || null;
-        await composeCanvas(imageUrl);
+        if (saved && saved.canvasJSON && saved.dirty) {
+          // Load saved canvas state
+          setCanvasHeight(saved.canvasHeight);
+          canvas.setDimensions({ width: CANVAS_W, height: saved.canvasHeight });
+          await new Promise<void>(resolve => {
+            canvas.loadFromJSON(saved.canvasJSON, () => {
+              canvas.renderAll();
+              resolve();
+            });
+          });
+          lastImageUrlRef.current = saved.imageUrl;
+        } else {
+          // Compose new canvas from template + AI image
+          const imageUrl = store.sections[sectionId]?.imageUrl || null;
+          await composeCanvas(imageUrl);
+        }
+      } finally {
+        setComposing(false);
       }
     };
 
@@ -114,7 +124,8 @@ export default function CanvasWorkspace({
     if (!ready) return;
     // Only recompose if imageUrl actually changed AND canvas hasn't been user-edited
     if (currentImageUrl && currentImageUrl !== lastImageUrlRef.current && !userEditedRef.current) {
-      composeCanvas(currentImageUrl);
+      setComposing(true);
+      composeCanvas(currentImageUrl).finally(() => setComposing(false));
     }
   }, [currentImageUrl, ready, composeCanvas]);
 
@@ -172,26 +183,37 @@ export default function CanvasWorkspace({
         <button
           onClick={undo}
           disabled={!canUndo}
-          className="px-3 py-1.5 text-xs text-[#c7c4d8] bg-[#1c1b1b] border border-[#464555]/20 rounded-lg disabled:opacity-30 hover:border-[#c3c0ff]/30 transition-all"
-          title="Ctrl+Z"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-[#c7c4d8] bg-[#1c1b1b] border border-[#464555]/20 rounded-lg disabled:opacity-30 hover:border-[#c3c0ff]/30 transition-all"
+          title="실행 취소 (Ctrl+Z)"
         >
+          <Undo2 className="w-3.5 h-3.5" />
           실행 취소
         </button>
         <button
           onClick={redo}
           disabled={!canRedo}
-          className="px-3 py-1.5 text-xs text-[#c7c4d8] bg-[#1c1b1b] border border-[#464555]/20 rounded-lg disabled:opacity-30 hover:border-[#c3c0ff]/30 transition-all"
-          title="Ctrl+Y"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-[#c7c4d8] bg-[#1c1b1b] border border-[#464555]/20 rounded-lg disabled:opacity-30 hover:border-[#c3c0ff]/30 transition-all"
+          title="다시 실행 (Ctrl+Y)"
         >
+          <Redo2 className="w-3.5 h-3.5" />
           다시 실행
         </button>
       </div>
 
       {/* Canvas container */}
       <div
-        className="rounded-xl overflow-hidden border border-[#464555]/15 shadow-[0_20px_60px_rgba(0,0,0,0.5)]"
+        className="relative rounded-xl overflow-hidden border border-[#464555]/15 shadow-[0_20px_60px_rgba(0,0,0,0.5)]"
         style={{ width: CANVAS_W }}
       >
+        {(!ready || composing) && (
+          <div
+            className="absolute inset-0 flex flex-col items-center justify-center bg-[#1a1a1a] z-10 rounded-xl"
+            style={{ minHeight: canvasHeight }}
+          >
+            <RefreshCw className="w-6 h-6 text-[#c3c0ff]/40 animate-spin mb-2" />
+            <span className="text-[10px] text-[#c7c4d8]/50">캔버스 로딩 중...</span>
+          </div>
+        )}
         <canvas ref={canvasElRef} />
       </div>
 
