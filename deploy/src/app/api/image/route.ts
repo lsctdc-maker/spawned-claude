@@ -136,9 +136,9 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await response.json();
-    const imageUrl = data.data?.[0]?.url;
+    const dalleUrl = data.data?.[0]?.url;
 
-    if (!imageUrl) {
+    if (!dalleUrl) {
       return NextResponse.json({
         success: true,
         imageUrl: getPlaceholderUrl(type, productName),
@@ -147,12 +147,28 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    return NextResponse.json({
-      success: true,
-      imageUrl,
-      isPlaceholder: false,
-      revisedPrompt: data.data?.[0]?.revised_prompt,
-    });
+    // Proxy: download DALL-E image and return as base64 data URL to avoid CORS
+    try {
+      const imgRes = await fetch(dalleUrl);
+      const arrayBuffer = await imgRes.arrayBuffer();
+      const base64 = Buffer.from(arrayBuffer).toString('base64');
+      const contentType = imgRes.headers.get('content-type') || 'image/png';
+
+      return NextResponse.json({
+        success: true,
+        imageUrl: `data:${contentType};base64,${base64}`,
+        isPlaceholder: false,
+        revisedPrompt: data.data?.[0]?.revised_prompt,
+      });
+    } catch (proxyErr) {
+      console.error('Image proxy failed, returning raw URL:', proxyErr);
+      return NextResponse.json({
+        success: true,
+        imageUrl: dalleUrl,
+        isPlaceholder: false,
+        revisedPrompt: data.data?.[0]?.revised_prompt,
+      });
+    }
   } catch (error) {
     console.error('Image generation error:', error);
     return NextResponse.json(

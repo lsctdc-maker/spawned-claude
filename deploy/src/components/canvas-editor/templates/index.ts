@@ -61,10 +61,10 @@ export async function composeSectionCanvas(
       canvas.add(bgImg);
     } catch (e) {
       console.warn('Failed to load background image:', e);
-      canvas.setBackgroundColor(colors.bg, () => {});
+      canvas.backgroundColor = colors.bg;
     }
   } else {
-    canvas.setBackgroundColor(colors.bg, () => {});
+    canvas.backgroundColor = colors.bg;
   }
 
   // 2. Dark overlay for text readability
