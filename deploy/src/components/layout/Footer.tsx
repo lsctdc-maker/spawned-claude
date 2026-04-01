@@ -1,7 +1,5 @@
 'use client';
 
-import Link from 'next/link';
-
 export default function Footer() {
   return (
     <footer className="border-t border-[#E5E8EB] bg-white">
@@ -11,12 +9,12 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} DetailMaker. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
-            <Link href="/plan" className="text-[#8B95A1] hover:text-[#191F28] text-xs transition-colors">
+            <span className="text-[#8B95A1] text-xs cursor-default">
               서비스 이용약관
-            </Link>
-            <Link href="/plan" className="text-[#8B95A1] hover:text-[#191F28] text-xs transition-colors">
+            </span>
+            <span className="text-[#8B95A1] text-xs cursor-default">
               개인정보처리방침
-            </Link>
+            </span>
           </div>
         </div>
       </div>

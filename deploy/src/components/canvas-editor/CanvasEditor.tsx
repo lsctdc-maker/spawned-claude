@@ -14,7 +14,7 @@ import LayerPanel from './panels/LayerPanel';
 import Button from '@/components/ui/Button';
 import {
   Download, RefreshCw, ChevronLeft, ChevronRight, Layers, Type, Palette,
-  Image as ImageIcon, Maximize2, Minimize2,
+  Image as ImageIcon,
 } from 'lucide-react';
 
 export default function CanvasEditor() {
@@ -23,7 +23,6 @@ export default function CanvasEditor() {
   const { manuscriptSections, productPhotos, colorPalette, fontRecommendation, productInfo, extractedUSPs, selectedTone } = state;
 
   const [selectedObj, setSelectedObj] = useState<any>(null);
-  const [isFullscreen, setIsFullscreen] = useState(true); // Default full-screen
   const [downloading, setDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
   const canvasRef = useRef<React.MutableRefObject<any>>({ current: null });
@@ -118,8 +117,12 @@ export default function CanvasEditor() {
     // CanvasWorkspace watches store.sections[sectionId].imageUrl and auto-recomposes
   }, [activeSection, regenerateSection]);
 
-  // Fullscreen toggle
-  const toggleFullscreen = useCallback(() => setIsFullscreen(f => !f), []);
+  // Navigate to main
+  const handleGoMain = useCallback(() => {
+    if (window.confirm('메인으로 돌아가시겠습니까? 저장하지 않은 변경사항이 사라질 수 있습니다.')) {
+      window.location.href = '/';
+    }
+  }, []);
 
   if (visibleSections.length === 0) {
     return (
@@ -142,20 +145,19 @@ export default function CanvasEditor() {
   const anyGenerating = store.isAnyGenerating();
 
   return (
-    <div className={`flex flex-col bg-[#F4F5F7] ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
+    <div className="flex flex-col bg-[#F4F5F7] fixed inset-0 z-50">
       {/* ===== Top Bar ===== */}
       <div className="flex items-center justify-between px-4 py-2.5 bg-white border-b border-[#E5E8EB] flex-shrink-0">
-        {/* Left: Back + Title */}
+        {/* Left: Back to Main + Title */}
         <div className="flex items-center gap-3">
-          {isFullscreen && (
-            <button
-              onClick={toggleFullscreen}
-              className="p-1.5 rounded-lg text-[#8B95A1] hover:text-[#191F28] hover:bg-[#F4F5F7] transition-all"
-              title="전체화면 종료"
-            >
-              <Minimize2 className="w-4 h-4" />
-            </button>
-          )}
+          <button
+            onClick={handleGoMain}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[#8B95A1] hover:text-[#191F28] hover:bg-[#F4F5F7] transition-all text-xs"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            메인으로
+          </button>
+          <div className="w-px h-5 bg-[#E5E8EB]" />
           <div>
             <h1 className="text-sm font-bold text-[#191F28]">이미지 에디터</h1>
             <p className="text-[10px] text-[#8B95A1]">
@@ -212,19 +214,8 @@ export default function CanvasEditor() {
             ))}
           </div>
 
-          {/* Fullscreen toggle */}
-          {!isFullscreen && (
-            <button
-              onClick={toggleFullscreen}
-              className="p-1.5 rounded-lg text-[#8B95A1] hover:text-[#191F28] hover:bg-[#F4F5F7] transition-all"
-              title="전체화면"
-            >
-              <Maximize2 className="w-4 h-4" />
-            </button>
-          )}
-
           {/* Exit to next step */}
-          <Button size="sm" onClick={() => { setIsFullscreen(false); dispatch({ type: 'NEXT_STEP' }); }}>
+          <Button size="sm" onClick={() => dispatch({ type: 'NEXT_STEP' })}>
             다음: 내보내기
           </Button>
         </div>
@@ -536,7 +527,7 @@ export default function CanvasEditor() {
 
       {/* ===== Bottom Bar ===== */}
       <div className="flex items-center justify-between px-4 py-2 bg-white border-t border-[#E5E8EB] flex-shrink-0">
-        <Button variant="ghost" size="sm" onClick={() => { setIsFullscreen(false); dispatch({ type: 'PREV_STEP' }); }}>
+        <Button variant="ghost" size="sm" onClick={() => dispatch({ type: 'PREV_STEP' })}>
           이전 (원고 수정)
         </Button>
         <div className="flex items-center gap-2">

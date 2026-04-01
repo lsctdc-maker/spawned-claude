@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import LoginModal from '@/components/auth/LoginModal';
-import { LogOut, User } from 'lucide-react';
+import { LogOut, User, LayoutDashboard } from 'lucide-react';
 
 export default function Header() {
   const { user, signOut, loading } = useAuth();
@@ -20,6 +20,30 @@ export default function Header() {
                 DetailMaker
               </span>
             </Link>
+
+            <nav className="hidden md:flex items-center gap-6">
+              <Link
+                href="/plan"
+                className="text-[#4E5968] hover:text-[#3182F6] transition-colors font-semibold text-sm"
+              >
+                AI 기획
+              </Link>
+              <Link
+                href="/design"
+                className="text-[#4E5968] hover:text-[#3182F6] transition-colors font-semibold text-sm"
+              >
+                이미지 제작
+              </Link>
+              {user && (
+                <Link
+                  href="/dashboard"
+                  className="text-[#4E5968] hover:text-[#3182F6] transition-colors font-semibold text-sm flex items-center gap-1"
+                >
+                  <LayoutDashboard className="w-3.5 h-3.5" />
+                  내 프로젝트
+                </Link>
+              )}
+            </nav>
 
             <div className="flex items-center gap-3">
               {!loading && (
