@@ -33,13 +33,19 @@ export async function composeSectionCanvas(
   fonts: CanvasFonts,
   productPhotoUrl: string | null,
 ): Promise<void> {
-  const template = getTemplate(section.sectionType);
+  // Use section.order for variant selection to ensure visual diversity
+  const template = getTemplate(section.sectionType, section.order);
 
   // Set canvas height
   canvas.setDimensions({ width: 860, height: template.canvasHeight });
 
   // Clear canvas
   canvas.clear();
+
+  // Learned pattern: real detail pages alternate light/dark backgrounds per section
+  // Even-order sections: lighter overlay, Odd-order sections: darker overlay
+  const sectionOrder = section.order ?? 0;
+  const isEvenSection = sectionOrder % 2 === 0;
 
   // 1. Set background image if available
   if (bgImageUrl) {
@@ -61,24 +67,47 @@ export async function composeSectionCanvas(
       canvas.add(bgImg);
     } catch (e) {
       console.warn('Failed to load background image:', e);
-      canvas.backgroundColor = colors.bg;
+      // No image: use alternating solid background from color palette
+      canvas.backgroundColor = isEvenSection ? colors.bg : colors.bg2;
     }
   } else {
-    canvas.backgroundColor = colors.bg;
+    // No image: alternate between light and tinted backgrounds
+    canvas.backgroundColor = isEvenSection ? colors.bg : colors.bg2;
   }
 
-  // 2. Dark overlay for text readability
+  // 2. Overlay for text readability
+  // Learned pattern: alternating light/dark overlays per section order
   if (bgImageUrl && template.overlayColor) {
     const overlay = new fabricModule.Rect({
       left: 0,
       top: 0,
       width: 860,
       height: template.canvasHeight,
-      fill: template.overlayColor,
       selectable: false,
       evented: false,
       name: '오버레이',
     });
+
+    // Parse the base overlay opacity from template
+    const opacityMatch = template.overlayColor.match(/[\d.]+\)$/);
+    const baseOpacity = opacityMatch ? parseFloat(opacityMatch[0]) : 0.4;
+
+    // Alternate: even sections get lighter overlay, odd sections get darker
+    const adjustedOpacity = isEvenSection
+      ? Math.max(0.15, baseOpacity - 0.15)  // lighter: image more visible
+      : Math.min(0.65, baseOpacity + 0.1);  // darker: text more readable
+
+    // Apply gradient overlay
+    overlay.set('fill', new fabricModule.Gradient({
+      type: 'linear',
+      coords: { x1: 0, y1: 0, x2: 0, y2: template.canvasHeight },
+      colorStops: [
+        { offset: 0, color: `rgba(0,0,0,${Math.max(0.05, adjustedOpacity - 0.15).toFixed(2)})` },
+        { offset: 0.5, color: `rgba(0,0,0,${adjustedOpacity.toFixed(2)})` },
+        { offset: 1, color: `rgba(0,0,0,${Math.min(0.7, adjustedOpacity + 0.1).toFixed(2)})` },
+      ],
+    }));
+
     canvas.add(overlay);
   }
 

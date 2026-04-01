@@ -121,6 +121,51 @@ function buildSearchQuery(
   return `${typeKeywords} ${toneExtra}`;
 }
 
+// ===== imageGuide → 영문 검색 키워드 변환 (GPT-4o-mini) =====
+async function buildSmartQuery(
+  imageGuide: string,
+  category: string,
+  tone: string,
+): Promise<string | null> {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey || !imageGuide.trim()) return null;
+
+  try {
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: 'You convert Korean image descriptions into 5-8 English search keywords for stock photo sites (Unsplash/Pexels). Return ONLY space-separated keywords, no explanation. Focus on visual elements, mood, and composition. Never include brand names or product-specific terms.',
+          },
+          {
+            role: 'user',
+            content: `Category: ${category}\nTone: ${tone}\nImage description: ${imageGuide}`,
+          },
+        ],
+        max_tokens: 60,
+        temperature: 0.3,
+      }),
+    });
+
+    if (!res.ok) return null;
+
+    const data = await res.json();
+    const keywords = data.choices?.[0]?.message?.content?.trim();
+    if (!keywords || keywords.length < 5) return null;
+
+    return keywords;
+  } catch {
+    return null;
+  }
+}
+
 // ===== Unsplash 검색 =====
 async function searchUnsplash(
   query: string,
@@ -265,6 +310,7 @@ async function generateWithDallE3(
   type: 'hero' | 'background' | 'lifestyle' | 'feature',
   category: string,
   tone: string,
+  imageGuide?: string,
 ): Promise<string | null> {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) return null;
@@ -287,11 +333,14 @@ async function generateWithDallE3(
   const toneStyle = toneStyles[tone] || toneStyles.trust;
   const noText = 'CRITICAL: The image must contain absolutely NO text, NO words, NO letters, NO numbers, NO logos, NO watermarks. Pure visual imagery only.';
 
+  // imageGuide가 있으면 프롬프트에 포함
+  const guideContext = imageGuide ? ` Scene description: ${imageGuide}.` : '';
+
   const prompts: Record<string, string> = {
-    hero: `${noText} Wide panoramic background scene for ${label} product landing page. Dramatic cinematic environment. ${toneStyle}. High-end commercial photography, 8k.`,
-    background: `${noText} Beautiful background surface for ${label} product photography. No product, just environment. ${toneStyle}. Shallow depth of field, 8k.`,
-    lifestyle: `${noText} Lifestyle scene environment for ${label} products. ${toneStyle}. Natural, candid atmosphere. Commercial lifestyle photography, 8k.`,
-    feature: `${noText} Abstract close-up texture related to ${label}. ${toneStyle}. Macro photography, studio lighting, 8k.`,
+    hero: `${noText} Wide panoramic background scene for ${label} product landing page.${guideContext} Dramatic cinematic environment. ${toneStyle}. High-end commercial photography, 8k.`,
+    background: `${noText} Beautiful background surface for ${label} product photography.${guideContext} No product, just environment. ${toneStyle}. Shallow depth of field, 8k.`,
+    lifestyle: `${noText} Lifestyle scene environment for ${label} products.${guideContext} ${toneStyle}. Natural, candid atmosphere. Commercial lifestyle photography, 8k.`,
+    feature: `${noText} Abstract close-up texture related to ${label}.${guideContext} ${toneStyle}. Macro photography, studio lighting, 8k.`,
   };
 
   try {
@@ -354,15 +403,25 @@ export async function POST(request: NextRequest) {
       productName = '제품',
       category = 'others',
       tone = 'trust',
+      imageGuide = '',
+      sectionTitle = '',
     } = body;
 
     const orientation = type === 'hero' ? 'landscape' : 'squarish';
     const pexelsOrientation = type === 'hero' ? 'landscape' : 'square';
 
     // ===== Step 1: 스톡 이미지 검색 =====
-    const query = buildSearchQuery(type as any, category, tone);
+    // imageGuide가 있으면 GPT-4o-mini로 스마트 검색어 생성, 없으면 기존 키워드 매핑
+    let query: string;
+    const smartQuery = imageGuide ? await buildSmartQuery(imageGuide, category, tone) : null;
+    if (smartQuery) {
+      query = smartQuery;
+      console.log(`[image] Smart query from imageGuide: "${query}"`);
+    } else {
+      query = buildSearchQuery(type as any, category, tone);
+      console.log(`[image] Fallback to keyword query: "${query}"`);
+    }
     console.log(`[image] auth=${isAuthenticated}, type=${type}, category=${category}`);
-    console.log(`[image] Searching stock: "${query}" (${orientation})`);
 
     let stockUrl: string | null = null;
     let source: 'unsplash' | 'pexels' | 'dalle' | 'placeholder' = 'placeholder';
@@ -400,7 +459,7 @@ export async function POST(request: NextRequest) {
 
     // ===== Step 3: DALL-E 3 직접 생성 (최종 fallback) =====
     console.log(`[image] Stock search failed → falling back to DALL-E 3 generation`);
-    const dalleBase64 = await generateWithDallE3(type as any, category, tone);
+    const dalleBase64 = await generateWithDallE3(type as any, category, tone, imageGuide || undefined);
     if (dalleBase64) {
       return NextResponse.json({
         success: true,

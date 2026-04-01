@@ -48,6 +48,7 @@ export interface ShapeObjectDef {
 
 export interface SectionTemplate {
   sectionType: ManuscriptSectionType;
+  variantId: string;            // 'A' | 'B' | 'C' — layout variant identifier
   canvasHeight: number;
   overlayColor: string;       // e.g. 'rgba(0,0,0,0.45)'
   hasProductImage: boolean;

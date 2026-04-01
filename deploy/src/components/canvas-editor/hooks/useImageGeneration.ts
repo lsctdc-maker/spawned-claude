@@ -23,6 +23,8 @@ export function useImageGeneration(ctx: GenerationContext) {
       category: ctx.productInfo.category || 'others',
       usps: ctx.extractedUSPs.map(u => u.title).slice(0, 3),
       tone: ctx.selectedTone || 'trust',
+      imageGuide: section.imageGuide || '',
+      sectionTitle: section.title || '',
     });
 
     store.setGenerating(section.id, true);
