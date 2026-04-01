@@ -32,9 +32,10 @@ export async function composeSectionCanvas(
   colors: CanvasColors,
   fonts: CanvasFonts,
   productPhotoUrl: string | null,
+  category?: string,
 ): Promise<void> {
   // Use section.order for variant selection to ensure visual diversity
-  const template = getTemplate(section.sectionType, section.order);
+  const template = getTemplate(section.sectionType, section.order, category);
 
   // Set canvas height
   canvas.setDimensions({ width: 860, height: template.canvasHeight });

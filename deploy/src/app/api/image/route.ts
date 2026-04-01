@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, isAuthError } from '@/lib/auth-server';
+import { getCategoryStyleModifiers, getCategoryImageContext } from '@/lib/design-knowledge';
 
 // ===== 카테고리별 검색 키워드 (Unsplash/Pexels용) =====
 const searchKeywords: Record<string, Record<string, string>> = {
@@ -146,7 +147,7 @@ async function buildSmartQuery(
           },
           {
             role: 'user',
-            content: `Category: ${category}\nTone: ${tone}\nImage description: ${imageGuide}`,
+            content: `Category: ${category}\nTone: ${tone}\nStyle: ${getCategoryStyleModifiers(category as any)}\nImage description: ${imageGuide}`,
           },
         ],
         max_tokens: 60,
@@ -333,14 +334,17 @@ async function generateWithDallE3(
   const toneStyle = toneStyles[tone] || toneStyles.trust;
   const noText = 'CRITICAL: The image must contain absolutely NO text, NO words, NO letters, NO numbers, NO logos, NO watermarks. Pure visual imagery only.';
 
+  // 카테고리별 스타일 키워드 (실제 한국 상세페이지 분석 기반)
+  const styleModifiers = getCategoryStyleModifiers(category as any);
+
   // imageGuide가 있으면 프롬프트에 포함
   const guideContext = imageGuide ? ` Scene description: ${imageGuide}.` : '';
 
   const prompts: Record<string, string> = {
-    hero: `${noText} Wide panoramic background scene for ${label} product landing page.${guideContext} Dramatic cinematic environment. ${toneStyle}. High-end commercial photography, 8k.`,
-    background: `${noText} Beautiful background surface for ${label} product photography.${guideContext} No product, just environment. ${toneStyle}. Shallow depth of field, 8k.`,
-    lifestyle: `${noText} Lifestyle scene environment for ${label} products.${guideContext} ${toneStyle}. Natural, candid atmosphere. Commercial lifestyle photography, 8k.`,
-    feature: `${noText} Abstract close-up texture related to ${label}.${guideContext} ${toneStyle}. Macro photography, studio lighting, 8k.`,
+    hero: `${noText} Wide panoramic background scene for ${label} product landing page.${guideContext} Style: ${styleModifiers}. ${toneStyle}. High-end commercial photography, 8k.`,
+    background: `${noText} Beautiful background surface for ${label} product photography.${guideContext} Style: ${styleModifiers}. No product, just environment. ${toneStyle}. Shallow depth of field, 8k.`,
+    lifestyle: `${noText} Lifestyle scene environment for ${label} products.${guideContext} Style: ${styleModifiers}. ${toneStyle}. Natural, candid atmosphere. Commercial lifestyle photography, 8k.`,
+    feature: `${noText} Abstract close-up texture related to ${label}.${guideContext} Style: ${styleModifiers}. ${toneStyle}. Macro photography, studio lighting, 8k.`,
   };
 
   try {

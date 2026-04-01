@@ -4,7 +4,6 @@ import { useReducer, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
 import { DetailPageContext, detailPageReducer, initialState } from '@/hooks/useDetailPage';
-import Header from '@/components/layout/Header';
 import ProgressBar from '@/components/ui/ProgressBar';
 import Step1ProductInfo from '@/components/steps/Step1ProductInfo';
 import Step2AIInterview from '@/components/steps/Step2AIInterview';
@@ -51,10 +50,16 @@ export default function PlanPage() {
 
   return (
     <DetailPageContext.Provider value={{ state, dispatch }}>
-      <div className="h-screen flex flex-col bg-[#0a0a0a]">
-        <Header />
-        <div className="bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-[#e5e2e1]/10 flex-shrink-0 z-40">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3">
+      <div className="h-screen flex flex-col bg-white">
+        {/* Minimal header with just logo */}
+        <div className="flex-shrink-0 border-b border-[#E5E8EB] py-4">
+          <div className="text-center">
+            <span className="text-lg font-bold text-[#191F28]">DetailMaker</span>
+          </div>
+        </div>
+        {/* Progress bar */}
+        <div className="flex-shrink-0 z-40">
+          <div className="max-w-3xl mx-auto px-6 pt-4">
             <ProgressBar
               currentStep={state.currentStep}
               labels={PLAN_STEP_LABELS}
@@ -62,7 +67,7 @@ export default function PlanPage() {
           </div>
         </div>
         <main className="flex-1 overflow-y-auto">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+          <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
             <AnimatePresence mode="wait">
               <div key={state.currentStep}>
                 {renderStep()}

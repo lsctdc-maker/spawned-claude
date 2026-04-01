@@ -66,7 +66,7 @@ export default function EditableText({ value, onSave, tag: Tag = 'span', classNa
       onKeyDown={handleKeyDown}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`${className} ${isEditing ? 'outline-none ring-1 ring-[#c3c0ff]/50 rounded px-1 bg-[#c3c0ff]/5' : ''} ${!isEditing && isHovered ? 'outline-dashed outline-1 outline-[#c3c0ff]/30 rounded cursor-text' : ''} transition-all relative`}
+      className={`${className} ${isEditing ? 'outline-none ring-1 ring-[#3182F6]/50 rounded px-1 bg-[#3182F6]/5' : ''} ${!isEditing && isHovered ? 'outline-dashed outline-1 outline-[#3182F6]/30 rounded cursor-text' : ''} transition-all relative`}
       style={style}
     >
       {value}

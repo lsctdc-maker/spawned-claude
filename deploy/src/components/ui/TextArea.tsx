@@ -14,22 +14,22 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
     return (
       <div className="w-full">
         {label && (
-          <label htmlFor={textAreaId} className="block text-[10px] uppercase tracking-widest text-[#e5e2e1]/50 mb-3 ml-1 font-label">{label}</label>
+          <label htmlFor={textAreaId} className="block text-sm text-[#8B95A1] mb-2 font-medium">{label}</label>
         )}
         <textarea
           ref={ref}
           id={textAreaId}
           className={`
-            w-full bg-[#1c1b1b] border-0 border-b transition-all duration-300
-            py-4 px-2 text-[#e5e2e1] placeholder:text-[#e5e2e1]/20
+            w-full bg-transparent border-0 border-b-2 transition-all duration-200
+            py-3 px-1 text-[#191F28] placeholder:text-[#D1D6DB]
             focus:outline-none focus:ring-0 resize-y min-h-[100px]
-            ${error ? 'border-[#ffb4ab] focus:border-[#ffb4ab]' : 'border-[#464555]/20 focus:border-[#c3c0ff]'}
+            ${error ? 'border-[#F04452] focus:border-[#F04452]' : 'border-[#E5E8EB] focus:border-[#3182F6]'}
             ${className}
           `}
           {...props}
         />
-        {error && <p className="mt-2 text-sm text-[#ffb4ab]">{error}</p>}
-        {hint && !error && <p className="mt-2 text-sm text-[#e5e2e1]/40">{hint}</p>}
+        {error && <p className="mt-2 text-sm text-[#F04452]">{error}</p>}
+        {hint && !error && <p className="mt-2 text-sm text-[#8B95A1]">{hint}</p>}
       </div>
     );
   }

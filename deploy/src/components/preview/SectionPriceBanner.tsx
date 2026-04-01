@@ -17,7 +17,7 @@ export default function SectionPriceBanner({ content, sectionId }: SectionPriceB
   const [editData, setEditData] = useState(content);
 
   const category = productInfo.category ? CATEGORIES[productInfo.category as keyof typeof CATEGORIES] : null;
-  const primaryColor = category?.primary || '#c3c0ff';
+  const primaryColor = category?.primary || '#3182F6';
 
   const handleSave = () => {
     dispatch({ type: 'UPDATE_SECTION', payload: { id: sectionId, data: { content: editData } } });
@@ -30,47 +30,47 @@ export default function SectionPriceBanner({ content, sectionId }: SectionPriceB
 
   if (isEditing) {
     return (
-      <div className="p-6 space-y-4 bg-[#1c1b1b]">
-        <h3 className="font-headline font-bold text-[#e5e2e1] mb-4">가격 배너 편집</h3>
+      <div className="p-6 space-y-4 bg-white">
+        <h3 className="font-headline font-bold text-[#191F28] mb-4">가격 배너 편집</h3>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs text-[#c7c4d8] mb-1">정상가</label>
+            <label className="block text-xs text-[#8B95A1] mb-1">정상가</label>
             <input
               type="number"
               value={editData.originalPrice}
               onChange={(e) => setEditData({ ...editData, originalPrice: Number(e.target.value) })}
-              className="w-full bg-[#201f1f] border-b border-[#464555]/20 px-2 py-2 text-[#e5e2e1] focus:outline-none focus:border-[#c3c0ff]"
+              className="w-full bg-[#F4F5F7] border-b border-[#E5E8EB]/20 px-2 py-2 text-[#191F28] focus:outline-none focus:border-[#3182F6]"
             />
           </div>
           <div>
-            <label className="block text-xs text-[#c7c4d8] mb-1">할인가</label>
+            <label className="block text-xs text-[#8B95A1] mb-1">할인가</label>
             <input
               type="number"
               value={editData.salePrice}
               onChange={(e) => setEditData({ ...editData, salePrice: Number(e.target.value) })}
-              className="w-full bg-[#201f1f] border-b border-[#464555]/20 px-2 py-2 text-[#e5e2e1] focus:outline-none focus:border-[#c3c0ff]"
+              className="w-full bg-[#F4F5F7] border-b border-[#E5E8EB]/20 px-2 py-2 text-[#191F28] focus:outline-none focus:border-[#3182F6]"
             />
           </div>
         </div>
         <div>
-          <label className="block text-xs text-[#c7c4d8] mb-1">할인율 (%)</label>
+          <label className="block text-xs text-[#8B95A1] mb-1">할인율 (%)</label>
           <input
             type="number"
             value={editData.discountRate}
             onChange={(e) => setEditData({ ...editData, discountRate: Number(e.target.value) })}
-            className="w-full bg-[#201f1f] border-b border-[#464555]/20 px-2 py-2 text-[#e5e2e1] focus:outline-none focus:border-[#c3c0ff]"
+            className="w-full bg-[#F4F5F7] border-b border-[#E5E8EB]/20 px-2 py-2 text-[#191F28] focus:outline-none focus:border-[#3182F6]"
           />
         </div>
         <div>
-          <label className="block text-xs text-[#c7c4d8] mb-1">이벤트 문구</label>
+          <label className="block text-xs text-[#8B95A1] mb-1">이벤트 문구</label>
           <input
             value={editData.eventText}
             onChange={(e) => setEditData({ ...editData, eventText: e.target.value })}
-            className="w-full bg-[#201f1f] border-b border-[#464555]/20 px-2 py-2 text-[#e5e2e1] focus:outline-none focus:border-[#c3c0ff]"
+            className="w-full bg-[#F4F5F7] border-b border-[#E5E8EB]/20 px-2 py-2 text-[#191F28] focus:outline-none focus:border-[#3182F6]"
             placeholder="오늘만 특가!"
           />
         </div>
-        <label className="flex items-center gap-2 text-sm text-[#c7c4d8]">
+        <label className="flex items-center gap-2 text-sm text-[#8B95A1]">
           <input
             type="checkbox"
             checked={editData.freeShipping}
@@ -80,8 +80,8 @@ export default function SectionPriceBanner({ content, sectionId }: SectionPriceB
           무료배송
         </label>
         <div className="flex gap-2 justify-end">
-          <button onClick={() => setIsEditing(false)} className="px-4 py-2 text-sm rounded-full text-[#c7c4d8] hover:bg-[#2a2a2a]">취소</button>
-          <button onClick={handleSave} className="px-4 py-2 text-sm rounded-full primary-gradient text-[#0f0069] font-bold">저장</button>
+          <button onClick={() => setIsEditing(false)} className="px-4 py-2 text-sm rounded-full text-[#8B95A1] hover:bg-[#F4F5F7]">취소</button>
+          <button onClick={handleSave} className="px-4 py-2 text-sm rounded-full primary-gradient text-white font-bold">저장</button>
         </div>
       </div>
     );
@@ -96,7 +96,7 @@ export default function SectionPriceBanner({ content, sectionId }: SectionPriceB
         }}
       >
         <div className="section-edit-overlay">
-          <span className="px-3 py-1.5 rounded-full bg-[#201f1f] shadow-md text-xs text-[#c7c4d8] border border-[#464555]/20">클릭하여 편집</span>
+          <span className="px-3 py-1.5 rounded-full bg-[#F4F5F7] shadow-md text-xs text-[#8B95A1] border border-[#E5E8EB]/20">클릭하여 편집</span>
         </div>
 
         {/* 이벤트 문구 뱃지 */}
@@ -114,7 +114,7 @@ export default function SectionPriceBanner({ content, sectionId }: SectionPriceB
         <div className="flex items-center justify-center gap-6 flex-wrap">
           {/* 정상가 (취소선) */}
           {content.originalPrice > content.salePrice && (
-            <div className="text-[#e5e2e1]/40">
+            <div className="text-[#191F28]/40">
               <span className="text-sm">정상가</span>
               <p className="text-xl line-through">{formatPrice(content.originalPrice)}원</p>
             </div>

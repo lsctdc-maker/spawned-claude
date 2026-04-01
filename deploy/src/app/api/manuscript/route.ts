@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, isAuthError } from '@/lib/auth-server';
 import { ProductInfo, USP, InterviewMessage, ManuscriptSection, ManuscriptSectionType, ToneKey, ColorPalette, FontRecommendation, ReferenceGuide } from '@/lib/types';
+import { buildCategoryDesignBrief, getRecommendedSectionCount, validateColorPalette } from '@/lib/design-knowledge';
 
 const SYSTEM_PROMPT = `당신은 한국 이커머스 상세페이지 전문 카피라이터입니다.
 상품 정보, USP, 인터뷰 내용을 바탕으로 상세페이지 원고를 작성합니다.
@@ -43,6 +44,10 @@ function buildPrompt(productInfo: ProductInfo, usps: USP[], interviewMessages: I
     .filter((c) => c && c !== '(건너뜀)')
     .join('\n---\n');
 
+  // 카테고리별 디자인 브리프 주입 (실제 분석 데이터 기반)
+  const designBrief = buildCategoryDesignBrief(productInfo.category);
+  const recommendedCount = getRecommendedSectionCount(productInfo.category);
+
   return `다음 정보를 바탕으로 상세페이지 원고를 작성해주세요.
 
 [상품 정보]
@@ -53,7 +58,11 @@ ${uspText || '없음'}
 
 [인터뷰 답변 요약]
 ${interviewText || '없음'}
-
+${designBrief ? `
+${designBrief}
+권장 섹션 수 참고: ${recommendedCount}개 (±2개 범위 내 조절 가능)
+colorPalette 작성 시 위 색상 경향을 참고하되, 제품 특성에 맞게 조정하세요.
+` : ''}
 [한국형 9단계 상세페이지 구조]
 아래 섹션 타입을 순서대로 사용하세요. 제품 특성에 따라 일부 섹션은 생략 가능하나, 반드시 hooking → features → cta 순서는 지켜야 합니다.
 
@@ -308,11 +317,26 @@ export async function POST(request: NextRequest) {
       })
     );
 
-    const colorPalette: ColorPalette | null = parsed.colorPalette || null;
+    let colorPalette: ColorPalette | null = parsed.colorPalette || null;
     const fontRecommendation: FontRecommendation | null = parsed.fontRecommendation || null;
     const layoutRationale: string | null = parsed.layoutRationale || null;
     const referenceGuide: ReferenceGuide | null = parsed.referenceGuide || null;
     const keywords: string[] | null = Array.isArray(parsed.keywords) ? parsed.keywords : null;
+
+    // Phase 2: 카테고리 기준 색상 팔레트 검증
+    if (colorPalette && colorPalette.colors.length > 0 && productInfo.category) {
+      const primaryHex = colorPalette.colors[0].hex;
+      const validation = validateColorPalette(primaryHex, productInfo.category);
+      if (validation.replaced) {
+        colorPalette = {
+          ...colorPalette,
+          colors: [
+            { hex: validation.hex, label: colorPalette.colors[0].label },
+            ...colorPalette.colors.slice(1),
+          ],
+        };
+      }
+    }
 
     return NextResponse.json({ sections, colorPalette, fontRecommendation, layoutRationale, referenceGuide, keywords });
   } catch (error) {

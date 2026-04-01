@@ -134,7 +134,7 @@ export default function ImageControls({ fabricCanvas, selectedObj, sectionId }: 
 
   return (
     <div className="space-y-3">
-      <div className="text-[9px] uppercase tracking-widest text-[#e5e2e1]/30 flex items-center gap-1.5">
+      <div className="text-[9px] uppercase tracking-widest text-[#8B95A1] flex items-center gap-1.5">
         <ImageIcon className="w-3 h-3" />
         이미지
       </div>
@@ -142,7 +142,7 @@ export default function ImageControls({ fabricCanvas, selectedObj, sectionId }: 
       {/* Upload new image */}
       <button
         onClick={handleUpload}
-        className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-[11px] text-[#c7c4d8] bg-[#1c1b1b] border border-[#464555]/20 rounded-lg hover:border-[#c3c0ff]/30 transition-all"
+        className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-[11px] text-[#4E5968] bg-[#F4F5F7] border border-[#E5E8EB] rounded-lg hover:border-[#3182F6]/30 transition-all"
       >
         <Upload className="w-3.5 h-3.5" />
         이미지 추가
@@ -156,7 +156,7 @@ export default function ImageControls({ fabricCanvas, selectedObj, sectionId }: 
           <button
             onClick={handleRemoveBg}
             disabled={removingBg}
-            className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-[11px] text-[#c7c4d8] bg-[#1c1b1b] border border-[#464555]/20 rounded-lg hover:border-[#c3c0ff]/30 transition-all disabled:opacity-40"
+            className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-[11px] text-[#4E5968] bg-[#F4F5F7] border border-[#E5E8EB] rounded-lg hover:border-[#3182F6]/30 transition-all disabled:opacity-40"
           >
             {removingBg ? (
               <RefreshCw className="w-3.5 h-3.5 animate-spin" />
@@ -172,7 +172,7 @@ export default function ImageControls({ fabricCanvas, selectedObj, sectionId }: 
 
           {/* Opacity */}
           <div className="flex items-center gap-2">
-            <label className="text-[9px] text-[#c7c4d8]/50 w-10">투명도</label>
+            <label className="text-[9px] text-[#8B95A1] w-10">투명도</label>
             <input
               type="range"
               min={0}
@@ -180,9 +180,9 @@ export default function ImageControls({ fabricCanvas, selectedObj, sectionId }: 
               step={0.05}
               value={selectedObj.opacity ?? 1}
               onChange={e => handleOpacity(Number(e.target.value))}
-              className="flex-1 h-1 appearance-none bg-[#464555]/30 rounded-full"
+              className="flex-1 h-1 appearance-none bg-[#E5E8EB] rounded-full"
             />
-            <span className="text-[9px] text-[#c7c4d8]/40 w-8 text-right">
+            <span className="text-[9px] text-[#8B95A1] w-8 text-right">
               {Math.round((selectedObj.opacity ?? 1) * 100)}%
             </span>
           </div>
@@ -190,7 +190,7 @@ export default function ImageControls({ fabricCanvas, selectedObj, sectionId }: 
           {/* Delete */}
           <button
             onClick={handleDelete}
-            className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-[11px] text-red-400/70 bg-[#1c1b1b] border border-red-400/15 rounded-lg hover:border-red-400/30 transition-all"
+            className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-[11px] text-[#F04452] bg-[#F04452]/5 border border-[#F04452]/15 rounded-lg hover:border-[#F04452]/30 transition-all"
           >
             <Trash2 className="w-3.5 h-3.5" />
             삭제

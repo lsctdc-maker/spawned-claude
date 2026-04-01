@@ -934,7 +934,7 @@ export default function Step4ImageEditor() {
     bg: colorPalette?.colors[0]?.hex || '#0f1729',
     bg2: colorPalette?.colors[1]?.hex || '#1a2744',
     text: colorPalette?.colors[2]?.hex || '#f0f0f0',
-    accent: colorPalette?.accent?.hex || '#c3c0ff',
+    accent: colorPalette?.accent?.hex || '#3182F6',
   };
 
   const productPhotoUrl = productPhotos.length > 0 ? productPhotos[0].dataUrl : null;
@@ -1074,7 +1074,7 @@ export default function Step4ImageEditor() {
   if (visibleSections.length === 0) {
     return (
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-3xl mx-auto text-center py-16 space-y-4">
-        <p className="text-[#e5e2e1]/40">편집할 섹션이 없습니다. 원고를 먼저 생성해주세요.</p>
+        <p className="text-[#8B95A1]">편집할 섹션이 없습니다. 원고를 먼저 생성해주세요.</p>
         <Button variant="ghost" onClick={() => dispatch({ type: 'PREV_STEP' })}>이전으로</Button>
       </motion.div>
     );
@@ -1089,8 +1089,8 @@ export default function Step4ImageEditor() {
     >
       {/* Header */}
       <div className="text-center">
-        <h2 className="text-2xl font-headline font-extrabold text-[#e5e2e1] mb-2">이미지 에디터</h2>
-        <p className="text-[#c7c4d8] text-sm">
+        <h2 className="text-2xl font-bold text-[#191F28] mb-2">이미지 에디터</h2>
+        <p className="text-[#8B95A1] text-sm">
           AI 추천 컬러와 폰트가 적용된 상세페이지를 확인하고 PNG로 다운로드하세요.
         </p>
       </div>
@@ -1099,50 +1099,50 @@ export default function Step4ImageEditor() {
       <div className="max-w-[960px] mx-auto flex flex-wrap gap-2.5 items-center">
         {/* Color palette */}
         {colorPalette && (
-          <div className="flex items-center gap-2 bg-[#1c1b1b] rounded-lg px-3 py-2 border border-[#464555]/15">
-            <Palette className="w-3.5 h-3.5 text-[#c3c0ff]/50 flex-shrink-0" />
+          <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 border border-[#E5E8EB]">
+            <Palette className="w-3.5 h-3.5 text-[#3182F6] flex-shrink-0" />
             <div className="flex gap-1.5">
               {[...colorPalette.colors, colorPalette.accent].map((c, i) => (
                 <div
                   key={i}
                   title={c.label}
                   style={{ background: c.hex }}
-                  className="w-4 h-4 rounded-full border border-white/10 flex-shrink-0"
+                  className="w-4 h-4 rounded-full border border-[#E5E8EB] flex-shrink-0"
                 />
               ))}
             </div>
-            <span className="text-[11px] text-[#c7c4d8]/50 ml-1 hidden sm:inline">{colorPalette.rationale}</span>
+            <span className="text-[11px] text-[#8B95A1] ml-1 hidden sm:inline">{colorPalette.rationale}</span>
           </div>
         )}
 
         {/* Font selector headline */}
-        <div className="flex items-center gap-2 bg-[#1c1b1b] rounded-lg px-3 py-2 border border-[#464555]/15">
-          <Type className="w-3.5 h-3.5 text-[#c3c0ff]/50 flex-shrink-0" />
+        <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 border border-[#E5E8EB]">
+          <Type className="w-3.5 h-3.5 text-[#3182F6] flex-shrink-0" />
           <select
             value={headlineFont}
             onChange={e => { setHeadlineFont(e.target.value); loadGoogleFont(e.target.value); }}
-            className="bg-transparent text-xs text-[#c7c4d8] outline-none cursor-pointer"
+            className="bg-transparent text-xs text-[#4E5968] outline-none cursor-pointer"
           >
-            {FONT_OPTIONS.map(f => <option key={f.value} value={f.value} className="bg-[#1c1b1b]">{f.label}</option>)}
+            {FONT_OPTIONS.map(f => <option key={f.value} value={f.value} className="bg-white">{f.label}</option>)}
           </select>
-          <span className="text-[#464555]/40">/</span>
+          <span className="text-[#D1D6DB]">/</span>
           <select
             value={bodyFont}
             onChange={e => { setBodyFont(e.target.value); loadGoogleFont(e.target.value); }}
-            className="bg-transparent text-xs text-[#c7c4d8] outline-none cursor-pointer"
+            className="bg-transparent text-xs text-[#4E5968] outline-none cursor-pointer"
           >
-            {FONT_OPTIONS.map(f => <option key={f.value} value={f.value} className="bg-[#1c1b1b]">{f.label}</option>)}
+            {FONT_OPTIONS.map(f => <option key={f.value} value={f.value} className="bg-white">{f.label}</option>)}
           </select>
         </div>
 
         {/* Resolution */}
-        <div className="flex items-center gap-1 bg-[#1c1b1b] rounded-lg p-1 border border-[#464555]/15">
+        <div className="flex items-center gap-1 bg-white rounded-lg p-1 border border-[#E5E8EB]">
           {([1, 2] as const).map(r => (
             <button
               key={r}
               onClick={() => setResolution(r)}
               className={`px-3 py-1.5 rounded text-xs font-medium transition-all ${
-                resolution === r ? 'bg-[#c3c0ff] text-[#0f0069]' : 'text-[#e5e2e1]/50 hover:text-[#e5e2e1]'
+                resolution === r ? 'bg-[#3182F6] text-white' : 'text-[#8B95A1] hover:text-[#191F28]'
               }`}
             >
               {r}x
@@ -1155,10 +1155,10 @@ export default function Step4ImageEditor() {
           <button
             onClick={handleRemoveBg}
             disabled={removingBg}
-            className={`flex items-center gap-2 bg-[#1c1b1b] rounded-lg px-3 py-2 border transition-all text-xs disabled:opacity-50 ${
+            className={`flex items-center gap-2 bg-white rounded-lg px-3 py-2 border transition-all text-xs disabled:opacity-50 ${
               removedBgUrl
-                ? 'border-[#c3c0ff]/30 text-[#c3c0ff]'
-                : 'border-[#464555]/15 text-[#c7c4d8] hover:border-[#c3c0ff]/20 hover:text-[#e5e2e1]'
+                ? 'border-[#3182F6]/30 text-[#3182F6]'
+                : 'border-[#E5E8EB] text-[#4E5968] hover:border-[#3182F6]/20 hover:text-[#191F28]'
             }`}
           >
             {removingBg ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
@@ -1169,7 +1169,7 @@ export default function Step4ImageEditor() {
         {removedBgUrl && (
           <button
             onClick={() => setRemovedBgUrl(null)}
-            className="flex items-center gap-1.5 text-xs text-[#e5e2e1]/40 hover:text-[#e5e2e1] transition-colors px-2 py-2 rounded-lg border border-[#464555]/15"
+            className="flex items-center gap-1.5 text-xs text-[#8B95A1] hover:text-[#191F28] transition-colors px-2 py-2 rounded-lg border border-[#E5E8EB]"
             title="배경 제거 취소"
           >
             <X className="w-3.5 h-3.5" />
@@ -1186,7 +1186,7 @@ export default function Step4ImageEditor() {
 
         {/* Section sidebar */}
         <div className="w-40 flex-shrink-0 sticky top-28 space-y-1.5">
-          <div className="text-[10px] uppercase tracking-widest text-[#e5e2e1]/35 mb-3 ml-1 font-label">
+          <div className="text-xs font-medium text-[#8B95A1] mb-3 ml-1">
             섹션 목록 ({visibleSections.length})
           </div>
           {visibleSections.map((section, i) => (
@@ -1195,13 +1195,13 @@ export default function Step4ImageEditor() {
               onClick={() => setSelectedId(section.id)}
               className={`w-full text-left px-3 py-2.5 rounded-xl text-xs transition-all ${
                 selectedId === section.id
-                  ? 'bg-[#c3c0ff]/10 border border-[#c3c0ff]/30 text-[#c3c0ff]'
-                  : 'bg-[#1c1b1b] border border-[#464555]/12 text-[#c7c4d8] hover:border-[#c3c0ff]/20 hover:text-[#e5e2e1]'
+                  ? 'bg-[#EBF4FF] border border-[#3182F6]/30 text-[#3182F6]'
+                  : 'bg-white border border-[#E5E8EB] text-[#4E5968] hover:border-[#3182F6]/20 hover:text-[#191F28]'
               }`}
             >
               <div className="flex items-center gap-2">
                 <span className={`w-4 h-4 rounded-full text-[9px] font-bold flex items-center justify-center flex-shrink-0 ${
-                  selectedId === section.id ? 'bg-[#c3c0ff] text-[#0f0069]' : 'bg-[#2a2a2a] text-[#e5e2e1]/40'
+                  selectedId === section.id ? 'bg-[#3182F6] text-white' : 'bg-[#F4F5F7] text-[#8B95A1]'
                 }`}>{i + 1}</span>
                 <span className="font-medium">{SECTION_LABEL_MAP[section.sectionType]}</span>
               </div>
@@ -1217,11 +1217,11 @@ export default function Step4ImageEditor() {
               {/* Section toolbar */}
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-2">
-                  <Layers className="w-4 h-4 text-[#c3c0ff]/50" />
-                  <span className="text-sm font-semibold text-[#e5e2e1]">
+                  <Layers className="w-4 h-4 text-[#3182F6]" />
+                  <span className="text-sm font-semibold text-[#191F28]">
                     {SECTION_LABEL_MAP[selectedSection.sectionType]}
                   </span>
-                  <span className="text-xs text-[#c7c4d8]/50">— {selectedSection.title}</span>
+                  <span className="text-xs text-[#8B95A1]">— {selectedSection.title}</span>
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
                   {/* Prev/Next section */}
@@ -1229,14 +1229,14 @@ export default function Step4ImageEditor() {
                     <button
                       onClick={() => selectedIdx > 0 && setSelectedId(visibleSections[selectedIdx - 1].id)}
                       disabled={selectedIdx === 0}
-                      className="p-1.5 rounded-lg border border-[#464555]/15 text-[#e5e2e1]/40 hover:text-[#e5e2e1] hover:border-[#c3c0ff]/20 disabled:opacity-20 transition-all"
+                      className="p-1.5 rounded-lg border border-[#E5E8EB] text-[#8B95A1] hover:text-[#191F28] hover:border-[#3182F6]/30 disabled:opacity-20 transition-all"
                     >
                       <ChevronLeft className="w-3.5 h-3.5" />
                     </button>
                     <button
                       onClick={() => selectedIdx < visibleSections.length - 1 && setSelectedId(visibleSections[selectedIdx + 1].id)}
                       disabled={selectedIdx === visibleSections.length - 1}
-                      className="p-1.5 rounded-lg border border-[#464555]/15 text-[#e5e2e1]/40 hover:text-[#e5e2e1] hover:border-[#c3c0ff]/20 disabled:opacity-20 transition-all"
+                      className="p-1.5 rounded-lg border border-[#E5E8EB] text-[#8B95A1] hover:text-[#191F28] hover:border-[#3182F6]/30 disabled:opacity-20 transition-all"
                     >
                       <ChevronRight className="w-3.5 h-3.5" />
                     </button>
@@ -1245,7 +1245,7 @@ export default function Step4ImageEditor() {
                   {/* Image replace */}
                   <button
                     onClick={() => handleImageUpload(selectedSection.id)}
-                    className="flex items-center gap-1.5 text-xs text-[#c7c4d8] hover:text-[#e5e2e1] transition-colors px-3 py-1.5 rounded-lg border border-[#464555]/15 hover:border-[#c3c0ff]/20"
+                    className="flex items-center gap-1.5 text-xs text-[#8B95A1] hover:text-[#191F28] transition-colors px-3 py-1.5 rounded-lg border border-[#E5E8EB] hover:border-[#3182F6]/30"
                   >
                     <Upload className="w-3.5 h-3.5" />
                     이미지 교체
@@ -1253,7 +1253,7 @@ export default function Step4ImageEditor() {
                   {customImages[selectedSection.id] && (
                     <button
                       onClick={() => setCustomImages(prev => { const n = { ...prev }; delete n[selectedSection.id]; return n; })}
-                      className="p-1.5 rounded-lg border border-[#464555]/15 text-[#e5e2e1]/40 hover:text-[#e5e2e1] hover:border-[#464555]/30 transition-all"
+                      className="p-1.5 rounded-lg border border-[#E5E8EB] text-[#8B95A1] hover:text-[#191F28] hover:border-[#E5E8EB] transition-all"
                       title="교체 이미지 제거"
                     >
                       <X className="w-3.5 h-3.5" />
@@ -1264,7 +1264,7 @@ export default function Step4ImageEditor() {
                   <button
                     onClick={() => downloadSection(selectedSection.id)}
                     disabled={downloading !== 'none'}
-                    className="flex items-center gap-1.5 text-xs bg-[#c3c0ff]/10 border border-[#c3c0ff]/20 text-[#c3c0ff] hover:bg-[#c3c0ff]/18 transition-all px-3 py-1.5 rounded-lg disabled:opacity-40"
+                    className="flex items-center gap-1.5 text-xs bg-[#3182F6]/10 border border-[#3182F6]/20 text-[#3182F6] hover:bg-[#3182F6]/20 transition-all px-3 py-1.5 rounded-lg disabled:opacity-40"
                   >
                     {downloading === 'section' ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
                     PNG 저장
@@ -1273,7 +1273,7 @@ export default function Step4ImageEditor() {
               </div>
 
               {/* Section canvas */}
-              <div className="overflow-x-auto rounded-2xl border border-[#464555]/12 shadow-[0_24px_64px_rgba(0,0,0,0.5)]">
+              <div className="overflow-x-auto rounded-2xl border border-[#E5E8EB] shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
                 <SectionCanvas
                   key={`${selectedSection.id}-${headlineFont}-${bodyFont}`}
                   sectionType={selectedSection.sectionType}
@@ -1291,15 +1291,15 @@ export default function Step4ImageEditor() {
               </div>
 
               {/* Width badge */}
-              <div className="text-center text-[10px] text-[#e5e2e1]/20 tracking-wider font-label">
+              <div className="text-center text-[10px] text-[#D1D6DB] tracking-wider">
                 860px — 네이버 스마트스토어 기준 폭
               </div>
 
               {/* Image guide hint */}
               {selectedSection.imageGuide && (
-                <div className="bg-[#1c1b1b] rounded-xl px-4 py-3 border border-[#464555]/10">
-                  <div className="text-[10px] uppercase tracking-widest text-[#c3c0ff]/40 mb-1 font-label">이미지 가이드</div>
-                  <p className="text-xs text-[#c7c4d8]/60 leading-relaxed">{selectedSection.imageGuide}</p>
+                <div className="bg-[#F4F5F7] rounded-xl px-4 py-3 border border-[#E5E8EB]">
+                  <div className="text-[10px] uppercase tracking-widest text-[#3182F6]/60 mb-1 font-medium">이미지 가이드</div>
+                  <p className="text-xs text-[#8B95A1] leading-relaxed">{selectedSection.imageGuide}</p>
                 </div>
               )}
             </>
@@ -1313,14 +1313,14 @@ export default function Step4ImageEditor() {
       {/* Download all progress */}
       {downloading === 'all' && (
         <div className="max-w-[960px] mx-auto">
-          <div className="bg-[#1c1b1b] rounded-xl px-5 py-4 border border-[#c3c0ff]/15">
+          <div className="bg-white rounded-xl px-5 py-4 border border-[#3182F6]/20">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-[#c7c4d8]">전체 상세페이지 렌더링 중...</span>
-              <span className="text-xs text-[#c3c0ff]">{downloadProgress}%</span>
+              <span className="text-xs text-[#4E5968]">전체 상세페이지 렌더링 중...</span>
+              <span className="text-xs text-[#3182F6]">{downloadProgress}%</span>
             </div>
-            <div className="h-1.5 bg-[#2a2a2a] rounded-full overflow-hidden">
+            <div className="h-1.5 bg-[#F4F5F7] rounded-full overflow-hidden">
               <motion.div
-                className="h-full bg-[#c3c0ff] rounded-full"
+                className="h-full bg-[#3182F6] rounded-full"
                 animate={{ width: `${downloadProgress}%` }}
                 transition={{ duration: 0.3 }}
               />
@@ -1330,7 +1330,7 @@ export default function Step4ImageEditor() {
       )}
 
       {/* Bottom navigation */}
-      <div className="max-w-[1100px] mx-auto border-t border-[#464555]/10 pt-6">
+      <div className="max-w-[1100px] mx-auto border-t border-[#E5E8EB] pt-6">
         <div className="flex items-center justify-between">
           <Button variant="ghost" onClick={() => dispatch({ type: 'PREV_STEP' })}>
             이전 (원고 수정)
@@ -1339,7 +1339,7 @@ export default function Step4ImageEditor() {
             <button
               onClick={downloadAll}
               disabled={downloading !== 'none'}
-              className="flex items-center gap-2 bg-[#1c1b1b] border border-[#464555]/15 text-[#c7c4d8] hover:text-[#e5e2e1] hover:border-[#c3c0ff]/20 transition-all px-4 py-2.5 rounded-xl text-sm font-medium disabled:opacity-40"
+              className="flex items-center gap-2 bg-white border border-[#E5E8EB] text-[#4E5968] hover:text-[#191F28] hover:border-[#3182F6]/30 transition-all px-4 py-2.5 rounded-xl text-sm font-medium disabled:opacity-40"
             >
               {downloading === 'all' ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
               전체 1장 저장

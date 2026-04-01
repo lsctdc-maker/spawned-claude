@@ -76,7 +76,7 @@ export default function TextControls({ fabricCanvas, selectedObj }: TextControls
 
   return (
     <div className="space-y-3">
-      <div className="text-[9px] uppercase tracking-widest text-[#e5e2e1]/30 flex items-center gap-1.5">
+      <div className="text-[9px] uppercase tracking-widest text-[#8B95A1] flex items-center gap-1.5">
         <Type className="w-3 h-3" />
         텍스트 편집
       </div>
@@ -85,10 +85,10 @@ export default function TextControls({ fabricCanvas, selectedObj }: TextControls
       <select
         value={fontFamily}
         onChange={e => handleFontChange(e.target.value)}
-        className="w-full bg-[#1c1b1b] text-[11px] text-[#c7c4d8] border border-[#464555]/20 rounded-lg px-2 py-1.5 outline-none"
+        className="w-full bg-[#F4F5F7] text-[11px] text-[#4E5968] border border-[#E5E8EB] rounded-lg px-2 py-1.5 outline-none"
       >
         {FONT_OPTIONS.map(f => (
-          <option key={f.value} value={f.value} className="bg-[#1c1b1b]">{f.label}</option>
+          <option key={f.value} value={f.value} className="bg-white">{f.label}</option>
         ))}
       </select>
 
@@ -100,14 +100,14 @@ export default function TextControls({ fabricCanvas, selectedObj }: TextControls
           onChange={e => handleSizeChange(Number(e.target.value))}
           min={8}
           max={120}
-          className="w-16 bg-[#1c1b1b] text-[11px] text-[#c7c4d8] border border-[#464555]/20 rounded-lg px-2 py-1.5 outline-none text-center"
+          className="w-16 bg-[#F4F5F7] text-[11px] text-[#4E5968] border border-[#E5E8EB] rounded-lg px-2 py-1.5 outline-none text-center"
         />
         <button
           onClick={handleWeightToggle}
           className={`p-1.5 rounded-lg border transition-all ${
             fontWeight === 700 || fontWeight === 'bold'
-              ? 'bg-[#c3c0ff]/15 border-[#c3c0ff]/30 text-[#c3c0ff]'
-              : 'border-[#464555]/20 text-[#e5e2e1]/40 hover:text-[#e5e2e1]'
+              ? 'bg-[#3182F6]/10 border-[#3182F6]/30 text-[#3182F6]'
+              : 'border-[#E5E8EB] text-[#8B95A1] hover:text-[#191F28]'
           }`}
         >
           <Bold className="w-3.5 h-3.5" />
@@ -115,7 +115,7 @@ export default function TextControls({ fabricCanvas, selectedObj }: TextControls
       </div>
 
       {/* Alignment */}
-      <div className="flex items-center gap-0.5 bg-[#1c1b1b] rounded-lg p-0.5 border border-[#464555]/20">
+      <div className="flex items-center gap-0.5 bg-[#F4F5F7] rounded-lg p-0.5 border border-[#E5E8EB]">
         {[
           { align: 'left', icon: AlignLeft },
           { align: 'center', icon: AlignCenter },
@@ -126,8 +126,8 @@ export default function TextControls({ fabricCanvas, selectedObj }: TextControls
             onClick={() => handleAlignChange(align)}
             className={`flex-1 p-1.5 rounded text-center transition-all ${
               textAlign === align
-                ? 'bg-[#c3c0ff] text-[#0f0069]'
-                : 'text-[#e5e2e1]/40 hover:text-[#e5e2e1]'
+                ? 'bg-[#3182F6] text-white'
+                : 'text-[#8B95A1] hover:text-[#191F28]'
             }`}
           >
             <Icon className="w-3.5 h-3.5 mx-auto" />
@@ -137,19 +137,19 @@ export default function TextControls({ fabricCanvas, selectedObj }: TextControls
 
       {/* Color */}
       <div className="flex items-center gap-2">
-        <label className="text-[9px] text-[#c7c4d8]/50">색상</label>
+        <label className="text-[9px] text-[#8B95A1]">색상</label>
         <input
           type="color"
           value={fill}
           onChange={e => handleColorChange(e.target.value)}
-          className="w-7 h-7 rounded border border-[#464555]/20 bg-transparent cursor-pointer"
+          className="w-7 h-7 rounded border border-[#E5E8EB] bg-transparent cursor-pointer"
         />
-        <span className="text-[9px] text-[#c7c4d8]/40">{fill}</span>
+        <span className="text-[9px] text-[#8B95A1]">{fill}</span>
       </div>
 
       {/* Opacity */}
       <div className="flex items-center gap-2">
-        <label className="text-[9px] text-[#c7c4d8]/50 w-10">투명도</label>
+        <label className="text-[9px] text-[#8B95A1] w-10">투명도</label>
         <input
           type="range"
           min={0}
@@ -157,9 +157,9 @@ export default function TextControls({ fabricCanvas, selectedObj }: TextControls
           step={0.05}
           value={opacity}
           onChange={e => handleOpacityChange(Number(e.target.value))}
-          className="flex-1 h-1 appearance-none bg-[#464555]/30 rounded-full"
+          className="flex-1 h-1 appearance-none bg-[#E5E8EB] rounded-full"
         />
-        <span className="text-[9px] text-[#c7c4d8]/40 w-8 text-right">{Math.round(opacity * 100)}%</span>
+        <span className="text-[9px] text-[#8B95A1] w-8 text-right">{Math.round(opacity * 100)}%</span>
       </div>
     </div>
   );

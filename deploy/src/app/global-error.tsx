@@ -8,23 +8,23 @@ export default function GlobalError({
   reset: () => void;
 }) {
   return (
-    <html lang="ko" className="dark">
-      <body className="bg-[#0a0a0a] text-[#e5e2e1]">
+    <html lang="ko">
+      <body className="bg-white text-[#191F28]">
         <div className="h-screen flex flex-col items-center justify-center gap-4">
-          <div className="text-lg font-bold text-red-400">오류가 발생했습니다</div>
-          <div className="text-sm text-[#e5e2e1]/60 max-w-md text-center">
+          <div className="text-lg font-bold text-[#F04452]">오류가 발생했습니다</div>
+          <div className="text-sm text-[#8B95A1] max-w-md text-center">
             페이지를 불러오는 중 문제가 발생했습니다.
           </div>
           <div className="flex gap-3 mt-4">
             <button
               onClick={() => reset()}
-              className="px-4 py-2 bg-[#c3c0ff]/20 text-[#c3c0ff] rounded-lg text-sm hover:bg-[#c3c0ff]/30 transition-colors"
+              className="px-4 py-2 bg-[#3182F6]/10 text-[#3182F6] rounded-lg text-sm hover:bg-[#3182F6]/20 transition-colors"
             >
               다시 시도
             </button>
             <button
               onClick={() => window.location.reload()}
-              className="px-4 py-2 bg-[#e5e2e1]/10 text-[#e5e2e1]/60 rounded-lg text-sm hover:bg-[#e5e2e1]/20 transition-colors"
+              className="px-4 py-2 bg-[#F4F5F7] text-[#8B95A1] rounded-lg text-sm hover:bg-[#E5E8EB] transition-colors"
             >
               새로고침
             </button>

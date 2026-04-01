@@ -500,9 +500,51 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
  * When `order` is provided, auto-selects variant based on order index
  * to ensure visual diversity across sections.
  */
-export function getTemplate(sectionType: ManuscriptSectionType, order?: number): SectionTemplate {
+// 카테고리별 선호 variant 순서 (클라이언트 사이드 정적 매핑)
+// 실제 한국 상세페이지 26개 분석 기반
+const CATEGORY_VARIANT_PREFERENCES: Record<string, Partial<Record<ManuscriptSectionType, string[]>>> = {
+  food: {
+    hooking: ['A', 'C'],      // 좌텍스트+우제품, 하단텍스트+상단이미지
+    features: ['A', 'B'],      // 아이콘그리드, 넘버링 포인트
+    social_proof: ['C', 'A'],  // 데이터증명, 인증그리드
+  },
+  cosmetics: {
+    hooking: ['B', 'C'],      // 중앙정렬 풀와이드, 모델+제품
+    features: ['B', 'A'],      // 넘버링 포인트(Point 1/2/3), 아이콘그리드
+    social_proof: ['C', 'A'],  // 수치 데이터 강조, 인증마크
+  },
+  interior: {
+    hooking: ['B', 'A'],      // 풀와이드 영문 브랜딩
+    features: ['A', 'C'],
+    detail: ['C', 'A'],        // 좌텍스트+우제품
+  },
+  industrial: {
+    hooking: ['A', 'B'],      // 좌텍스트 (기술 설명)
+    features: ['A', 'B'],
+  },
+  living: {
+    features: ['B', 'A'],      // 넘버링 포인트 (Point 1/2/3/4)
+    social_proof: ['A', 'B'],
+  },
+};
+
+export function getTemplate(sectionType: ManuscriptSectionType, order?: number, category?: string): SectionTemplate {
   const variants = templateVariants[sectionType] || templateVariants.features;
-  if (order === undefined || variants.length <= 1) return variants[0];
+  if (variants.length <= 1) return variants[0];
+
+  // 카테고리별 선호 variant가 있으면 우선 적용
+  if (category && CATEGORY_VARIANT_PREFERENCES[category]) {
+    const prefs = CATEGORY_VARIANT_PREFERENCES[category][sectionType];
+    if (prefs && prefs.length > 0) {
+      const prefIndex = (order ?? 0) % prefs.length;
+      const preferredId = prefs[prefIndex];
+      const found = variants.find(v => v.variantId === preferredId);
+      if (found) return found;
+    }
+  }
+
+  // 폴백: 기존 order 기반 순환
+  if (order === undefined) return variants[0];
   const variantIndex = order % variants.length;
   return variants[variantIndex];
 }

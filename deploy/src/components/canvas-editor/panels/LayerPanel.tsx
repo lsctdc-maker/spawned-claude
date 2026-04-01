@@ -155,18 +155,18 @@ export default function LayerPanel({ fabricCanvas, ready, onSelectionChange }: L
   if (layers.length === 0) {
     return (
       <div>
-        <div className="text-[9px] uppercase tracking-widest text-[#e5e2e1]/30 mb-2 flex items-center gap-1.5">
+        <div className="text-[9px] uppercase tracking-widest text-[#8B95A1] mb-2 flex items-center gap-1.5">
           <Layers className="w-3 h-3" />
           레이어
         </div>
-        <p className="text-[9px] text-[#c7c4d8]/40">레이어 없음</p>
+        <p className="text-[9px] text-[#8B95A1]">레이어 없음</p>
       </div>
     );
   }
 
   return (
     <div>
-      <div className="text-[9px] uppercase tracking-widest text-[#e5e2e1]/30 mb-2 flex items-center gap-1.5">
+      <div className="text-[9px] uppercase tracking-widest text-[#8B95A1] mb-2 flex items-center gap-1.5">
         <Layers className="w-3 h-3" />
         레이어 ({layers.length})
       </div>
@@ -180,16 +180,16 @@ export default function LayerPanel({ fabricCanvas, ready, onSelectionChange }: L
               onClick={() => handleSelect(i)}
               className={`flex items-center gap-1 px-1.5 py-1 rounded-lg cursor-pointer transition-all group ${
                 layer.selected
-                  ? 'bg-[#c3c0ff]/10 border border-[#c3c0ff]/25'
-                  : 'hover:bg-[#1c1b1b] border border-transparent'
+                  ? 'bg-[#EBF4FF] border border-[#3182F6]/25'
+                  : 'hover:bg-[#F4F5F7] border border-transparent'
               }`}
             >
               <Icon className={`w-3 h-3 flex-shrink-0 ${
-                layer.selected ? 'text-[#c3c0ff]' : 'text-[#e5e2e1]/30'
+                layer.selected ? 'text-[#3182F6]' : 'text-[#D1D6DB]'
               }`} />
 
               <span className={`flex-1 text-[9px] truncate ${
-                layer.selected ? 'text-[#c3c0ff]' : 'text-[#c7c4d8]/70'
+                layer.selected ? 'text-[#3182F6]' : 'text-[#4E5968]'
               } ${!layer.visible ? 'line-through opacity-40' : ''}`}>
                 {layer.name}
               </span>
@@ -200,21 +200,21 @@ export default function LayerPanel({ fabricCanvas, ready, onSelectionChange }: L
               } transition-opacity`}>
                 <button
                   onClick={(e) => { e.stopPropagation(); handleMoveUp(i); }}
-                  className="p-0.5 text-[#e5e2e1]/30 hover:text-[#e5e2e1] rounded"
+                  className="p-0.5 text-[#D1D6DB] hover:text-[#191F28] rounded"
                   title="위로"
                 >
                   <ChevronUp className="w-2.5 h-2.5" />
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); handleMoveDown(i); }}
-                  className="p-0.5 text-[#e5e2e1]/30 hover:text-[#e5e2e1] rounded"
+                  className="p-0.5 text-[#D1D6DB] hover:text-[#191F28] rounded"
                   title="아래로"
                 >
                   <ChevronDown className="w-2.5 h-2.5" />
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); handleToggleVisible(i); }}
-                  className="p-0.5 text-[#e5e2e1]/30 hover:text-[#e5e2e1] rounded"
+                  className="p-0.5 text-[#D1D6DB] hover:text-[#191F28] rounded"
                   title={layer.visible ? '숨기기' : '보이기'}
                 >
                   {layer.visible
@@ -224,7 +224,7 @@ export default function LayerPanel({ fabricCanvas, ready, onSelectionChange }: L
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); handleToggleLock(i); }}
-                  className="p-0.5 text-[#e5e2e1]/30 hover:text-[#e5e2e1] rounded"
+                  className="p-0.5 text-[#D1D6DB] hover:text-[#191F28] rounded"
                   title={layer.locked ? '잠금 해제' : '잠금'}
                 >
                   {layer.locked

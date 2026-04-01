@@ -11,11 +11,11 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantStyles: Record<string, string> = {
-  primary: 'primary-gradient text-[#0f0069] font-headline font-extrabold shadow-cta hover:scale-[1.02] active:scale-[0.98]',
-  secondary: 'bg-[#2a2a2a] border border-[#464555]/20 text-[#e5e2e1] hover:bg-[#353534]',
-  outline: 'border border-[#c3c0ff]/40 text-[#c3c0ff] hover:bg-[#c3c0ff]/10',
-  ghost: 'text-[#c7c4d8] hover:bg-[#2a2a2a]',
-  danger: 'bg-[#93000a] text-[#ffdad6]',
+  primary: 'bg-[#1B2559] text-white font-semibold shadow-cta hover:bg-[#232D6B]',
+  secondary: 'bg-[#F4F5F7] border border-[#E5E8EB] text-[#4E5968] hover:bg-[#E8EAED]',
+  outline: 'border border-[#D1D6DB] text-[#4E5968] hover:bg-[#F4F5F7]',
+  ghost: 'text-[#8B95A1] hover:bg-[#F4F5F7]',
+  danger: 'bg-[#F04452] text-white',
 };
 
 const sizeStyles: Record<string, string> = {
@@ -31,12 +31,12 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <motion.button
         ref={ref}
         type={type}
-        whileHover={isDisabled ? {} : { scale: 1.02 }}
+        whileHover={isDisabled ? {} : { scale: 1.01 }}
         whileTap={isDisabled ? {} : { scale: 0.98 }}
         className={`
-          inline-flex items-center justify-center font-medium transition-all duration-300 rounded-full
-          focus:outline-none focus:ring-2 focus:ring-[#c3c0ff]/30 focus:ring-offset-2 focus:ring-offset-[#0a0a0a]
-          disabled:opacity-50 disabled:cursor-not-allowed
+          inline-flex items-center justify-center font-medium transition-all duration-200 rounded-xl
+          focus:outline-none focus:ring-2 focus:ring-[#3182F6]/20 focus:ring-offset-2 focus:ring-offset-white
+          disabled:opacity-40 disabled:cursor-not-allowed
           ${variantStyles[variant]} ${sizeStyles[size]}
           ${fullWidth ? 'w-full' : ''} ${className}
         `}

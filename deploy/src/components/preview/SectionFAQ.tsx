@@ -18,7 +18,7 @@ export default function SectionFAQ({ content, sectionId }: SectionFAQProps) {
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
 
   const category = productInfo.category ? CATEGORIES[productInfo.category as keyof typeof CATEGORIES] : null;
-  const primaryColor = category?.primary || '#c3c0ff';
+  const primaryColor = category?.primary || '#3182F6';
 
   const updateItem = useCallback((idx: number, field: string, value: string) => {
     const newItems = [...content.items];
@@ -32,10 +32,10 @@ export default function SectionFAQ({ content, sectionId }: SectionFAQProps) {
         <h2 className="text-3xl font-headline font-bold text-center mb-12" style={{ color: primaryColor }}>자주 묻는 질문</h2>
         <div className="space-y-3">
           {content.items.map((item, idx) => (
-            <div key={idx} className="rounded-xl overflow-hidden bg-[#201f1f] border border-[#464555]/10">
+            <div key={idx} className="rounded-xl overflow-hidden bg-[#F4F5F7] border border-[#E5E8EB]/10">
               <button
                 onClick={() => setExpandedIdx(expandedIdx === idx ? null : idx)}
-                className="w-full px-6 py-4 flex items-center justify-between hover:bg-[#2a2a2a] transition-colors"
+                className="w-full px-6 py-4 flex items-center justify-between hover:bg-[#F4F5F7] transition-colors"
               >
                 <span className="font-bold text-left flex items-center gap-1" style={{ color: primaryColor }}>
                   Q: <EditableText
@@ -49,13 +49,13 @@ export default function SectionFAQ({ content, sectionId }: SectionFAQProps) {
                 <ChevronDown className={`w-5 h-5 transition-transform flex-shrink-0 ${expandedIdx === idx ? 'rotate-180' : ''}`} style={{ color: primaryColor }} />
               </button>
               {expandedIdx === idx && (
-                <div className="px-6 py-4 bg-[#1c1b1b]">
+                <div className="px-6 py-4 bg-white">
                   <span className="font-bold" style={{ color: primaryColor }}>A: </span>
                   <EditableText
                     tag="span"
                     value={item.answer}
                     onSave={(v) => updateItem(idx, 'answer', v)}
-                    className="text-[#c7c4d8]"
+                    className="text-[#8B95A1]"
                     multiline
                   />
                 </div>

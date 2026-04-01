@@ -7,20 +7,19 @@ import { ImageIcon } from 'lucide-react';
 import { ManuscriptSectionType } from '@/lib/types';
 
 const SECTION_ACCENT: Record<ManuscriptSectionType, { bg: string; text: string; border: string }> = {
-  hooking:      { bg: 'bg-[#c3c0ff]/8',  text: 'text-[#c3c0ff]',  border: 'border-[#c3c0ff]/20' },
-  problem:      { bg: 'bg-[#ffb3b3]/8',  text: 'text-[#ffb3b3]',  border: 'border-[#ffb3b3]/20' },
-  solution:     { bg: 'bg-[#a0e7e5]/8',  text: 'text-[#a0e7e5]',  border: 'border-[#a0e7e5]/20' },
-  features:     { bg: 'bg-[#a5c8ff]/8',  text: 'text-[#a5c8ff]',  border: 'border-[#a5c8ff]/20' },
-  howto:        { bg: 'bg-[#a0e7e5]/8',  text: 'text-[#a0e7e5]',  border: 'border-[#a0e7e5]/20' },
-  social_proof: { bg: 'bg-[#d4a5ff]/8',  text: 'text-[#d4a5ff]',  border: 'border-[#d4a5ff]/20' },
-  specs:        { bg: 'bg-[#bbc3ff]/8',  text: 'text-[#bbc3ff]',  border: 'border-[#bbc3ff]/20' },
-  guarantee:    { bg: 'bg-[#a5ffcc]/8',  text: 'text-[#a5ffcc]',  border: 'border-[#a5ffcc]/20' },
-  event_banner: { bg: 'bg-[#ffd700]/8',  text: 'text-[#ffd700]',  border: 'border-[#ffd700]/20' },
-  cta:          { bg: 'bg-[#ffb3b3]/8',  text: 'text-[#ffb3b3]',  border: 'border-[#ffb3b3]/20' },
-  // legacy
-  hero:     { bg: 'bg-[#c3c0ff]/8',  text: 'text-[#c3c0ff]',  border: 'border-[#c3c0ff]/20' },
-  detail:   { bg: 'bg-[#bbc3ff]/8',  text: 'text-[#bbc3ff]',  border: 'border-[#bbc3ff]/20' },
-  trust:    { bg: 'bg-[#d4a5ff]/8',  text: 'text-[#d4a5ff]',  border: 'border-[#d4a5ff]/20' },
+  hooking:      { bg: 'bg-[#3182F6]/5',  text: 'text-[#3182F6]',  border: 'border-[#3182F6]/20' },
+  problem:      { bg: 'bg-[#F04452]/5',  text: 'text-[#F04452]',  border: 'border-[#F04452]/20' },
+  solution:     { bg: 'bg-[#00C471]/5',  text: 'text-[#00C471]',  border: 'border-[#00C471]/20' },
+  features:     { bg: 'bg-[#3182F6]/5',  text: 'text-[#3182F6]',  border: 'border-[#3182F6]/20' },
+  howto:        { bg: 'bg-[#00C471]/5',  text: 'text-[#00C471]',  border: 'border-[#00C471]/20' },
+  social_proof: { bg: 'bg-[#8B5CF6]/5',  text: 'text-[#8B5CF6]',  border: 'border-[#8B5CF6]/20' },
+  specs:        { bg: 'bg-[#4E5968]/5',  text: 'text-[#4E5968]',  border: 'border-[#4E5968]/20' },
+  guarantee:    { bg: 'bg-[#00C471]/5',  text: 'text-[#00C471]',  border: 'border-[#00C471]/20' },
+  event_banner: { bg: 'bg-[#FF9F00]/5',  text: 'text-[#FF9F00]',  border: 'border-[#FF9F00]/20' },
+  cta:          { bg: 'bg-[#F04452]/5',  text: 'text-[#F04452]',  border: 'border-[#F04452]/20' },
+  hero:     { bg: 'bg-[#3182F6]/5',  text: 'text-[#3182F6]',  border: 'border-[#3182F6]/20' },
+  detail:   { bg: 'bg-[#4E5968]/5',  text: 'text-[#4E5968]',  border: 'border-[#4E5968]/20' },
+  trust:    { bg: 'bg-[#8B5CF6]/5',  text: 'text-[#8B5CF6]',  border: 'border-[#8B5CF6]/20' },
 };
 
 const SECTION_LABELS: Record<ManuscriptSectionType, string> = {
@@ -34,7 +33,6 @@ const SECTION_LABELS: Record<ManuscriptSectionType, string> = {
   guarantee: '보증/신뢰',
   event_banner: '이벤트 배너',
   cta: '구매 유도',
-  // legacy
   hero: '히어로 카피',
   detail: '상세 설명',
   trust: '신뢰 요소',
@@ -56,7 +54,7 @@ export default function Step4Preview() {
         exit={{ opacity: 0, x: -20 }}
         className="max-w-3xl mx-auto text-center py-16 space-y-4"
       >
-        <p className="text-[#e5e2e1]/40">미리볼 원고가 없습니다.</p>
+        <p className="text-[#8B95A1]">미리볼 원고가 없습니다.</p>
         <Button variant="ghost" onClick={() => dispatch({ type: 'PREV_STEP' })}>이전으로</Button>
       </motion.div>
     );
@@ -70,59 +68,53 @@ export default function Step4Preview() {
       className="space-y-6"
     >
       <div className="text-center">
-        <h2 className="text-2xl font-headline font-extrabold text-[#e5e2e1] mb-2">미리보기</h2>
-        <p className="text-[#c7c4d8]">원고와 이미지 가이드를 확인하세요. 이미지는 Phase 2에서 제작합니다.</p>
+        <h2 className="text-2xl font-bold text-[#191F28] mb-2">미리보기</h2>
+        <p className="text-[#8B95A1]">원고와 이미지 가이드를 확인하세요. 이미지는 Phase 2에서 제작합니다.</p>
       </div>
 
-      {/* 제품 대표 정보 */}
       <div className="max-w-[860px] mx-auto">
-        <div className="bg-[#1c1b1b] rounded-2xl overflow-hidden border border-[#464555]/15 shadow-[0_40px_100px_rgba(0,0,0,0.5)]">
+        <div className="bg-white rounded-2xl overflow-hidden border border-[#E5E8EB] shadow-card">
 
-          {/* 상단 메타 바 */}
-          <div className="px-6 py-3 border-b border-[#464555]/10 flex items-center gap-4">
+          <div className="px-6 py-3 border-b border-[#E5E8EB] flex items-center gap-4">
             {productPhotos.length > 0 && (
               <img src={productPhotos[0].dataUrl} alt="대표 사진" className="w-8 h-8 rounded-md object-cover" />
             )}
             <div>
-              <span className="text-xs font-bold text-[#e5e2e1]">{productInfo.name || '제품명'}</span>
-              {productInfo.price && <span className="ml-2 text-xs text-[#e5e2e1]/40">{productInfo.price}</span>}
+              <span className="text-xs font-bold text-[#191F28]">{productInfo.name || '제품명'}</span>
+              {productInfo.price && <span className="ml-2 text-xs text-[#8B95A1]">{productInfo.price}</span>}
             </div>
             <div className="ml-auto flex gap-2">
               {[...Array(Math.min(productPhotos.length, 5))].map((_, i) => (
                 <img key={i} src={productPhotos[i].dataUrl} alt="" className="w-6 h-6 rounded object-cover opacity-60" />
               ))}
               {productPhotos.length > 5 && (
-                <span className="text-xs text-[#e5e2e1]/30 self-center">+{productPhotos.length - 5}</span>
+                <span className="text-xs text-[#8B95A1] self-center">+{productPhotos.length - 5}</span>
               )}
             </div>
           </div>
 
-          {/* 섹션 미리보기 */}
-          <div className="divide-y divide-[#464555]/8">
+          <div className="divide-y divide-[#E5E8EB]">
             {visibleSections.map((section) => {
               const accent = SECTION_ACCENT[section.sectionType] || SECTION_ACCENT.detail;
 
               return (
                 <div key={section.id} className="group">
-                  {/* 섹션 라벨 */}
                   <div className={`px-6 py-2 flex items-center gap-2 ${accent.bg}`}>
-                    <span className={`text-[10px] uppercase tracking-widest font-label ${accent.text}`}>
+                    <span className={`text-[10px] uppercase tracking-widest font-medium ${accent.text}`}>
                       {SECTION_LABELS[section.sectionType] || section.sectionType}
                     </span>
-                    <span className={`text-xs font-semibold text-[#e5e2e1]/70`}>
+                    <span className="text-xs font-semibold text-[#191F28]">
                       {section.title}
                     </span>
                   </div>
 
                   <div className="px-6 py-5 grid md:grid-cols-[1fr_200px] gap-5">
-                    {/* 원고 텍스트 */}
                     <div>
-                      <p className="text-sm text-[#c7c4d8] leading-relaxed whitespace-pre-wrap">
+                      <p className="text-sm text-[#4E5968] leading-relaxed whitespace-pre-wrap">
                         {section.body}
                       </p>
                     </div>
 
-                    {/* 이미지 가이드 박스 */}
                     <div className={`rounded-xl border-2 border-dashed ${accent.border} flex flex-col items-center justify-center py-6 px-4 text-center min-h-[120px]`}>
                       <ImageIcon className={`w-6 h-6 mb-2 ${accent.text} opacity-50`} />
                       <p className={`text-[11px] leading-relaxed ${accent.text} opacity-60`}>
@@ -135,10 +127,9 @@ export default function Step4Preview() {
             })}
           </div>
 
-          {/* 하단 워터마크 */}
-          <div className="px-6 py-3 border-t border-[#464555]/10 text-center">
-            <span className="text-[10px] text-[#e5e2e1]/15 tracking-widest uppercase font-label">
-              The Digital Atelier — Phase 1 Draft
+          <div className="px-6 py-3 border-t border-[#E5E8EB] text-center">
+            <span className="text-[10px] text-[#D1D6DB] tracking-widest uppercase">
+              DetailMaker — Draft
             </span>
           </div>
         </div>

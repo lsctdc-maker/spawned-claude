@@ -19,6 +19,7 @@ interface CanvasWorkspaceProps {
   productPhotoUrl: string | null;
   onSelectionChange: (obj: any | null) => void;
   onCanvasReady?: (canvasRef: React.MutableRefObject<any>) => void;
+  category?: string;
 }
 
 export default function CanvasWorkspace({
@@ -28,6 +29,7 @@ export default function CanvasWorkspace({
   productPhotoUrl,
   onSelectionChange,
   onCanvasReady,
+  category,
 }: CanvasWorkspaceProps) {
   const canvasElRef = useRef<HTMLCanvasElement>(null);
   const store = useCanvasEditorStore();
@@ -65,6 +67,7 @@ export default function CanvasWorkspace({
       colors,
       fonts,
       productPhotoUrl,
+      category,
     );
     setCanvasHeight(canvas.getHeight());
 
@@ -80,7 +83,7 @@ export default function CanvasWorkspace({
     } catch {}
 
     lastImageUrlRef.current = imageUrl;
-  }, [fabricCanvas, getFabricModule, ready, section, sectionId, colors, fonts, productPhotoUrl]);
+  }, [fabricCanvas, getFabricModule, ready, section, sectionId, colors, fonts, productPhotoUrl, category]);
 
   // Load or compose canvas when section changes
   useEffect(() => {
@@ -183,7 +186,7 @@ export default function CanvasWorkspace({
         <button
           onClick={undo}
           disabled={!canUndo}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-[#c7c4d8] bg-[#1c1b1b] border border-[#464555]/20 rounded-lg disabled:opacity-30 hover:border-[#c3c0ff]/30 transition-all"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-[#4E5968] bg-white border border-[#E5E8EB] rounded-lg disabled:opacity-30 hover:border-[#3182F6]/30 transition-all"
           title="실행 취소 (Ctrl+Z)"
         >
           <Undo2 className="w-3.5 h-3.5" />
@@ -192,7 +195,7 @@ export default function CanvasWorkspace({
         <button
           onClick={redo}
           disabled={!canRedo}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-[#c7c4d8] bg-[#1c1b1b] border border-[#464555]/20 rounded-lg disabled:opacity-30 hover:border-[#c3c0ff]/30 transition-all"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-[#4E5968] bg-white border border-[#E5E8EB] rounded-lg disabled:opacity-30 hover:border-[#3182F6]/30 transition-all"
           title="다시 실행 (Ctrl+Y)"
         >
           <Redo2 className="w-3.5 h-3.5" />
@@ -202,7 +205,7 @@ export default function CanvasWorkspace({
 
       {/* Canvas container */}
       <div
-        className="relative rounded-xl overflow-hidden border border-[#464555]/15 shadow-[0_20px_60px_rgba(0,0,0,0.5)]"
+        className="relative rounded-xl overflow-hidden border border-[#E5E8EB] shadow-[0_8px_32px_rgba(0,0,0,0.08)]"
         style={{ width: CANVAS_W }}
       >
         {(!ready || composing) && (
@@ -210,15 +213,15 @@ export default function CanvasWorkspace({
             className="absolute inset-0 flex flex-col items-center justify-center bg-[#1a1a1a] z-10 rounded-xl"
             style={{ minHeight: canvasHeight }}
           >
-            <RefreshCw className="w-6 h-6 text-[#c3c0ff]/40 animate-spin mb-2" />
-            <span className="text-[10px] text-[#c7c4d8]/50">캔버스 로딩 중...</span>
+            <RefreshCw className="w-6 h-6 text-[#3182F6]/40 animate-spin mb-2" />
+            <span className="text-[10px] text-[#8B95A1]">캔버스 로딩 중...</span>
           </div>
         )}
         <canvas ref={canvasElRef} />
       </div>
 
       {/* Width badge */}
-      <div className="text-[10px] text-[#e5e2e1]/20 tracking-wider">
+      <div className="text-[10px] text-[#D1D6DB] tracking-wider">
         860px — 네이버 스마트스토어 기준 폭
       </div>
     </div>

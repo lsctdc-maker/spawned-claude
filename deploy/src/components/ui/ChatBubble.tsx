@@ -23,10 +23,10 @@ export default function ChatBubble({ role, content, isTyping = false }: ChatBubb
         <div
           className={`
             flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-sm
-            ${isAI ? 'bg-[#2a2a2a] text-[#c3c0ff]' : 'bg-[#2a2a2a] text-[#e5e2e1]'}
+            ${isAI ? 'bg-[#EBF4FF] text-[#3182F6]' : 'bg-[#F4F5F7] text-[#4E5968]'}
           `}
         >
-          {isAI ? '🤖' : '👤'}
+          {isAI ? 'AI' : ''}
         </div>
 
         {/* Bubble */}
@@ -35,25 +35,25 @@ export default function ChatBubble({ role, content, isTyping = false }: ChatBubb
             px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap
             ${
               isAI
-                ? 'glass-card text-[#e5e2e1] rounded-tl-sm'
-                : 'primary-gradient text-[#0f0069] rounded-tr-sm'
+                ? 'bg-[#F4F5F7] text-[#191F28] rounded-tl-sm'
+                : 'bg-[#3182F6] text-white rounded-tr-sm'
             }
           `}
         >
           {isTyping ? (
             <div className="flex items-center gap-1.5 py-1">
               <motion.span
-                className="w-2 h-2 bg-[#e5e2e1]/40 rounded-full"
+                className="w-2 h-2 bg-[#8B95A1] rounded-full"
                 animate={{ opacity: [0.3, 1, 0.3] }}
                 transition={{ repeat: Infinity, duration: 1, delay: 0 }}
               />
               <motion.span
-                className="w-2 h-2 bg-[#e5e2e1]/40 rounded-full"
+                className="w-2 h-2 bg-[#8B95A1] rounded-full"
                 animate={{ opacity: [0.3, 1, 0.3] }}
                 transition={{ repeat: Infinity, duration: 1, delay: 0.2 }}
               />
               <motion.span
-                className="w-2 h-2 bg-[#e5e2e1]/40 rounded-full"
+                className="w-2 h-2 bg-[#8B95A1] rounded-full"
                 animate={{ opacity: [0.3, 1, 0.3] }}
                 transition={{ repeat: Infinity, duration: 1, delay: 0.4 }}
               />

@@ -25,18 +25,18 @@ export default function Card({
   onClick,
   ...props
 }: CardProps) {
-  const baseStyles = 'rounded-xl transition-all duration-300';
+  const baseStyles = 'rounded-xl transition-all duration-200';
 
   const variantStyles: Record<string, string> = {
-    default: 'bg-[#201f1f] border border-[#464555]/10',
-    elevated: 'bg-[#201f1f] shadow-[0_10px_40px_rgba(229,226,225,0.05)]',
-    bordered: `${selected ? 'bg-[#c3c0ff]/5 border border-[#c3c0ff]/40 shadow-[0_0_15px_rgba(195,192,255,0.1)]' : 'bg-[#2a2a2a] border border-[#464555]/15 hover:border-[#c3c0ff]/50'}`,
-    interactive: `cursor-pointer ${selected ? 'bg-[#c3c0ff]/5 border border-[#c3c0ff]/40 shadow-[0_0_15px_rgba(195,192,255,0.1)]' : 'bg-[#2a2a2a] border border-[#464555]/15 hover:border-[#c3c0ff]/50 hover:bg-[#353534]'}`,
+    default: 'bg-white border border-[#E5E8EB]',
+    elevated: 'bg-white shadow-card',
+    bordered: `${selected ? 'bg-[#EBF4FF] border-2 border-[#3182F6]' : 'bg-white border border-[#E5E8EB] hover:border-[#3182F6]'}`,
+    interactive: `cursor-pointer ${selected ? 'bg-[#EBF4FF] border-2 border-[#3182F6]' : 'bg-white border border-[#E5E8EB] hover:border-[#3182F6] hover:shadow-card-hover'}`,
   };
 
   const Component = onClick ? motion.div : 'div';
   const motionProps = onClick
-    ? { whileHover: { scale: 1.02 }, whileTap: { scale: 0.98 } }
+    ? { whileHover: { scale: 1.01 }, whileTap: { scale: 0.99 } }
     : {};
 
   return (

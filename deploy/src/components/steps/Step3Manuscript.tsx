@@ -28,26 +28,26 @@ const SECTION_LABELS: Record<ManuscriptSectionType, string> = {
 };
 
 const SECTION_COLORS: Record<ManuscriptSectionType, string> = {
-  hooking: 'border-[#c3c0ff]/30 bg-[#c3c0ff]/5',
-  problem: 'border-[#ffb3b3]/30 bg-[#ffb3b3]/5',
-  solution: 'border-[#a0e7e5]/30 bg-[#a0e7e5]/5',
-  features: 'border-[#a5c8ff]/30 bg-[#a5c8ff]/5',
-  howto: 'border-[#a0e7e5]/30 bg-[#a0e7e5]/5',
-  social_proof: 'border-[#d4a5ff]/30 bg-[#d4a5ff]/5',
-  specs: 'border-[#bbc3ff]/30 bg-[#bbc3ff]/5',
-  guarantee: 'border-[#a5ffcc]/30 bg-[#a5ffcc]/5',
-  event_banner: 'border-[#ffd700]/30 bg-[#ffd700]/5',
-  cta: 'border-[#ffb3b3]/30 bg-[#ffb3b3]/5',
+  hooking: 'border-[#3182F6]/20 bg-[#3182F6]/5',
+  problem: 'border-[#F04452]/20 bg-[#F04452]/5',
+  solution: 'border-[#00C471]/20 bg-[#00C471]/5',
+  features: 'border-[#3182F6]/20 bg-[#3182F6]/5',
+  howto: 'border-[#00C471]/20 bg-[#00C471]/5',
+  social_proof: 'border-[#8B5CF6]/20 bg-[#8B5CF6]/5',
+  specs: 'border-[#4E5968]/15 bg-[#4E5968]/5',
+  guarantee: 'border-[#00C471]/20 bg-[#00C471]/5',
+  event_banner: 'border-[#FF9F00]/20 bg-[#FF9F00]/5',
+  cta: 'border-[#F04452]/20 bg-[#F04452]/5',
   // legacy
-  hero: 'border-[#c3c0ff]/30 bg-[#c3c0ff]/5',
-  detail: 'border-[#bbc3ff]/30 bg-[#bbc3ff]/5',
-  trust: 'border-[#d4a5ff]/30 bg-[#d4a5ff]/5',
+  hero: 'border-[#3182F6]/20 bg-[#3182F6]/5',
+  detail: 'border-[#4E5968]/15 bg-[#4E5968]/5',
+  trust: 'border-[#8B5CF6]/20 bg-[#8B5CF6]/5',
 };
 
 const TONE_ACCENT: Record<ToneKey, { border: string; bg: string; text: string }> = {
-  trust:     { border: 'border-[#a5c8ff]/40', bg: 'bg-[#a5c8ff]/10', text: 'text-[#a5c8ff]' },
-  emotional: { border: 'border-[#d4a5ff]/40', bg: 'bg-[#d4a5ff]/10', text: 'text-[#d4a5ff]' },
-  impact:    { border: 'border-[#ffb3b3]/40', bg: 'bg-[#ffb3b3]/10', text: 'text-[#ffb3b3]' },
+  trust:     { border: 'border-[#3182F6]/30', bg: 'bg-[#3182F6]/10', text: 'text-[#3182F6]' },
+  emotional: { border: 'border-[#8B5CF6]/30', bg: 'bg-[#8B5CF6]/10', text: 'text-[#8B5CF6]' },
+  impact:    { border: 'border-[#F04452]/30', bg: 'bg-[#F04452]/10', text: 'text-[#F04452]' },
 };
 
 export default function Step3Manuscript() {
@@ -59,10 +59,8 @@ export default function Step3Manuscript() {
   const dragIdRef = useRef<string | null>(null);
   const editingTextareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // 편집 시작 시 페이지 스크롤 없이 포커스
   useEffect(() => {
     if (editingId) {
-      // 렌더 후 포커스 (preventScroll: 페이지/컨테이너가 textarea로 스크롤하지 않음)
       const timer = setTimeout(() => {
         editingTextareaRef.current?.focus({ preventScroll: true });
       }, 30);
@@ -144,7 +142,7 @@ export default function Step3Manuscript() {
     setEditingId(newSection.id);
   };
 
-  // ===== 섹션 순서 변경 (드래그 앤 드롭) =====
+  // ===== 섹션 순서 변경 =====
   const handleDragStart = (id: string) => {
     dragIdRef.current = id;
   };
@@ -204,13 +202,13 @@ export default function Step3Manuscript() {
       className="max-w-3xl mx-auto space-y-6"
     >
       <div className="text-center">
-        <h2 className="text-2xl font-headline font-extrabold text-[#e5e2e1] mb-2">원고 확인 / 수정</h2>
-        <p className="text-[#c7c4d8]">톤앤매너를 선택하고 AI가 인터뷰 내용을 바탕으로 원고를 작성합니다.</p>
+        <h2 className="text-2xl font-bold text-[#191F28] mb-2">원고 확인 / 수정</h2>
+        <p className="text-[#8B95A1]">톤앤매너를 선택하고 AI가 인터뷰 내용을 바탕으로 원고를 작성합니다.</p>
       </div>
 
       {/* ===== 톤앤매너 선택 ===== */}
       <div>
-        <h3 className="text-[10px] uppercase tracking-widest text-[#e5e2e1]/50 mb-3 ml-1 font-label">톤앤매너</h3>
+        <h3 className="text-xs font-medium text-[#8B95A1] mb-3 ml-1">톤앤매너</h3>
         <div className="grid grid-cols-3 gap-3">
           {(Object.entries(TONE_STYLES) as [ToneKey, typeof TONE_STYLES[ToneKey]][]).map(([key, tone]) => {
             const accent = TONE_ACCENT[key];
@@ -222,13 +220,13 @@ export default function Step3Manuscript() {
                 className={`rounded-xl border px-4 py-3 text-left transition-all duration-200 ${
                   isSelected
                     ? `${accent.border} ${accent.bg} ring-1 ring-inset ${accent.border}`
-                    : 'border-[#464555]/20 bg-[#1c1b1b]/60 hover:border-[#464555]/40'
+                    : 'border-[#E5E8EB] bg-white hover:border-[#D1D6DB]'
                 }`}
               >
-                <div className={`text-sm font-semibold mb-1 ${isSelected ? accent.text : 'text-[#e5e2e1]'}`}>
+                <div className={`text-sm font-semibold mb-1 ${isSelected ? accent.text : 'text-[#191F28]'}`}>
                   {tone.label}
                 </div>
-                <div className="text-[11px] text-[#c7c4d8]/70 leading-relaxed">{tone.desc}</div>
+                <div className="text-[11px] text-[#8B95A1] leading-relaxed">{tone.desc}</div>
               </button>
             );
           })}
@@ -239,12 +237,12 @@ export default function Step3Manuscript() {
       {manuscriptSections.length === 0 ? (
         <Card variant="elevated" padding="lg">
           <div className="text-center py-4 space-y-4">
-            <div className="w-12 h-12 rounded-full bg-[#c3c0ff]/10 border border-[#c3c0ff]/20 flex items-center justify-center mx-auto">
-              <Wand2 className="w-6 h-6 text-[#c3c0ff]" />
+            <div className="w-12 h-12 rounded-full bg-[#3182F6]/10 border border-[#3182F6]/20 flex items-center justify-center mx-auto">
+              <Wand2 className="w-6 h-6 text-[#3182F6]" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-[#e5e2e1] mb-1">원고 자동 생성</h3>
-              <p className="text-sm text-[#c7c4d8]">
+              <h3 className="text-lg font-bold text-[#191F28] mb-1">원고 자동 생성</h3>
+              <p className="text-sm text-[#8B95A1]">
                 인터뷰 답변과 USP를 바탕으로 6개 섹션 원고를 작성합니다.
                 {productPhotos.length > 0 && ' 제품 사진도 함께 분석합니다.'}
               </p>
@@ -256,7 +254,7 @@ export default function Step3Manuscript() {
         </Card>
       ) : (
         <div className="flex items-center justify-between">
-          <p className="text-sm text-[#e5e2e1]/50">{visibleCount}개 섹션 활성 · 드래그하여 순서 변경</p>
+          <p className="text-sm text-[#8B95A1]">{visibleCount}개 섹션 활성 · 드래그하여 순서 변경</p>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={handleAddSection}>
               <Plus className="w-3.5 h-3.5 mr-1" />섹션 추가
@@ -269,18 +267,18 @@ export default function Step3Manuscript() {
       )}
 
       {state.error && (
-        <div className="p-4 rounded-xl bg-[#93000a]/20 border border-[#ffb4ab]/20 text-[#ffb4ab] text-sm">
+        <div className="p-4 rounded-xl bg-[#F04452]/10 border border-[#F04452]/20 text-[#F04452] text-sm">
           {state.error}
         </div>
       )}
 
       {/* ===== AI 추천 레이아웃 근거 ===== */}
       {manuscriptSections.length > 0 && layoutRationale && (
-        <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-[#c3c0ff]/8 border border-[#c3c0ff]/15">
-          <Lightbulb className="w-4 h-4 text-[#c3c0ff]/70 flex-shrink-0 mt-0.5" />
+        <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-[#3182F6]/5 border border-[#3182F6]/15">
+          <Lightbulb className="w-4 h-4 text-[#3182F6] flex-shrink-0 mt-0.5" />
           <div>
-            <span className="text-[10px] uppercase tracking-widest text-[#c3c0ff]/50 font-label">AI 추천 레이아웃 근거</span>
-            <p className="text-sm text-[#c7c4d8] mt-0.5 leading-relaxed">{layoutRationale}</p>
+            <span className="text-xs font-medium text-[#3182F6]">AI 추천 레이아웃 근거</span>
+            <p className="text-sm text-[#4E5968] mt-0.5 leading-relaxed">{layoutRationale}</p>
           </div>
         </div>
       )}
@@ -288,70 +286,63 @@ export default function Step3Manuscript() {
       {/* ===== 색상 팔레트 + 폰트 추천 ===== */}
       {manuscriptSections.length > 0 && (colorPalette || fontRecommendation) && (
         <div className="grid sm:grid-cols-2 gap-3">
-          {/* 색상 팔레트 */}
           {colorPalette && (
-            <div className="rounded-xl border border-[#464555]/20 bg-[#1c1b1b]/60 p-4 space-y-3">
+            <div className="rounded-xl border border-[#E5E8EB] bg-white p-4 space-y-3">
               <div className="flex items-center gap-2">
-                <Palette className="w-4 h-4 text-[#c3c0ff]/70" />
-                <span className="text-[10px] uppercase tracking-widest text-[#e5e2e1]/50 font-label">추천 색상 팔레트</span>
+                <Palette className="w-4 h-4 text-[#3182F6]" />
+                <span className="text-xs font-medium text-[#8B95A1]">추천 색상 팔레트</span>
               </div>
               <div className="flex gap-2 flex-wrap">
                 {colorPalette.colors.map((c, i) => (
                   <div key={i} className="flex flex-col items-center gap-1">
                     <div
-                      className="w-9 h-9 rounded-lg border border-white/10 shadow-sm"
+                      className="w-9 h-9 rounded-lg border border-[#E5E8EB] shadow-sm"
                       style={{ backgroundColor: c.hex }}
                     />
-                    <span className="text-[9px] text-[#e5e2e1]/40 font-mono">{c.hex}</span>
+                    <span className="text-[9px] text-[#8B95A1] font-mono">{c.hex}</span>
                   </div>
                 ))}
                 <div className="flex flex-col items-center gap-1">
                   <div
-                    className="w-9 h-9 rounded-lg border-2 border-dashed border-white/20 shadow-sm"
+                    className="w-9 h-9 rounded-lg border-2 border-dashed border-[#D1D6DB] shadow-sm"
                     style={{ backgroundColor: colorPalette.accent.hex }}
                   />
-                  <span className="text-[9px] text-[#e5e2e1]/40 font-mono">{colorPalette.accent.hex}</span>
+                  <span className="text-[9px] text-[#8B95A1] font-mono">{colorPalette.accent.hex}</span>
                 </div>
               </div>
-              <div className="flex items-start gap-2">
-                {colorPalette.colors.map((c, i) => (
-                  <div key={i} className="text-[10px] text-[#c7c4d8]/60 leading-tight hidden">{c.label}</div>
-                ))}
-              </div>
-              <p className="text-[11px] text-[#c7c4d8]/60 leading-relaxed">{colorPalette.rationale}</p>
+              <p className="text-[11px] text-[#8B95A1] leading-relaxed">{colorPalette.rationale}</p>
               <div className="space-y-1">
                 {colorPalette.colors.map((c, i) => (
                   <div key={i} className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-sm flex-shrink-0" style={{ backgroundColor: c.hex }} />
-                    <span className="text-[10px] text-[#e5e2e1]/50">{c.label}</span>
+                    <span className="text-[10px] text-[#8B95A1]">{c.label}</span>
                   </div>
                 ))}
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-sm flex-shrink-0 border border-dashed border-white/30" style={{ backgroundColor: colorPalette.accent.hex }} />
-                  <span className="text-[10px] text-[#e5e2e1]/50">{colorPalette.accent.label} (포인트)</span>
+                  <div className="w-3 h-3 rounded-sm flex-shrink-0 border border-dashed border-[#D1D6DB]" style={{ backgroundColor: colorPalette.accent.hex }} />
+                  <span className="text-[10px] text-[#8B95A1]">{colorPalette.accent.label} (포인트)</span>
                 </div>
               </div>
             </div>
           )}
 
-          {/* 폰트 추천 */}
           {fontRecommendation && (
-            <div className="rounded-xl border border-[#464555]/20 bg-[#1c1b1b]/60 p-4 space-y-3">
+            <div className="rounded-xl border border-[#E5E8EB] bg-white p-4 space-y-3">
               <div className="flex items-center gap-2">
-                <Type className="w-4 h-4 text-[#c3c0ff]/70" />
-                <span className="text-[10px] uppercase tracking-widest text-[#e5e2e1]/50 font-label">추천 폰트 스타일</span>
+                <Type className="w-4 h-4 text-[#3182F6]" />
+                <span className="text-xs font-medium text-[#8B95A1]">추천 폰트 스타일</span>
               </div>
               <div className="space-y-2.5">
                 <div className="space-y-0.5">
-                  <div className="text-[10px] uppercase tracking-wider text-[#e5e2e1]/30 font-label">제목</div>
-                  <p className="text-[11px] text-[#c7c4d8] leading-relaxed">{fontRecommendation.headline}</p>
+                  <div className="text-[10px] uppercase tracking-wider text-[#D1D6DB]">제목</div>
+                  <p className="text-[11px] text-[#4E5968] leading-relaxed">{fontRecommendation.headline}</p>
                 </div>
                 <div className="space-y-0.5">
-                  <div className="text-[10px] uppercase tracking-wider text-[#e5e2e1]/30 font-label">본문</div>
-                  <p className="text-[11px] text-[#c7c4d8] leading-relaxed">{fontRecommendation.body}</p>
+                  <div className="text-[10px] uppercase tracking-wider text-[#D1D6DB]">본문</div>
+                  <p className="text-[11px] text-[#4E5968] leading-relaxed">{fontRecommendation.body}</p>
                 </div>
-                <div className="pt-1 border-t border-[#464555]/15">
-                  <p className="text-[11px] text-[#e5e2e1]/40 italic">{fontRecommendation.mood}</p>
+                <div className="pt-1 border-t border-[#E5E8EB]">
+                  <p className="text-[11px] text-[#8B95A1] italic">{fontRecommendation.mood}</p>
                 </div>
               </div>
             </div>
@@ -361,24 +352,21 @@ export default function Step3Manuscript() {
 
       {/* ===== 추천 레퍼런스 가이드 ===== */}
       {manuscriptSections.length > 0 && referenceGuide && (
-        <div className="rounded-xl border border-[#464555]/20 bg-[#1c1b1b]/60 overflow-hidden">
-          {/* 헤더 */}
-          <div className="flex items-center gap-2 px-4 py-3 border-b border-[#464555]/10">
-            <BarChart2 className="w-4 h-4 text-[#c3c0ff]/70" />
-            <span className="text-[10px] uppercase tracking-widest text-[#e5e2e1]/50 font-label">추천 레퍼런스 가이드</span>
+        <div className="rounded-xl border border-[#E5E8EB] bg-white overflow-hidden">
+          <div className="flex items-center gap-2 px-4 py-3 border-b border-[#E5E8EB]">
+            <BarChart2 className="w-4 h-4 text-[#3182F6]" />
+            <span className="text-xs font-medium text-[#8B95A1]">추천 레퍼런스 가이드</span>
           </div>
           <div className="p-4 space-y-4">
-            <p className="text-xs text-[#c7c4d8]/70 leading-relaxed">{referenceGuide.summary}</p>
+            <p className="text-xs text-[#8B95A1] leading-relaxed">{referenceGuide.summary}</p>
 
-            {/* 레이아웃 다이어그램 */}
             <div className="space-y-1.5">
               {referenceGuide.sections.map((sec, i) => {
-                const hue = [195, 220, 260, 170, 340, 30][i % 6];
-                const barColor = `hsl(${hue} 60% 65% / 0.25)`;
-                const textColor = `hsl(${hue} 60% 72%)`;
+                const hue = [210, 220, 260, 170, 340, 30][i % 6];
+                const barColor = `hsl(${hue} 60% 55% / 0.15)`;
+                const textColor = `hsl(${hue} 60% 45%)`;
                 return (
                   <div key={i} className="flex items-center gap-3">
-                    {/* 비율 바 */}
                     <div className="flex-1 flex items-center gap-2">
                       <div
                         className="h-7 rounded-md flex items-center px-2.5 transition-all"
@@ -393,8 +381,8 @@ export default function Step3Manuscript() {
                         </span>
                       </div>
                       <div className="min-w-0">
-                        <span className="text-xs font-medium text-[#e5e2e1]/80">{sec.label}</span>
-                        <span className="text-[11px] text-[#e5e2e1]/35 ml-2">— {sec.tip}</span>
+                        <span className="text-xs font-medium text-[#191F28]">{sec.label}</span>
+                        <span className="text-[11px] text-[#8B95A1] ml-2">— {sec.tip}</span>
                       </div>
                     </div>
                   </div>
@@ -402,9 +390,8 @@ export default function Step3Manuscript() {
               })}
             </div>
 
-            {/* 비율 합계 */}
             <div className="flex justify-end">
-              <span className="text-[10px] text-[#e5e2e1]/25 font-mono">
+              <span className="text-[10px] text-[#D1D6DB] font-mono">
                 합계: {referenceGuide.sections.reduce((s, r) => s + r.percentage, 0)}%
               </span>
             </div>
@@ -415,7 +402,7 @@ export default function Step3Manuscript() {
       {/* ===== 섹션 목록 ===== */}
       <AnimatePresence>
         {sortedSections.map((section, idx) => {
-          const colorClass = SECTION_COLORS[section.sectionType] || 'border-[#464555]/20 bg-[#2a2a2a]';
+          const colorClass = SECTION_COLORS[section.sectionType] || 'border-[#E5E8EB] bg-[#F4F5F7]';
           const isEditing = editingId === section.id;
           const isDragOver = dragOverId === section.id;
 
@@ -431,41 +418,41 @@ export default function Step3Manuscript() {
               onDrop={() => handleDrop(section.id)}
               onDragLeave={() => setDragOverId(null)}
               className={`rounded-xl border transition-all duration-200 ${colorClass} ${
-                isDragOver ? 'ring-2 ring-[#c3c0ff]/50 scale-[1.01]' : ''
+                isDragOver ? 'ring-2 ring-[#3182F6]/50 scale-[1.01]' : ''
               } ${!section.visible ? 'opacity-40' : ''}`}
             >
               {/* 섹션 헤더 */}
-              <div className="flex items-center gap-2 px-4 py-3 border-b border-white/5">
-                <div className="cursor-grab text-[#e5e2e1]/20 select-none text-xs mr-1">⠿⠿</div>
-                <span className="text-[10px] uppercase tracking-widest text-[#e5e2e1]/40 font-label w-20 flex-shrink-0">
+              <div className="flex items-center gap-2 px-4 py-3 border-b border-black/5">
+                <div className="cursor-grab text-[#D1D6DB] select-none text-xs mr-1">⠿⠿</div>
+                <span className="text-[10px] uppercase tracking-widest text-[#8B95A1] font-medium w-20 flex-shrink-0">
                   {SECTION_LABELS[section.sectionType] || section.sectionType}
                 </span>
                 {isEditing ? (
                   <input
                     value={section.title}
                     onChange={(e) => handleTitleChange(section.id, e.target.value)}
-                    className="flex-1 bg-transparent text-sm font-semibold text-[#e5e2e1] focus:outline-none border-b border-[#c3c0ff]/30"
+                    className="flex-1 bg-transparent text-sm font-semibold text-[#191F28] focus:outline-none border-b border-[#3182F6]/30"
                     onClick={(e) => e.stopPropagation()}
                   />
                 ) : (
                   <span
-                    className="flex-1 text-sm font-semibold text-[#e5e2e1] cursor-pointer hover:text-[#c3c0ff] transition-colors truncate"
+                    className="flex-1 text-sm font-semibold text-[#191F28] cursor-pointer hover:text-[#3182F6] transition-colors truncate"
                     onClick={() => setEditingId(section.id)}
                   >
                     {section.title}
                   </span>
                 )}
                 <div className="flex items-center gap-1 flex-shrink-0">
-                  <button onClick={() => handleMoveUp(section.id)} disabled={idx === 0} className="p-1 text-[#e5e2e1]/30 hover:text-[#e5e2e1] disabled:opacity-20 transition-colors">
+                  <button onClick={() => handleMoveUp(section.id)} disabled={idx === 0} className="p-1 text-[#D1D6DB] hover:text-[#191F28] disabled:opacity-20 transition-colors">
                     <ChevronUp className="w-3.5 h-3.5" />
                   </button>
-                  <button onClick={() => handleMoveDown(section.id)} disabled={idx === sortedSections.length - 1} className="p-1 text-[#e5e2e1]/30 hover:text-[#e5e2e1] disabled:opacity-20 transition-colors">
+                  <button onClick={() => handleMoveDown(section.id)} disabled={idx === sortedSections.length - 1} className="p-1 text-[#D1D6DB] hover:text-[#191F28] disabled:opacity-20 transition-colors">
                     <ChevronDown className="w-3.5 h-3.5" />
                   </button>
-                  <button onClick={() => handleToggleVisibility(section.id)} className="p-1 text-[#e5e2e1]/30 hover:text-[#e5e2e1] transition-colors">
+                  <button onClick={() => handleToggleVisibility(section.id)} className="p-1 text-[#D1D6DB] hover:text-[#191F28] transition-colors">
                     {section.visible ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
                   </button>
-                  <button onClick={() => handleRemove(section.id)} className="p-1 text-[#e5e2e1]/20 hover:text-[#ffb4ab] transition-colors">
+                  <button onClick={() => handleRemove(section.id)} className="p-1 text-[#D1D6DB] hover:text-[#F04452] transition-colors">
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -479,22 +466,22 @@ export default function Step3Manuscript() {
                     value={section.body}
                     onChange={(e) => handleBodyChange(section.id, e.target.value)}
                     rows={8}
-                    className="w-full bg-[#1c1b1b]/60 border border-[#464555]/20 rounded-lg px-4 py-3 text-sm text-[#e5e2e1] placeholder:text-[#e5e2e1]/20 resize-y focus:outline-none focus:border-[#c3c0ff]/50 transition-all leading-relaxed"
+                    className="w-full bg-white border border-[#E5E8EB] rounded-lg px-4 py-3 text-sm text-[#191F28] placeholder:text-[#D1D6DB] resize-y focus:outline-none focus:border-[#3182F6] transition-all leading-relaxed"
                   />
                 ) : (
                   <div
                     onClick={() => setEditingId(section.id)}
-                    className="text-sm text-[#c7c4d8] leading-relaxed whitespace-pre-wrap cursor-text hover:text-[#e5e2e1] transition-colors min-h-[4rem] p-2 rounded-lg hover:bg-white/5"
+                    className="text-sm text-[#4E5968] leading-relaxed whitespace-pre-wrap cursor-text hover:text-[#191F28] transition-colors min-h-[4rem] p-2 rounded-lg hover:bg-black/[0.02]"
                   >
                     {section.body}
                   </div>
                 )}
 
-                {/* 이미지 + 색상/폰트 가이드 */}
-                <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg bg-black/20 border border-white/5">
-                  <ImageIcon className="w-3.5 h-3.5 text-[#e5e2e1]/30 flex-shrink-0 mt-0.5" />
-                  <p className="text-xs text-[#e5e2e1]/40 leading-relaxed">
-                    <span className="font-medium text-[#e5e2e1]/50">이미지 가이드:</span> {section.imageGuide}
+                {/* 이미지 가이드 */}
+                <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg bg-[#F4F5F7] border border-[#E5E8EB]">
+                  <ImageIcon className="w-3.5 h-3.5 text-[#D1D6DB] flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-[#8B95A1] leading-relaxed">
+                    <span className="font-medium text-[#4E5968]">이미지 가이드:</span> {section.imageGuide}
                   </p>
                 </div>
 
@@ -502,7 +489,7 @@ export default function Step3Manuscript() {
                   <div className="flex justify-end">
                     <button
                       onClick={() => setEditingId(null)}
-                      className="text-xs text-[#c3c0ff]/60 hover:text-[#c3c0ff] transition-colors"
+                      className="text-xs text-[#3182F6]/60 hover:text-[#3182F6] transition-colors"
                     >
                       편집 완료
                     </button>
@@ -514,8 +501,8 @@ export default function Step3Manuscript() {
         })}
       </AnimatePresence>
 
-      {/* ===== 네비게이션 버튼 — sticky bottom으로 항상 표시 ===== */}
-      <div className="flex justify-between sticky bottom-0 bg-[#0a0a0a] py-4 border-t border-[#464555]/10 -mx-4 px-4 mt-2">
+      {/* ===== 네비게이션 버튼 ===== */}
+      <div className="flex justify-between sticky bottom-0 bg-white py-4 border-t border-[#E5E8EB] -mx-4 px-4 mt-2">
         <Button variant="ghost" onClick={() => dispatch({ type: 'PREV_STEP' })}>이전</Button>
         {manuscriptSections.length > 0 && (
           <Button size="lg" onClick={() => dispatch({ type: 'NEXT_STEP' })}>

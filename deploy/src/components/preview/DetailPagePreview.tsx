@@ -49,12 +49,12 @@ function SectionWrapper({ section, onDragStart, onDragOver, onDrop, isDragging }
     >
       <div
         className="absolute left-0 top-0 bottom-0 w-8 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 cursor-grab active:cursor-grabbing"
-        style={{ backgroundColor: 'rgba(229,226,225,0.03)' }}
+        style={{ backgroundColor: 'rgba(25,31,40,0.03)' }}
       >
         <div className="flex flex-col gap-0.5">
-          <span className="block w-4 h-0.5 bg-[#e5e2e1]/30 rounded" />
-          <span className="block w-4 h-0.5 bg-[#e5e2e1]/30 rounded" />
-          <span className="block w-4 h-0.5 bg-[#e5e2e1]/30 rounded" />
+          <span className="block w-4 h-0.5 bg-[#191F28]/30 rounded" />
+          <span className="block w-4 h-0.5 bg-[#191F28]/30 rounded" />
+          <span className="block w-4 h-0.5 bg-[#191F28]/30 rounded" />
         </div>
       </div>
       {renderSection()}
@@ -114,7 +114,7 @@ export default function DetailPagePreview() {
 
   if (visibleSections.length === 0) {
     return (
-      <div className="py-20 text-center text-[#e5e2e1]/30">
+      <div className="py-20 text-center text-[#191F28]/30">
         <p className="text-lg mb-2">표시할 섹션이 없습니다</p>
         <p className="text-sm">위의 토글 버튼으로 섹션을 활성화해주세요.</p>
       </div>

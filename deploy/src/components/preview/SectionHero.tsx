@@ -18,7 +18,7 @@ export default function SectionHero({ content, sectionId }: SectionHeroProps) {
   const { productInfo, images, imageGenerating } = state;
 
   const category = productInfo.category ? CATEGORIES[productInfo.category as keyof typeof CATEGORIES] : null;
-  const primaryColor = category?.primary || '#c3c0ff';
+  const primaryColor = category?.primary || '#3182F6';
   const heroImage = images.hero;
   const isGeneratingImage = imageGenerating['hero'] || false;
 
@@ -83,14 +83,14 @@ export default function SectionHero({ content, sectionId }: SectionHeroProps) {
             value={content.subheadline}
             onSave={(v) => updateContent('subheadline', v)}
             className="text-lg mb-8 max-w-xl mx-auto leading-relaxed"
-            style={{ color: heroImage ? 'rgba(255,255,255,0.85)' : '#c7c4d8' }}
+            style={{ color: heroImage ? 'rgba(255,255,255,0.85)' : '#8B95A1' }}
             multiline
           />
           <EditableText
             tag="span"
             value={content.ctaText}
             onSave={(v) => updateContent('ctaText', v)}
-            className="inline-block px-8 py-4 rounded-full text-[#0f0069] font-bold text-lg shadow-lg primary-gradient"
+            className="inline-block px-8 py-4 rounded-full text-white font-bold text-lg shadow-lg primary-gradient"
           />
           {productInfo.price && <p className="mt-4 text-2xl font-bold" style={{ color: heroImage ? '#ffffff' : primaryColor }}>{productInfo.price}</p>}
         </div>
@@ -100,7 +100,7 @@ export default function SectionHero({ content, sectionId }: SectionHeroProps) {
           <button
             onClick={handleGenerateImage}
             disabled={isGeneratingImage}
-            className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium transition-all bg-[#201f1f]/80 hover:bg-[#201f1f] text-[#c3c0ff] border border-[#c3c0ff]/20 backdrop-blur-sm disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium transition-all bg-[#F4F5F7]/80 hover:bg-[#F4F5F7] text-[#3182F6] border border-[#3182F6]/20 backdrop-blur-sm disabled:opacity-50"
           >
             {isGeneratingImage ? (
               <><Loader2 className="w-3.5 h-3.5 animate-spin" />생성 중...</>

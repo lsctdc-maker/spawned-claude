@@ -21,20 +21,20 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <div className="w-full">
         {label && (
-          <label htmlFor={selectId} className="block text-[10px] uppercase tracking-widest text-[#e5e2e1]/50 mb-3 ml-1 font-label">{label}</label>
+          <label htmlFor={selectId} className="block text-sm text-[#8B95A1] mb-2 font-medium">{label}</label>
         )}
         <select
           ref={ref}
           id={selectId}
           className={`
-            w-full bg-[#1c1b1b] border-0 border-b transition-all duration-300 appearance-none
-            py-4 px-2 text-[#e5e2e1]
+            w-full bg-transparent border-0 border-b-2 transition-all duration-200 appearance-none
+            py-3 px-1 text-[#191F28]
             focus:outline-none focus:ring-0
-            ${error ? 'border-[#ffb4ab]' : 'border-[#464555]/20 focus:border-[#c3c0ff]'}
+            ${error ? 'border-[#F04452]' : 'border-[#E5E8EB] focus:border-[#3182F6]'}
             ${className}
           `}
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23c7c4d8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+            backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%238B95A1' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
             backgroundPosition: 'right 0.75rem center',
             backgroundRepeat: 'no-repeat',
             backgroundSize: '1.5em 1.5em',
@@ -49,7 +49,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
             </option>
           ))}
         </select>
-        {error && <p className="mt-2 text-sm text-[#ffb4ab]">{error}</p>}
+        {error && <p className="mt-2 text-sm text-[#F04452]">{error}</p>}
       </div>
     );
   }

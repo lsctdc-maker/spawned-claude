@@ -16,7 +16,7 @@ export default function SectionComparison({ content, sectionId }: SectionCompari
   const { productInfo } = state;
 
   const category = productInfo.category ? CATEGORIES[productInfo.category as keyof typeof CATEGORIES] : null;
-  const primaryColor = category?.primary || '#c3c0ff';
+  const primaryColor = category?.primary || '#3182F6';
 
   const updateHeader = useCallback((idx: number, value: string) => {
     const newHeaders = [...content.headers];
@@ -46,7 +46,7 @@ export default function SectionComparison({ content, sectionId }: SectionCompari
               <tr>
                 <th className="px-4 py-3 text-left font-bold rounded-tl-xl" style={{ backgroundColor: `${primaryColor}20`, color: primaryColor }}>기능</th>
                 {content.headers.map((header, idx) => (
-                  <th key={idx} className="px-4 py-3 text-center font-bold" style={{ backgroundColor: `${primaryColor}10`, color: '#e5e2e1' }}>
+                  <th key={idx} className="px-4 py-3 text-center font-bold" style={{ backgroundColor: `${primaryColor}10`, color: '#191F28' }}>
                     <EditableText
                       tag="span"
                       value={header}
@@ -59,12 +59,12 @@ export default function SectionComparison({ content, sectionId }: SectionCompari
             </thead>
             <tbody>
               {content.rows.map((row, idx) => (
-                <tr key={idx} className="border-t border-[#464555]/15">
-                  <td className="px-4 py-3 font-semibold text-[#e5e2e1]" style={{ backgroundColor: `${primaryColor}08` }}>
+                <tr key={idx} className="border-t border-[#E5E8EB]/15">
+                  <td className="px-4 py-3 font-semibold text-[#191F28]" style={{ backgroundColor: `${primaryColor}08` }}>
                     <EditableText tag="span" value={row.label} onSave={(v) => updateRow(idx, 'label', v)} className="font-semibold" />
                   </td>
                   {row.values.map((val, valIdx) => (
-                    <td key={valIdx} className="px-4 py-3 text-center text-[#c7c4d8]">
+                    <td key={valIdx} className="px-4 py-3 text-center text-[#8B95A1]">
                       <EditableText tag="span" value={val} onSave={(v) => updateRow(idx, 'value', v, valIdx)} />
                     </td>
                   ))}

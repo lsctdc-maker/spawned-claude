@@ -85,7 +85,7 @@ const GUIDE_ITEMS: GuideItem[] = [
 function GuidePanel({ activeGuide }: { activeGuide: GuideKey | null }) {
   return (
     <div className="space-y-2.5">
-      <p className="text-[10px] uppercase tracking-widest text-[#e5e2e1]/25 font-label px-1 mb-3">입력 가이드</p>
+      <p className="text-xs font-medium text-[#8B95A1] px-1 mb-3">입력 가이드</p>
       {GUIDE_ITEMS.map((guide) => {
         const isActive = activeGuide === guide.key;
         const Icon = guide.icon;
@@ -94,19 +94,19 @@ function GuidePanel({ activeGuide }: { activeGuide: GuideKey | null }) {
             key={guide.key}
             className={`rounded-xl border p-4 transition-all duration-300 ${
               isActive
-                ? 'border-[#c3c0ff]/30 bg-[#c3c0ff]/5 shadow-[0_0_20px_rgba(195,192,255,0.06)]'
-                : 'border-[#464555]/15 bg-[#1c1b1b]'
+                ? 'border-[#3182F6]/30 bg-[#3182F6]/5'
+                : 'border-[#E5E8EB] bg-white'
             }`}
           >
             <div className="flex items-center gap-2 mb-2.5">
               <Icon
                 className={`w-3.5 h-3.5 flex-shrink-0 transition-colors ${
-                  isActive ? 'text-[#c3c0ff]' : 'text-[#e5e2e1]/25'
+                  isActive ? 'text-[#3182F6]' : 'text-[#D1D6DB]'
                 }`}
               />
               <span
                 className={`text-[11px] font-semibold transition-colors ${
-                  isActive ? 'text-[#c3c0ff]' : 'text-[#e5e2e1]/40'
+                  isActive ? 'text-[#3182F6]' : 'text-[#8B95A1]'
                 }`}
               >
                 {guide.label}
@@ -118,10 +118,10 @@ function GuidePanel({ activeGuide }: { activeGuide: GuideKey | null }) {
                   <span
                     className={`text-[10px] mt-[3px] flex-shrink-0 font-bold ${
                       tip.good === true
-                        ? 'text-[#2ed573]'
+                        ? 'text-[#00C471]'
                         : tip.good === false
-                        ? 'text-[#ffb4ab]'
-                        : 'text-[#464555]'
+                        ? 'text-[#F04452]'
+                        : 'text-[#D1D6DB]'
                     }`}
                   >
                     {tip.good === true ? 'O' : tip.good === false ? 'X' : '—'}
@@ -129,10 +129,10 @@ function GuidePanel({ activeGuide }: { activeGuide: GuideKey | null }) {
                   <span
                     className={`text-[11px] leading-relaxed ${
                       tip.good === true
-                        ? 'text-[#2ed573]/70'
+                        ? 'text-[#00C471]'
                         : tip.good === false
-                        ? 'text-[#ffb4ab]/60'
-                        : 'text-[#c7c4d8]/50'
+                        ? 'text-[#F04452]/80'
+                        : 'text-[#8B95A1]'
                     }`}
                   >
                     {tip.text}
@@ -321,12 +321,11 @@ export default function Step1ProductInfo() {
       <div className="md:grid md:grid-cols-[1fr_300px] md:gap-8 md:items-start">
 
         {/* ===== 왼쪽: 입력 폼 ===== */}
-        <div className="bg-[#201f1f] rounded-xl shadow-[0_40px_100px_rgba(0,0,0,0.4)] p-8 md:p-12 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#c3c0ff]/5 blur-[100px] rounded-full -mr-32 -mt-32" />
+        <div className="bg-white rounded-xl border border-[#E5E8EB] shadow-card p-8 md:p-12 relative overflow-hidden">
 
           <header className="mb-10 relative">
-            <h1 className="font-headline text-3xl font-extrabold tracking-tight text-[#e5e2e1] mb-2">제품 등록</h1>
-            <p className="text-[#c7c4d8]">제품 사진과 기본 정보를 입력해주세요.</p>
+            <h1 className="text-3xl font-extrabold tracking-tight text-[#191F28] mb-2">제품 등록</h1>
+            <p className="text-[#8B95A1]">제품 사진과 기본 정보를 입력해주세요.</p>
           </header>
 
           <div className="space-y-8 relative">
@@ -334,8 +333,8 @@ export default function Step1ProductInfo() {
             {/* ===== 제품 사진 ===== */}
             <div onFocus={() => setActiveGuide('photos')} onClick={() => setActiveGuide('photos')}>
               <div className="flex items-center justify-between mb-3">
-                <label className="block text-xs uppercase tracking-widest text-[#e5e2e1]/50 ml-1 font-label">
-                  제품 사진 * <span className="normal-case text-[#e5e2e1]/30 tracking-normal ml-1">{productPhotos.length}/{MAX_PHOTOS}장</span>
+                <label className="block text-sm text-[#8B95A1] font-medium">
+                  제품 사진 * <span className="text-[#D1D6DB] ml-1">{productPhotos.length}/{MAX_PHOTOS}장</span>
                 </label>
               </div>
 
@@ -347,13 +346,13 @@ export default function Step1ProductInfo() {
                   onClick={() => photoInputRef.current?.click()}
                   className={`w-full py-8 border-2 border-dashed rounded-xl text-center cursor-pointer transition-all duration-300 ${
                     isDragging
-                      ? 'border-[#c3c0ff]/60 bg-[#c3c0ff]/10'
-                      : 'border-[#464555]/30 hover:border-[#c3c0ff]/40 hover:bg-[#c3c0ff]/5'
+                      ? 'border-[#3182F6]/60 bg-[#3182F6]/5'
+                      : 'border-[#E5E8EB] hover:border-[#3182F6]/40 hover:bg-[#F4F5F7]'
                   }`}
                 >
-                  <Upload className="w-7 h-7 text-[#e5e2e1]/30 mx-auto mb-3 transition-colors" />
-                  <p className="text-sm text-[#e5e2e1]/50">사진을 드래그하거나 클릭하여 업로드</p>
-                  <p className="text-xs text-[#e5e2e1]/25 mt-1">최대 {MAX_PHOTOS}장 · JPG, PNG, WEBP</p>
+                  <Upload className="w-7 h-7 text-[#D1D6DB] mx-auto mb-3 transition-colors" />
+                  <p className="text-sm text-[#8B95A1]">사진을 드래그하거나 클릭하여 업로드</p>
+                  <p className="text-xs text-[#D1D6DB] mt-1">최대 {MAX_PHOTOS}장 · JPG, PNG, WEBP</p>
                 </div>
               )}
               <input
@@ -377,16 +376,16 @@ export default function Step1ProductInfo() {
                         className="relative aspect-square group"
                       >
                         {idx === 0 && (
-                          <span className="absolute top-1 left-1 z-10 text-[9px] bg-[#c3c0ff] text-[#0f0069] px-1 py-0.5 rounded font-bold leading-tight">대표</span>
+                          <span className="absolute top-1 left-1 z-10 text-[9px] bg-[#3182F6] text-white px-1 py-0.5 rounded font-bold leading-tight">대표</span>
                         )}
                         <img
                           src={photo.dataUrl}
                           alt={photo.name}
-                          className="w-full h-full object-cover rounded-lg border border-[#464555]/20"
+                          className="w-full h-full object-cover rounded-lg border border-[#E5E8EB]"
                         />
                         <button
                           onClick={() => handleRemovePhoto(photo.id)}
-                          className="absolute top-1 right-1 w-5 h-5 rounded-full bg-[#1c1b1b]/80 text-[#e5e2e1]/60 hover:text-white hover:bg-[#93000a]/80 transition-all opacity-0 group-hover:opacity-100 flex items-center justify-center"
+                          className="absolute top-1 right-1 w-5 h-5 rounded-full bg-white/80 text-[#8B95A1] hover:text-white hover:bg-[#F04452] transition-all opacity-0 group-hover:opacity-100 flex items-center justify-center"
                         >
                           <X className="w-3 h-3" />
                         </button>
@@ -395,10 +394,10 @@ export default function Step1ProductInfo() {
                   </AnimatePresence>
                 </div>
               )}
-              {errors.photos && <p className="mt-2 text-sm text-[#ffb4ab]">{errors.photos}</p>}
+              {errors.photos && <p className="mt-2 text-sm text-[#F04452]">{errors.photos}</p>}
 
               {/* 모바일 힌트 */}
-              <p className="md:hidden mt-2 text-[11px] text-[#e5e2e1]/30">다양한 각도로 최소 3장 이상, 밝고 깨끗한 배경 권장</p>
+              <p className="md:hidden mt-2 text-[11px] text-[#D1D6DB]">다양한 각도로 최소 3장 이상, 밝고 깨끗한 배경 권장</p>
             </div>
 
             {/* ===== 상품명 ===== */}
@@ -410,12 +409,12 @@ export default function Step1ProductInfo() {
                 onChange={(e) => handleChange('name', e.target.value)}
                 error={errors.name}
               />
-              <p className="md:hidden mt-1.5 text-[11px] text-[#e5e2e1]/30">브랜드명 + 제품 종류 + 핵심 키워드</p>
+              <p className="md:hidden mt-1.5 text-[11px] text-[#D1D6DB]">브랜드명 + 제품 종류 + 핵심 키워드</p>
             </div>
 
             {/* ===== 카테고리 ===== */}
             <div>
-              <label className="block text-xs uppercase tracking-widest text-[#e5e2e1]/50 mb-4 ml-1 font-label">카테고리 *</label>
+              <label className="block text-sm text-[#8B95A1] mb-4 ml-1 font-medium">카테고리 *</label>
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
                 {(Object.entries(CATEGORIES) as [CategoryKey, typeof CATEGORIES[CategoryKey]][]).map(([key, cat]) => {
                   const isSelected = productInfo.category === key;
@@ -427,17 +426,17 @@ export default function Step1ProductInfo() {
                       onClick={() => handleCategorySelect(key)}
                       className={`flex flex-col items-center justify-center gap-1 py-3 px-2 rounded-lg transition-all duration-300 ${
                         isSelected
-                          ? 'bg-[#c3c0ff]/5 border border-[#c3c0ff]/40 shadow-[0_0_15px_rgba(195,192,255,0.1)]'
-                          : 'bg-[#2a2a2a] border border-[#464555]/15 hover:border-[#c3c0ff]/50 hover:bg-[#353534]'
+                          ? 'bg-[#EBF4FF] border-2 border-[#3182F6]'
+                          : 'bg-[#F4F5F7] border border-[#E5E8EB] hover:border-[#3182F6]/50 hover:bg-white'
                       }`}
                     >
-                      <span className={`text-[11px] font-medium leading-tight text-center ${isSelected ? 'text-[#c3c0ff]' : 'text-[#e5e2e1]'}`}>{cat.label}</span>
+                      <span className={`text-[11px] font-medium leading-tight text-center ${isSelected ? 'text-[#3182F6]' : 'text-[#4E5968]'}`}>{cat.label}</span>
                     </motion.button>
                   );
                 })}
               </div>
-              {errors.category && <p className="mt-2 text-sm text-[#ffb4ab]">{errors.category}</p>}
-              <p className="md:hidden mt-2 text-[11px] text-[#e5e2e1]/30">카테고리에 따라 AI 질문과 레이아웃이 달라집니다</p>
+              {errors.category && <p className="mt-2 text-sm text-[#F04452]">{errors.category}</p>}
+              <p className="md:hidden mt-2 text-[11px] text-[#D1D6DB]">카테고리에 따라 AI 질문과 레이아웃이 달라집니다</p>
             </div>
 
             {/* ===== 타겟 고객 ===== */}
@@ -460,40 +459,40 @@ export default function Step1ProductInfo() {
                 error={errors.shortDescription}
                 rows={3}
               />
-              <p className="md:hidden mt-1.5 text-[11px] text-[#e5e2e1]/30">경쟁사 대비 차별점 중심으로 3~5개, 구체적인 수치 포함 권장</p>
+              <p className="md:hidden mt-1.5 text-[11px] text-[#D1D6DB]">경쟁사 대비 차별점 중심으로 3~5개, 구체적인 수치 포함 권장</p>
             </div>
 
             {/* ===== 경쟁사/자사 분석 (선택) ===== */}
-            <div className="border border-[#464555]/15 rounded-xl overflow-hidden">
+            <div className="border border-[#E5E8EB] rounded-xl overflow-hidden">
               <button
                 onClick={() => {
                   const next = !showAnalysis;
                   setShowAnalysis(next);
                   if (next) setActiveGuide('competitor');
                 }}
-                className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-[#2a2a2a] transition-colors"
+                className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-[#F4F5F7] transition-colors"
               >
                 <div>
-                  <span className="text-sm font-medium text-[#e5e2e1]/70">기존 상세페이지 분석</span>
-                  <span className="ml-2 text-xs text-[#e5e2e1]/30">선택사항</span>
+                  <span className="text-sm font-medium text-[#4E5968]">기존 상세페이지 분석</span>
+                  <span className="ml-2 text-xs text-[#D1D6DB]">선택사항</span>
                 </div>
-                {showAnalysis ? <ChevronUp className="w-4 h-4 text-[#e5e2e1]/30" /> : <ChevronDown className="w-4 h-4 text-[#e5e2e1]/30" />}
+                {showAnalysis ? <ChevronUp className="w-4 h-4 text-[#D1D6DB]" /> : <ChevronDown className="w-4 h-4 text-[#D1D6DB]" />}
               </button>
 
               {showAnalysis && (
-                <div className="px-5 pb-5 bg-[#c3c0ff]/3 border-t border-[#464555]/10">
-                  <p className="text-xs text-[#e5e2e1]/40 mt-3 mb-4">경쟁사 또는 자사 기존 상세페이지를 분석하여 정보를 자동으로 채웁니다.</p>
+                <div className="px-5 pb-5 bg-[#F4F5F7] border-t border-[#E5E8EB]">
+                  <p className="text-xs text-[#8B95A1] mt-3 mb-4">경쟁사 또는 자사 기존 상세페이지를 분석하여 정보를 자동으로 채웁니다.</p>
 
                   <div className="flex gap-1 mb-4">
                     <button
                       onClick={() => { setAnalyzeTab('url'); setAnalyzeError(''); setAnalyzeResult(null); }}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${analyzeTab === 'url' ? 'bg-[#c3c0ff]/20 text-[#c3c0ff]' : 'text-[#e5e2e1]/40 hover:text-[#e5e2e1]/70'}`}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${analyzeTab === 'url' ? 'bg-[#3182F6]/10 text-[#3182F6]' : 'text-[#8B95A1] hover:text-[#4E5968]'}`}
                     >
                       <Link className="w-3 h-3" /> URL 입력
                     </button>
                     <button
                       onClick={() => { setAnalyzeTab('image'); setAnalyzeError(''); setAnalyzeResult(null); }}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${analyzeTab === 'image' ? 'bg-[#c3c0ff]/20 text-[#c3c0ff]' : 'text-[#e5e2e1]/40 hover:text-[#e5e2e1]/70'}`}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${analyzeTab === 'image' ? 'bg-[#3182F6]/10 text-[#3182F6]' : 'text-[#8B95A1] hover:text-[#4E5968]'}`}
                     >
                       <ImageIcon className="w-3 h-3" /> 스크린샷 업로드
                     </button>
@@ -506,7 +505,7 @@ export default function Step1ProductInfo() {
                         value={analyzeUrl}
                         onChange={(e) => setAnalyzeUrl(e.target.value)}
                         placeholder="https://smartstore.naver.com/..."
-                        className="flex-1 bg-[#1c1b1b] border-0 border-b border-[#464555]/20 py-3 px-2 text-sm text-[#e5e2e1] placeholder:text-[#e5e2e1]/20 focus:outline-none focus:border-[#c3c0ff] transition-all"
+                        className="flex-1 bg-white border-0 border-b-2 border-[#E5E8EB] py-3 px-2 text-sm text-[#191F28] placeholder:text-[#D1D6DB] focus:outline-none focus:border-[#3182F6] transition-all"
                       />
                       <Button variant="secondary" size="sm" onClick={handleAnalyzeUrl} disabled={!analyzeUrl.trim() || isAnalyzing}>
                         {isAnalyzing ? '분석 중...' : '분석하기'}
@@ -518,8 +517,8 @@ export default function Step1ProductInfo() {
                       {compImagePreview ? (
                         <div className="space-y-2">
                           <div className="relative">
-                            <img src={compImagePreview} alt="분석 이미지" className="w-full max-h-32 object-contain rounded-lg border border-[#464555]/20" />
-                            <button onClick={() => { setCompImageFile(null); setCompImagePreview(''); setAnalyzeResult(null); }} className="absolute top-2 right-2 w-6 h-6 rounded-full bg-[#1c1b1b]/80 text-[#e5e2e1]/60 hover:text-[#e5e2e1] text-xs flex items-center justify-center">
+                            <img src={compImagePreview} alt="분석 이미지" className="w-full max-h-32 object-contain rounded-lg border border-[#E5E8EB]" />
+                            <button onClick={() => { setCompImageFile(null); setCompImagePreview(''); setAnalyzeResult(null); }} className="absolute top-2 right-2 w-6 h-6 rounded-full bg-white/80 text-[#8B95A1] hover:text-[#191F28] text-xs flex items-center justify-center">
                               <X className="w-3 h-3" />
                             </button>
                           </div>
@@ -528,23 +527,23 @@ export default function Step1ProductInfo() {
                           </Button>
                         </div>
                       ) : (
-                        <button onClick={() => compFileInputRef.current?.click()} className="w-full py-5 border border-dashed border-[#464555]/30 rounded-lg text-center hover:border-[#c3c0ff]/40 transition-all group">
-                          <Upload className="w-5 h-5 text-[#e5e2e1]/30 mx-auto mb-1.5" />
-                          <p className="text-xs text-[#e5e2e1]/40">상세페이지 스크린샷 업로드</p>
+                        <button onClick={() => compFileInputRef.current?.click()} className="w-full py-5 border border-dashed border-[#E5E8EB] rounded-lg text-center hover:border-[#3182F6]/40 transition-all group bg-white">
+                          <Upload className="w-5 h-5 text-[#D1D6DB] mx-auto mb-1.5" />
+                          <p className="text-xs text-[#8B95A1]">상세페이지 스크린샷 업로드</p>
                         </button>
                       )}
                     </div>
                   )}
 
-                  {analyzeError && <p className="mt-2 text-sm text-[#ffb4ab]">{analyzeError}</p>}
+                  {analyzeError && <p className="mt-2 text-sm text-[#F04452]">{analyzeError}</p>}
                   {analyzeResult && (
-                    <div className="mt-3 p-3 rounded-lg bg-[#2ed573]/10 border border-[#2ed573]/20">
-                      <p className="text-sm text-[#2ed573] font-medium">분석 완료! 기본 정보가 자동으로 채워졌습니다.</p>
+                    <div className="mt-3 p-3 rounded-lg bg-[#00C471]/10 border border-[#00C471]/20">
+                      <p className="text-sm text-[#00C471] font-medium">분석 완료! 기본 정보가 자동으로 채워졌습니다.</p>
                       {analyzeResult.improvementSuggestions?.length > 0 && (
                         <div className="mt-2">
-                          <p className="text-xs text-[#c7c4d8] font-medium mb-1">개선 제안:</p>
+                          <p className="text-xs text-[#4E5968] font-medium mb-1">개선 제안:</p>
                           {analyzeResult.improvementSuggestions.map((s: string, i: number) => (
-                            <p key={i} className="text-xs text-[#c7c4d8]/70">• {s}</p>
+                            <p key={i} className="text-xs text-[#8B95A1]">• {s}</p>
                           ))}
                         </div>
                       )}

@@ -176,22 +176,22 @@ export default function SeedPage() {
   }, []);
 
   return (
-    <div className="h-screen flex flex-col items-center justify-center bg-[#0a0a0a] text-[#e5e2e1] gap-4">
+    <div className="h-screen flex flex-col items-center justify-center bg-white text-[#191F28] gap-4">
       {error ? (
         <>
-          <div className="text-red-400 text-lg font-bold">Error</div>
-          <div className="text-sm text-red-300">{error}</div>
+          <div className="text-[#F04452] text-lg font-bold">Error</div>
+          <div className="text-sm text-[#F04452]/80">{error}</div>
         </>
       ) : done ? (
         <>
-          <div className="text-lg font-bold text-[#c3c0ff]">28 Days Teatree Serum</div>
-          <div className="text-sm text-[#c7c4d8]">샘플 원고 로드 완료! 에디터로 이동 중...</div>
-          <div className="w-8 h-8 border-2 border-[#c3c0ff] border-t-transparent rounded-full animate-spin" />
+          <div className="text-lg font-bold text-[#3182F6]">28 Days Teatree Serum</div>
+          <div className="text-sm text-[#8B95A1]">샘플 원고 로드 완료! 에디터로 이동 중...</div>
+          <div className="w-8 h-8 border-2 border-[#3182F6] border-t-transparent rounded-full animate-spin" />
         </>
       ) : (
         <>
-          <div className="text-sm text-[#c7c4d8]">샘플 데이터 로딩 중...</div>
-          <div className="w-8 h-8 border-2 border-[#c3c0ff] border-t-transparent rounded-full animate-spin" />
+          <div className="text-sm text-[#8B95A1]">샘플 데이터 로딩 중...</div>
+          <div className="w-8 h-8 border-2 border-[#3182F6] border-t-transparent rounded-full animate-spin" />
         </>
       )}
     </div>

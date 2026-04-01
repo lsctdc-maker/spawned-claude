@@ -16,7 +16,7 @@ export default function SectionCTA({ content, sectionId }: SectionCTAProps) {
   const { productInfo } = state;
 
   const category = productInfo.category ? CATEGORIES[productInfo.category as keyof typeof CATEGORIES] : null;
-  const primaryColor = category?.primary || '#c3c0ff';
+  const primaryColor = category?.primary || '#3182F6';
 
   const updateContent = useCallback((field: keyof CTAContent, value: string) => {
     dispatch({ type: 'UPDATE_SECTION', payload: { id: sectionId, data: { content: { ...content, [field]: value } } } });
@@ -29,20 +29,20 @@ export default function SectionCTA({ content, sectionId }: SectionCTAProps) {
           tag="h2"
           value={content.headline}
           onSave={(v) => updateContent('headline', v)}
-          className="text-3xl sm:text-4xl font-headline font-extrabold mb-4 leading-tight text-[#0f0069]"
+          className="text-3xl sm:text-4xl font-headline font-extrabold mb-4 leading-tight text-white"
         />
         <EditableText
           tag="p"
           value={content.subtext}
           onSave={(v) => updateContent('subtext', v)}
-          className="text-lg mb-8 max-w-2xl mx-auto text-[#0f0069]/70"
+          className="text-lg mb-8 max-w-2xl mx-auto text-white/70"
           multiline
         />
         <EditableText
           tag="span"
           value={content.buttonText}
           onSave={(v) => updateContent('buttonText', v)}
-          className="inline-block px-8 py-4 rounded-full bg-[#0f0069] text-lg font-bold shadow-lg"
+          className="inline-block px-8 py-4 rounded-full bg-white text-lg font-bold shadow-lg"
           style={{ color: primaryColor }}
         />
         {content.urgencyText && (
@@ -51,7 +51,7 @@ export default function SectionCTA({ content, sectionId }: SectionCTAProps) {
               tag="p"
               value={content.urgencyText}
               onSave={(v) => updateContent('urgencyText', v)}
-              className="text-sm text-[#0f0069]/80"
+              className="text-sm text-white/80"
             />
           </div>
         )}

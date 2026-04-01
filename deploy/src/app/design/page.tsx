@@ -50,8 +50,8 @@ export default function DesignPage() {
 
   if (!ready) {
     return (
-      <div className="h-screen flex items-center justify-center bg-[#0a0a0a]">
-        <div className="text-[#e5e2e1]/40 text-sm">불러오는 중...</div>
+      <div className="h-screen flex items-center justify-center bg-white">
+        <div className="text-[#8B95A1] text-sm">불러오는 중...</div>
       </div>
     );
   }
@@ -67,9 +67,9 @@ export default function DesignPage() {
 
   return (
     <DetailPageContext.Provider value={{ state, dispatch }}>
-      <div className="h-screen flex flex-col bg-[#0a0a0a]">
+      <div className="h-screen flex flex-col bg-white">
         <Header />
-        <div className="bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-[#e5e2e1]/10 flex-shrink-0 z-40">
+        <div className="bg-white/95 backdrop-blur-xl border-b border-[#E5E8EB] flex-shrink-0 z-40">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3">
             <ProgressBar
               currentStep={state.currentStep}

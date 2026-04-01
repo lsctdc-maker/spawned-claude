@@ -67,17 +67,17 @@ export default function Step3ToneSelect() {
       className="max-w-3xl mx-auto space-y-8"
     >
       <div className="text-center">
-        <h2 className="text-2xl font-headline font-extrabold text-[#e5e2e1] mb-2">톤앤매너 설계</h2>
-        <p className="text-[#c7c4d8]">브랜드 아이덴티티에 맞는 카피 스타일을 선택합니다.</p>
+        <h2 className="text-2xl font-bold text-[#191F28] mb-2">톤앤매너 설계</h2>
+        <p className="text-[#8B95A1]">브랜드 아이덴티티에 맞는 카피 스타일을 선택합니다.</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
         {(Object.entries(TONE_STYLES) as [ToneKey, typeof TONE_STYLES[ToneKey]][]).map(
           ([key, tone]) => (
             <Card key={key} variant="interactive" padding="lg" selected={selectedTone === key} onClick={() => handleSelectTone(key)} className="text-center">
-              <div className="flex justify-center mb-3 text-[#c3c0ff]/70">{toneIcons[key]}</div>
-              <h3 className="text-lg font-headline font-bold text-[#e5e2e1] mb-2">{tone.label}</h3>
-              <p className="text-sm text-[#c7c4d8] leading-relaxed">{tone.desc}</p>
+              <div className="flex justify-center mb-3 text-[#3182F6]">{toneIcons[key]}</div>
+              <h3 className="text-lg font-bold text-[#191F28] mb-2">{tone.label}</h3>
+              <p className="text-sm text-[#8B95A1] leading-relaxed">{tone.desc}</p>
             </Card>
           )
         )}
@@ -85,22 +85,18 @@ export default function Step3ToneSelect() {
 
       {selectedTone && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
-          <h3 className="text-[10px] uppercase tracking-widest text-[#e5e2e1]/50 ml-1 font-label">카피 미리보기</h3>
+          <h3 className="text-xs font-medium text-[#8B95A1] ml-1">카피 미리보기</h3>
           <Card variant="elevated" padding="lg">
-            <div className="rounded-xl p-6" style={{
-              background: selectedTone === 'trust' ? 'linear-gradient(135deg, rgba(195,192,255,0.1) 0%, rgba(79,70,229,0.1) 100%)'
-                : selectedTone === 'emotional' ? 'linear-gradient(135deg, rgba(187,195,255,0.1) 0%, rgba(35,70,250,0.1) 100%)'
-                : 'linear-gradient(135deg, rgba(255,180,171,0.1) 0%, rgba(147,0,10,0.15) 100%)',
-            }}>
-              <h4 className="text-xl font-headline font-bold text-[#e5e2e1] mb-3">{toneExamples[selectedTone].headline}</h4>
-              <p className="text-sm text-[#c7c4d8] leading-relaxed">{toneExamples[selectedTone].body}</p>
+            <div className="rounded-xl p-6 bg-[#F4F5F7]">
+              <h4 className="text-xl font-bold text-[#191F28] mb-3">{toneExamples[selectedTone].headline}</h4>
+              <p className="text-sm text-[#4E5968] leading-relaxed">{toneExamples[selectedTone].body}</p>
             </div>
           </Card>
         </motion.div>
       )}
 
       {state.error && (
-        <div className="p-4 rounded-xl bg-[#93000a]/20 border border-[#ffb4ab]/20 text-[#ffb4ab] text-sm">{state.error}</div>
+        <div className="p-4 rounded-xl bg-[#F04452]/10 border border-[#F04452]/20 text-[#F04452] text-sm">{state.error}</div>
       )}
 
       <div className="flex justify-between pt-4">

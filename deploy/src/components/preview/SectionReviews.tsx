@@ -17,7 +17,7 @@ export default function SectionReviews({ content, sectionId }: SectionReviewsPro
   const { productInfo } = state;
 
   const category = productInfo.category ? CATEGORIES[productInfo.category as keyof typeof CATEGORIES] : null;
-  const primaryColor = category?.primary || '#c3c0ff';
+  const primaryColor = category?.primary || '#3182F6';
 
   const updateReview = useCallback((idx: number, field: string, value: string) => {
     const newReviews = [...content.reviews];
@@ -39,15 +39,15 @@ export default function SectionReviews({ content, sectionId }: SectionReviewsPro
           {content.reviews.map((review, idx) => (
             <div key={idx} className="p-6 rounded-xl" style={{ backgroundColor: `${primaryColor}10`, borderLeft: `4px solid ${primaryColor}` }}>
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm primary-gradient text-[#0f0069]">{review.author.charAt(0)}</div>
+                <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm primary-gradient text-white">{review.author.charAt(0)}</div>
                 <div>
                   <EditableText
                     tag="p"
                     value={review.author}
                     onSave={(v) => updateReview(idx, 'author', v)}
-                    className="font-bold text-sm text-[#e5e2e1]"
+                    className="font-bold text-sm text-[#191F28]"
                   />
-                  <p className="text-xs text-[#e5e2e1]/40">{review.date || '최근'}</p>
+                  <p className="text-xs text-[#191F28]/40">{review.date || '최근'}</p>
                 </div>
               </div>
               <div className="flex gap-1 mb-3">{renderStars(review.rating)}</div>
@@ -55,7 +55,7 @@ export default function SectionReviews({ content, sectionId }: SectionReviewsPro
                 tag="p"
                 value={review.text}
                 onSave={(v) => updateReview(idx, 'text', v)}
-                className="text-[#c7c4d8]"
+                className="text-[#8B95A1]"
                 multiline
               />
             </div>

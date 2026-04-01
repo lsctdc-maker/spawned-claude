@@ -340,15 +340,24 @@ function generateMockSections(
   ];
 }
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 function buildLocalHTML(sections: DetailPageSection[], productInfo: ProductInfo): string {
   const visibleSections = sections.filter((s) => s.visible).sort((a, b) => a.order - b.order);
-  const name = productInfo.name || '상세페이지';
+  const name = escapeHtml(productInfo.name || '상세페이지');
 
   let sectionsHTML = '';
   for (const section of visibleSections) {
-    sectionsHTML += `<div class="section section-${section.type}">
-      <h2>${section.title}</h2>
-      <p>${JSON.stringify(section.content)}</p>
+    sectionsHTML += `<div class="section section-${escapeHtml(section.type)}">
+      <h2>${escapeHtml(section.title)}</h2>
+      <p>${escapeHtml(JSON.stringify(section.content))}</p>
     </div>\n`;
   }
 

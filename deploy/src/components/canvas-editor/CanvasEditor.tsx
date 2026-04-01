@@ -81,7 +81,7 @@ export default function CanvasEditor() {
     bg: colorPalette?.colors[0]?.hex || '#0f1729',
     bg2: colorPalette?.colors[1]?.hex || '#1a2744',
     text: colorPalette?.colors[2]?.hex || '#f0f0f0',
-    accent: colorPalette?.accent?.hex || '#c3c0ff',
+    accent: colorPalette?.accent?.hex || '#3182F6',
   }), [colorPalette]);
 
   const fonts: CanvasFonts = useMemo(() => ({
@@ -123,13 +123,13 @@ export default function CanvasEditor() {
 
   if (visibleSections.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-[#0a0a0a] gap-4">
-        <p className="text-[#e5e2e1]/40 text-sm">
+      <div className="flex flex-col items-center justify-center h-screen bg-white gap-4">
+        <p className="text-[#8B95A1] text-sm">
           편집할 섹션이 없습니다. 원고를 먼저 생성해주세요.
         </p>
         <a
           href="/plan"
-          className="px-4 py-2 text-sm text-[#c3c0ff] border border-[#c3c0ff]/30 rounded-lg hover:bg-[#c3c0ff]/10 transition-colors"
+          className="px-4 py-2 text-sm text-[#3182F6] border border-[#3182F6]/30 rounded-lg hover:bg-[#3182F6]/10 transition-colors"
         >
           AI 기획으로 돌아가기
         </a>
@@ -142,23 +142,23 @@ export default function CanvasEditor() {
   const anyGenerating = store.isAnyGenerating();
 
   return (
-    <div className={`flex flex-col bg-[#0a0a0a] ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
+    <div className={`flex flex-col bg-[#F4F5F7] ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
       {/* ===== Top Bar ===== */}
-      <div className="flex items-center justify-between px-4 py-2.5 bg-[#1a1a1a] border-b border-[#464555]/15 flex-shrink-0">
+      <div className="flex items-center justify-between px-4 py-2.5 bg-white border-b border-[#E5E8EB] flex-shrink-0">
         {/* Left: Back + Title */}
         <div className="flex items-center gap-3">
           {isFullscreen && (
             <button
               onClick={toggleFullscreen}
-              className="p-1.5 rounded-lg text-[#e5e2e1]/50 hover:text-[#e5e2e1] hover:bg-[#2a2a2a] transition-all"
+              className="p-1.5 rounded-lg text-[#8B95A1] hover:text-[#191F28] hover:bg-[#F4F5F7] transition-all"
               title="전체화면 종료"
             >
               <Minimize2 className="w-4 h-4" />
             </button>
           )}
           <div>
-            <h1 className="text-sm font-bold text-[#e5e2e1]">이미지 에디터</h1>
-            <p className="text-[10px] text-[#c7c4d8]/50">
+            <h1 className="text-sm font-bold text-[#191F28]">이미지 에디터</h1>
+            <p className="text-[10px] text-[#8B95A1]">
               {anyGenerating ? '이미지 생성 중...' : hasError ? '이미지 생성 실패' : `${visibleSections.length}개 섹션`}
             </p>
           </div>
@@ -169,17 +169,17 @@ export default function CanvasEditor() {
           <button
             onClick={() => activeIdx > 0 && switchSection(visibleSections[activeIdx - 1].id)}
             disabled={activeIdx <= 0}
-            className="p-1.5 rounded-lg border border-[#464555]/20 text-[#e5e2e1]/50 hover:text-[#e5e2e1] disabled:opacity-20 transition-all"
+            className="p-1.5 rounded-lg border border-[#E5E8EB] text-[#8B95A1] hover:text-[#191F28] disabled:opacity-20 transition-all"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
-          <span className="text-xs text-[#c7c4d8] min-w-[120px] text-center">
+          <span className="text-xs text-[#4E5968] min-w-[120px] text-center">
             {activeSection ? `${activeIdx + 1}/${visibleSections.length} ${SECTION_LABEL_MAP[activeSection.sectionType]}` : ''}
           </span>
           <button
             onClick={() => activeIdx < visibleSections.length - 1 && switchSection(visibleSections[activeIdx + 1].id)}
             disabled={activeIdx >= visibleSections.length - 1}
-            className="p-1.5 rounded-lg border border-[#464555]/20 text-[#e5e2e1]/50 hover:text-[#e5e2e1] disabled:opacity-20 transition-all"
+            className="p-1.5 rounded-lg border border-[#E5E8EB] text-[#8B95A1] hover:text-[#191F28] disabled:opacity-20 transition-all"
           >
             <ChevronRight className="w-4 h-4" />
           </button>
@@ -191,20 +191,20 @@ export default function CanvasEditor() {
           <button
             onClick={handleRegenerate}
             disabled={isGenerating}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-[#c7c4d8] bg-[#1c1b1b] border border-[#464555]/20 rounded-lg hover:border-[#c3c0ff]/30 transition-all disabled:opacity-40"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-[#4E5968] bg-white border border-[#E5E8EB] rounded-lg hover:border-[#3182F6]/30 transition-all disabled:opacity-40"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isGenerating ? 'animate-spin' : ''}`} />
             {isGenerating ? '생성 중...' : hasError ? '재시도' : '이미지 재생성'}
           </button>
 
           {/* Resolution */}
-          <div className="flex items-center gap-0.5 bg-[#1c1b1b] rounded-lg p-0.5 border border-[#464555]/20">
+          <div className="flex items-center gap-0.5 bg-[#F4F5F7] rounded-lg p-0.5 border border-[#E5E8EB]">
             {([1, 2] as const).map(r => (
               <button
                 key={r}
                 onClick={() => store.setResolution(r)}
                 className={`px-2.5 py-1 rounded text-[10px] font-medium transition-all ${
-                  store.resolution === r ? 'bg-[#c3c0ff] text-[#0f0069]' : 'text-[#e5e2e1]/40 hover:text-[#e5e2e1]'
+                  store.resolution === r ? 'bg-[#3182F6] text-white' : 'text-[#8B95A1] hover:text-[#191F28]'
                 }`}
               >
                 {r}x
@@ -216,7 +216,7 @@ export default function CanvasEditor() {
           {!isFullscreen && (
             <button
               onClick={toggleFullscreen}
-              className="p-1.5 rounded-lg text-[#e5e2e1]/50 hover:text-[#e5e2e1] hover:bg-[#2a2a2a] transition-all"
+              className="p-1.5 rounded-lg text-[#8B95A1] hover:text-[#191F28] hover:bg-[#F4F5F7] transition-all"
               title="전체화면"
             >
               <Maximize2 className="w-4 h-4" />
@@ -233,9 +233,9 @@ export default function CanvasEditor() {
       {/* ===== Main Area ===== */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left: Section Sidebar */}
-        <div className="w-44 bg-[#161616] border-r border-[#464555]/10 overflow-y-auto flex-shrink-0">
+        <div className="w-44 bg-white border-r border-[#E5E8EB] overflow-y-auto flex-shrink-0">
           <div className="p-3">
-            <div className="text-[9px] uppercase tracking-widest text-[#e5e2e1]/30 mb-2">
+            <div className="text-[9px] uppercase tracking-widest text-[#8B95A1] mb-2">
               섹션 ({visibleSections.length})
             </div>
             <div className="space-y-1.5">
@@ -250,12 +250,12 @@ export default function CanvasEditor() {
                     onClick={() => switchSection(section.id)}
                     className={`w-full text-left rounded-lg transition-all overflow-hidden ${
                       isActive
-                        ? 'ring-1 ring-[#c3c0ff]/40'
-                        : 'hover:ring-1 hover:ring-[#464555]/30'
+                        ? 'ring-1 ring-[#3182F6]/40'
+                        : 'hover:ring-1 hover:ring-[#E5E8EB]'
                     }`}
                   >
                     {/* Thumbnail */}
-                    <div className="aspect-[860/520] bg-[#1c1b1b] relative overflow-hidden">
+                    <div className="aspect-[860/520] bg-[#F4F5F7] relative overflow-hidden">
                       {sectionState?.thumbnail ? (
                         <img
                           src={sectionState.thumbnail}
@@ -264,23 +264,23 @@ export default function CanvasEditor() {
                         />
                       ) : isGen ? (
                         <div className="flex items-center justify-center h-full">
-                          <RefreshCw className="w-4 h-4 text-[#c3c0ff]/40 animate-spin" />
+                          <RefreshCw className="w-4 h-4 text-[#3182F6]/40 animate-spin" />
                         </div>
                       ) : (
-                        <div className="flex items-center justify-center h-full text-[#e5e2e1]/15 text-[8px]">
+                        <div className="flex items-center justify-center h-full text-[#D1D6DB] text-[8px]">
                           미리보기
                         </div>
                       )}
                       {/* Number badge */}
                       <div className={`absolute top-1 left-1 w-4 h-4 rounded-full text-[8px] font-bold flex items-center justify-center ${
-                        isActive ? 'bg-[#c3c0ff] text-[#0f0069]' : 'bg-[#2a2a2a] text-[#e5e2e1]/50'
+                        isActive ? 'bg-[#3182F6] text-white' : 'bg-[#E5E8EB] text-[#8B95A1]'
                       }`}>
                         {i + 1}
                       </div>
                     </div>
                     {/* Label */}
-                    <div className={`px-2 py-1.5 ${isActive ? 'bg-[#c3c0ff]/10' : 'bg-[#1c1b1b]'}`}>
-                      <div className={`text-[10px] font-medium truncate ${isActive ? 'text-[#c3c0ff]' : 'text-[#c7c4d8]'}`}>
+                    <div className={`px-2 py-1.5 ${isActive ? 'bg-[#EBF4FF]' : 'bg-white'}`}>
+                      <div className={`text-[10px] font-medium truncate ${isActive ? 'text-[#3182F6]' : 'text-[#4E5968]'}`}>
                         {SECTION_LABEL_MAP[section.sectionType]}
                       </div>
                     </div>
@@ -292,7 +292,7 @@ export default function CanvasEditor() {
         </div>
 
         {/* Center: Canvas */}
-        <div className="flex-1 overflow-auto flex items-start justify-center py-8 px-4 bg-[#0d0d0d]">
+        <div className="flex-1 overflow-auto flex items-start justify-center py-8 px-4 bg-[#F4F5F7]">
           {activeSection && (
             <CanvasWorkspace
               key={activeSectionId}
@@ -302,17 +302,18 @@ export default function CanvasEditor() {
               productPhotoUrl={productPhotoUrl}
               onSelectionChange={setSelectedObj}
               onCanvasReady={(ref) => { canvasRef.current = ref; }}
+              category={productInfo.category || undefined}
             />
           )}
         </div>
 
         {/* Right: Properties Panel */}
-        <div className="w-56 bg-[#161616] border-l border-[#464555]/10 overflow-y-auto flex-shrink-0">
+        <div className="w-56 bg-white border-l border-[#E5E8EB] overflow-y-auto flex-shrink-0">
           <div className="p-3 space-y-4">
             {/* Color Palette */}
             {colorPalette && (
               <div>
-                <div className="text-[9px] uppercase tracking-widest text-[#e5e2e1]/30 mb-2 flex items-center gap-1.5">
+                <div className="text-[9px] uppercase tracking-widest text-[#8B95A1] mb-2 flex items-center gap-1.5">
                   <Palette className="w-3 h-3" />
                   컬러
                 </div>
@@ -321,10 +322,10 @@ export default function CanvasEditor() {
                     <div key={i} className="flex flex-col items-center gap-1">
                       <div
                         style={{ background: c.hex }}
-                        className="w-7 h-7 rounded-lg border border-white/10"
+                        className="w-7 h-7 rounded-lg border border-[#E5E8EB]"
                         title={c.label}
                       />
-                      <span className="text-[7px] text-[#e5e2e1]/30">{c.hex}</span>
+                      <span className="text-[7px] text-[#8B95A1]">{c.hex}</span>
                     </div>
                   ))}
                 </div>
@@ -333,29 +334,29 @@ export default function CanvasEditor() {
 
             {/* Font Selector */}
             <div>
-              <div className="text-[9px] uppercase tracking-widest text-[#e5e2e1]/30 mb-2 flex items-center gap-1.5">
+              <div className="text-[9px] uppercase tracking-widest text-[#8B95A1] mb-2 flex items-center gap-1.5">
                 <Type className="w-3 h-3" />
                 폰트
               </div>
               <div className="space-y-1.5">
                 <div>
-                  <label className="text-[8px] text-[#c7c4d8]/50 block mb-0.5">제목</label>
+                  <label className="text-[8px] text-[#8B95A1] block mb-0.5">제목</label>
                   <select
                     value={headlineFont}
                     onChange={e => { setHeadlineFont(e.target.value); loadGoogleFont(e.target.value); }}
-                    className="w-full bg-[#1c1b1b] text-[11px] text-[#c7c4d8] border border-[#464555]/20 rounded-lg px-2 py-1.5 outline-none"
+                    className="w-full bg-[#F4F5F7] text-[11px] text-[#4E5968] border border-[#E5E8EB] rounded-lg px-2 py-1.5 outline-none"
                   >
-                    {FONT_OPTIONS.map(f => <option key={f.value} value={f.value} className="bg-[#1c1b1b]">{f.label}</option>)}
+                    {FONT_OPTIONS.map(f => <option key={f.value} value={f.value} className="bg-white">{f.label}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="text-[8px] text-[#c7c4d8]/50 block mb-0.5">본문</label>
+                  <label className="text-[8px] text-[#8B95A1] block mb-0.5">본문</label>
                   <select
                     value={bodyFont}
                     onChange={e => { setBodyFont(e.target.value); loadGoogleFont(e.target.value); }}
-                    className="w-full bg-[#1c1b1b] text-[11px] text-[#c7c4d8] border border-[#464555]/20 rounded-lg px-2 py-1.5 outline-none"
+                    className="w-full bg-[#F4F5F7] text-[11px] text-[#4E5968] border border-[#E5E8EB] rounded-lg px-2 py-1.5 outline-none"
                   >
-                    {FONT_OPTIONS.map(f => <option key={f.value} value={f.value} className="bg-[#1c1b1b]">{f.label}</option>)}
+                    {FONT_OPTIONS.map(f => <option key={f.value} value={f.value} className="bg-white">{f.label}</option>)}
                   </select>
                 </div>
               </div>
@@ -386,22 +387,22 @@ export default function CanvasEditor() {
             {/* Selected Object Info */}
             {selectedObj && (
               <div>
-                <div className="text-[9px] uppercase tracking-widest text-[#e5e2e1]/30 mb-2 flex items-center gap-1.5">
+                <div className="text-[9px] uppercase tracking-widest text-[#8B95A1] mb-2 flex items-center gap-1.5">
                   <Layers className="w-3 h-3" />
                   선택된 요소
                 </div>
-                <div className="bg-[#1c1b1b] rounded-lg p-2.5 border border-[#464555]/15 space-y-2">
-                  <div className="text-[10px] text-[#c3c0ff] font-medium">
+                <div className="bg-[#F4F5F7] rounded-lg p-2.5 border border-[#E5E8EB] space-y-2">
+                  <div className="text-[10px] text-[#3182F6] font-medium">
                     {selectedObj.name || selectedObj.type || '요소'}
                   </div>
-                  <div className="grid grid-cols-2 gap-1.5 text-[9px] text-[#c7c4d8]/60">
+                  <div className="grid grid-cols-2 gap-1.5 text-[9px] text-[#8B95A1]">
                     <div>X: {Math.round(selectedObj.left || 0)}</div>
                     <div>Y: {Math.round(selectedObj.top || 0)}</div>
                     <div>W: {Math.round((selectedObj.width || 0) * (selectedObj.scaleX || 1))}</div>
                     <div>H: {Math.round((selectedObj.height || 0) * (selectedObj.scaleY || 1))}</div>
                   </div>
                   {selectedObj.type === 'i-text' && (
-                    <div className="text-[9px] text-[#c7c4d8]/40 mt-1">
+                    <div className="text-[9px] text-[#8B95A1] mt-1">
                       더블클릭으로 텍스트 편집
                     </div>
                   )}
@@ -411,7 +412,7 @@ export default function CanvasEditor() {
 
             {/* Export section */}
             <div>
-              <div className="text-[9px] uppercase tracking-widest text-[#e5e2e1]/30 mb-2 flex items-center gap-1.5">
+              <div className="text-[9px] uppercase tracking-widest text-[#8B95A1] mb-2 flex items-center gap-1.5">
                 <Download className="w-3 h-3" />
                 내보내기
               </div>
@@ -437,7 +438,7 @@ export default function CanvasEditor() {
                     }
                   }}
                   disabled={downloading}
-                  className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-[11px] text-[#c3c0ff] bg-[#c3c0ff]/10 border border-[#c3c0ff]/20 rounded-lg hover:bg-[#c3c0ff]/18 transition-all disabled:opacity-40"
+                  className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-[11px] text-[#3182F6] bg-[#3182F6]/10 border border-[#3182F6]/20 rounded-lg hover:bg-[#3182F6]/20 transition-all disabled:opacity-40"
                 >
                   <Download className="w-3.5 h-3.5" />
                   현재 섹션 PNG
@@ -500,7 +501,7 @@ export default function CanvasEditor() {
                     }
                   }}
                   disabled={downloading}
-                  className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-[11px] text-[#c7c4d8] bg-[#1c1b1b] border border-[#464555]/20 rounded-lg hover:border-[#c3c0ff]/30 transition-all disabled:opacity-40"
+                  className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-[11px] text-[#4E5968] bg-[#F4F5F7] border border-[#E5E8EB] rounded-lg hover:border-[#3182F6]/30 transition-all disabled:opacity-40"
                 >
                   {downloading ? (
                     <>
@@ -520,11 +521,11 @@ export default function CanvasEditor() {
             {/* Image Guide */}
             {activeSection?.imageGuide && (
               <div>
-                <div className="text-[9px] uppercase tracking-widest text-[#e5e2e1]/30 mb-2 flex items-center gap-1.5">
+                <div className="text-[9px] uppercase tracking-widest text-[#8B95A1] mb-2 flex items-center gap-1.5">
                   <ImageIcon className="w-3 h-3" />
                   이미지 가이드
                 </div>
-                <p className="text-[10px] text-[#c7c4d8]/50 leading-relaxed bg-[#1c1b1b] rounded-lg p-2.5 border border-[#464555]/15">
+                <p className="text-[10px] text-[#8B95A1] leading-relaxed bg-[#F4F5F7] rounded-lg p-2.5 border border-[#E5E8EB]">
                   {activeSection.imageGuide}
                 </p>
               </div>
@@ -534,18 +535,18 @@ export default function CanvasEditor() {
       </div>
 
       {/* ===== Bottom Bar ===== */}
-      <div className="flex items-center justify-between px-4 py-2 bg-[#1a1a1a] border-t border-[#464555]/15 flex-shrink-0">
+      <div className="flex items-center justify-between px-4 py-2 bg-white border-t border-[#E5E8EB] flex-shrink-0">
         <Button variant="ghost" size="sm" onClick={() => { setIsFullscreen(false); dispatch({ type: 'PREV_STEP' }); }}>
           이전 (원고 수정)
         </Button>
         <div className="flex items-center gap-2">
           {anyGenerating && (
-            <span className="text-[10px] text-[#c3c0ff]/60 flex items-center gap-1.5">
+            <span className="text-[10px] text-[#3182F6] flex items-center gap-1.5">
               <RefreshCw className="w-3 h-3 animate-spin" />
               이미지 생성 중...
             </span>
           )}
-          <span className="text-[10px] text-[#e5e2e1]/25">
+          <span className="text-[10px] text-[#D1D6DB]">
             {store.resolution}x 해상도 · {SECTION_LABEL_MAP[activeSection?.sectionType || 'features']}
           </span>
         </div>

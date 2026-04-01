@@ -30,17 +30,17 @@ export function useFabricCanvas(
       });
 
       // Style selection controls
-      canvas.selectionColor = 'rgba(195, 192, 255, 0.15)';
-      canvas.selectionBorderColor = '#c3c0ff';
+      canvas.selectionColor = 'rgba(49, 130, 246, 0.15)';
+      canvas.selectionBorderColor = '#3182F6';
       canvas.selectionLineWidth = 1;
 
       // Default object control styling
       const defaultControls = {
-        cornerColor: '#c3c0ff',
-        cornerStrokeColor: '#c3c0ff',
+        cornerColor: '#3182F6',
+        cornerStrokeColor: '#3182F6',
         cornerSize: 8,
         cornerStyle: 'circle' as const,
-        borderColor: '#c3c0ff',
+        borderColor: '#3182F6',
         borderScaleFactor: 1.5,
         transparentCorners: false,
         padding: 4,

@@ -23,9 +23,9 @@ export default function DesignError({
 
   // Show manual controls only if auto-reload didn't fix it
   return (
-    <div className="h-screen flex flex-col items-center justify-center bg-[#0a0a0a] text-[#e5e2e1] gap-4">
-      <div className="w-8 h-8 border-2 border-[#c3c0ff] border-t-transparent rounded-full animate-spin" />
-      <div className="text-sm text-[#e5e2e1]/40">페이지를 다시 불러오는 중...</div>
+    <div className="h-screen flex flex-col items-center justify-center bg-white text-[#191F28] gap-4">
+      <div className="w-8 h-8 border-2 border-[#3182F6] border-t-transparent rounded-full animate-spin" />
+      <div className="text-sm text-[#8B95A1]">페이지를 다시 불러오는 중...</div>
     </div>
   );
 }

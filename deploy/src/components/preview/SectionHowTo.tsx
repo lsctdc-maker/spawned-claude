@@ -16,7 +16,7 @@ export default function SectionHowTo({ content, sectionId }: SectionHowToProps) 
   const { productInfo } = state;
 
   const category = productInfo.category ? CATEGORIES[productInfo.category as keyof typeof CATEGORIES] : null;
-  const primaryColor = category?.primary || '#c3c0ff';
+  const primaryColor = category?.primary || '#3182F6';
 
   const updateStep = useCallback((idx: number, field: string, value: string) => {
     const newSteps = [...content.steps];
@@ -35,7 +35,7 @@ export default function SectionHowTo({ content, sectionId }: SectionHowToProps) 
                 <div className="absolute left-4 top-16 w-0.5 h-24" style={{ backgroundColor: `${primaryColor}40` }} />
               )}
               <div className="flex-shrink-0">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center text-[#0f0069] font-bold z-10 relative primary-gradient text-sm">{idx + 1}</div>
+                <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold z-10 relative primary-gradient text-sm">{idx + 1}</div>
               </div>
               <div className="flex-1 py-2">
                 <EditableText
@@ -49,7 +49,7 @@ export default function SectionHowTo({ content, sectionId }: SectionHowToProps) 
                   tag="p"
                   value={step.description}
                   onSave={(v) => updateStep(idx, 'description', v)}
-                  className="text-[#c7c4d8]"
+                  className="text-[#8B95A1]"
                   multiline
                 />
               </div>

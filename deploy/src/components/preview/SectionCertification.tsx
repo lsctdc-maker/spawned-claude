@@ -16,7 +16,7 @@ export default function SectionCertification({ content, sectionId }: SectionCert
   const { productInfo } = state;
 
   const category = productInfo.category ? CATEGORIES[productInfo.category as keyof typeof CATEGORIES] : null;
-  const primaryColor = category?.primary || '#c3c0ff';
+  const primaryColor = category?.primary || '#3182F6';
 
   const updateItem = useCallback((idx: number, field: string, value: string) => {
     const newItems = [...content.items];
@@ -31,7 +31,7 @@ export default function SectionCertification({ content, sectionId }: SectionCert
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {content.items.map((item, idx) => (
             <div key={idx} className="flex flex-col items-center text-center">
-              <div className="w-16 h-16 rounded-xl flex items-center justify-center bg-[#201f1f] shadow-[0_10px_40px_rgba(229,226,225,0.05)] mb-4 text-3xl border border-[#464555]/10">{item.icon || '🏆'}</div>
+              <div className="w-16 h-16 rounded-xl flex items-center justify-center bg-[#F4F5F7] shadow-[0_10px_40px_rgba(25,31,40,0.05)] mb-4 text-3xl border border-[#E5E8EB]/10">{item.icon || '🏆'}</div>
               <EditableText
                 tag="h3"
                 value={item.name}
@@ -43,7 +43,7 @@ export default function SectionCertification({ content, sectionId }: SectionCert
                 tag="p"
                 value={item.description}
                 onSave={(v) => updateItem(idx, 'description', v)}
-                className="text-[#c7c4d8] text-sm"
+                className="text-[#8B95A1] text-sm"
                 multiline
               />
             </div>

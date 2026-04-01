@@ -16,7 +16,7 @@ export default function SectionUSP({ content, sectionId }: SectionUSPProps) {
   const { productInfo } = state;
 
   const category = productInfo.category ? CATEGORIES[productInfo.category as keyof typeof CATEGORIES] : null;
-  const primaryColor = category?.primary || '#c3c0ff';
+  const primaryColor = category?.primary || '#3182F6';
 
   const updatePoint = useCallback((idx: number, field: string, value: string) => {
     const newPoints = [...content.points];
@@ -43,7 +43,7 @@ export default function SectionUSP({ content, sectionId }: SectionUSPProps) {
                 tag="p"
                 value={point.description}
                 onSave={(v) => updatePoint(idx, 'description', v)}
-                className="text-[#c7c4d8]"
+                className="text-[#8B95A1]"
                 multiline
               />
             </div>
