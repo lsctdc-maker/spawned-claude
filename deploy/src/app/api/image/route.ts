@@ -404,7 +404,6 @@ export async function POST(request: NextRequest) {
       category = 'others',
       tone = 'trust',
       imageGuide = '',
-      sectionTitle = '',
     } = body;
 
     const orientation = type === 'hero' ? 'landscape' : 'squarish';

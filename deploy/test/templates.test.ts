@@ -25,9 +25,10 @@ describe('getTemplate', () => {
     }
   });
 
-  it('falls back to hero for unknown section type', () => {
+  it('falls back to features for unknown section type', () => {
     const t = getTemplate('nonexistent' as any, 0);
     expect(t).toBeDefined();
+    expect(t.sectionType).toBe('features');
     expect(t.canvasHeight).toBeGreaterThan(0);
   });
 
