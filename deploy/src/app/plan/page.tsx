@@ -59,7 +59,7 @@ export default function PlanPage() {
     <DetailPageContext.Provider value={{ state, dispatch }}>
       <div className="flex flex-col bg-white fixed inset-0 z-50">
         {/* Top Bar */}
-        <div className="flex items-center justify-between px-4 py-2.5 bg-white border-b border-[#E5E8EB] flex-shrink-0">
+        <div className="flex items-center px-4 py-2.5 bg-white border-b border-[#E5E8EB] flex-shrink-0">
           <div className="flex items-center gap-3">
             <button
               onClick={handleGoMain}
@@ -71,13 +71,15 @@ export default function PlanPage() {
             <div className="w-px h-5 bg-[#E5E8EB]" />
             <h1 className="text-sm font-bold text-[#191F28]">AI 기획</h1>
           </div>
-          <div className="max-w-md w-full">
+        </div>
+        {/* Progress bar */}
+        <div className="flex-shrink-0">
+          <div className="max-w-3xl mx-auto px-6 pt-4">
             <ProgressBar
               currentStep={state.currentStep}
               labels={PLAN_STEP_LABELS}
             />
           </div>
-          <div className="w-[120px]" />
         </div>
         <main className="flex-1 overflow-y-auto">
           <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
