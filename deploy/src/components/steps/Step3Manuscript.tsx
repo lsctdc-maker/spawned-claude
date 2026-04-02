@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDetailPage } from '@/hooks/useDetailPage';
-import { TONE_STYLES } from '@/lib/constants';
 import { generateManuscript } from '@/lib/api';
 import { ManuscriptSection, ManuscriptSectionType, ToneKey } from '@/lib/types';
 import Button from '@/components/ui/Button';
@@ -42,12 +41,6 @@ const SECTION_COLORS: Record<ManuscriptSectionType, string> = {
   hero: 'border-[#3182F6]/20 bg-[#3182F6]/5',
   detail: 'border-[#4E5968]/15 bg-[#4E5968]/5',
   trust: 'border-[#8B5CF6]/20 bg-[#8B5CF6]/5',
-};
-
-const TONE_ACCENT: Record<ToneKey, { border: string; bg: string; text: string }> = {
-  trust:     { border: 'border-[#3182F6]/30', bg: 'bg-[#3182F6]/10', text: 'text-[#3182F6]' },
-  emotional: { border: 'border-[#8B5CF6]/30', bg: 'bg-[#8B5CF6]/10', text: 'text-[#8B5CF6]' },
-  impact:    { border: 'border-[#F04452]/30', bg: 'bg-[#F04452]/10', text: 'text-[#F04452]' },
 };
 
 export default function Step3Manuscript() {
@@ -203,34 +196,7 @@ export default function Step3Manuscript() {
     >
       <div className="text-center">
         <h2 className="text-2xl font-bold text-[#191F28] mb-2">원고 확인 / 수정</h2>
-        <p className="text-[#8B95A1]">톤앤매너를 선택하고 AI가 인터뷰 내용을 바탕으로 원고를 작성합니다.</p>
-      </div>
-
-      {/* ===== 톤앤매너 선택 ===== */}
-      <div>
-        <h3 className="text-xs font-medium text-[#8B95A1] mb-3 ml-1">톤앤매너</h3>
-        <div className="grid grid-cols-3 gap-3">
-          {(Object.entries(TONE_STYLES) as [ToneKey, typeof TONE_STYLES[ToneKey]][]).map(([key, tone]) => {
-            const accent = TONE_ACCENT[key];
-            const isSelected = selectedTone === key;
-            return (
-              <button
-                key={key}
-                onClick={() => dispatch({ type: 'SET_TONE', payload: key })}
-                className={`rounded-xl border px-4 py-3 text-left transition-all duration-200 ${
-                  isSelected
-                    ? `${accent.border} ${accent.bg} ring-1 ring-inset ${accent.border}`
-                    : 'border-[#E5E8EB] bg-white hover:border-[#D1D6DB]'
-                }`}
-              >
-                <div className={`text-sm font-semibold mb-1 ${isSelected ? accent.text : 'text-[#191F28]'}`}>
-                  {tone.label}
-                </div>
-                <div className="text-[11px] text-[#8B95A1] leading-relaxed">{tone.desc}</div>
-              </button>
-            );
-          })}
-        </div>
+        <p className="text-[#8B95A1]">AI가 인터뷰 내용을 바탕으로 원고를 작성합니다.</p>
       </div>
 
       {/* ===== 생성 버튼 / 재생성 ===== */}

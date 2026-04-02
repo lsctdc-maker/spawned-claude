@@ -148,8 +148,40 @@ export const STEP_LABELS = [
 
 export const PLAN_STEP_LABELS = [
   { step: 1, label: '제품 등록' },
-  { step: 2, label: 'AI 인터뷰' },
-  { step: 3, label: '원고 완성' },
+  { step: 2, label: '타겟 분석' },
+  { step: 3, label: 'USP 추출' },
+  { step: 4, label: '원고 생성' },
+];
+
+export const CATEGORY_ICONS: Record<CategoryKey, string> = {
+  electronics: 'Monitor',
+  fashion: 'Shirt',
+  interior: 'Home',
+  cosmetics: 'Sparkles',
+  food: 'UtensilsCrossed',
+  sports: 'Dumbbell',
+  health: 'Heart',
+  living: 'Lamp',
+  pets: 'PawPrint',
+  kids: 'Baby',
+  automotive: 'Car',
+  stationery: 'PenTool',
+  beverages: 'Wine',
+  digital: 'Cpu',
+  others: 'MoreHorizontal',
+};
+
+export const TARGET_AGE_OPTIONS = [
+  { value: '18-24' as const, label: '18-24' },
+  { value: '25-34' as const, label: '25-34' },
+  { value: '35-44' as const, label: '35-44' },
+  { value: '45+' as const, label: '45+' },
+];
+
+export const TARGET_GENDER_OPTIONS = [
+  { value: 'male' as const, label: '남성' },
+  { value: 'female' as const, label: '여성' },
+  { value: 'all' as const, label: '전체' },
 ];
 
 export const DESIGN_STEP_LABELS = [

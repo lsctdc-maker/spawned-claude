@@ -51,14 +51,20 @@ export interface ToneInfo {
 }
 
 // ===== 상품 정보 =====
+export type TargetAge = '18-24' | '25-34' | '35-44' | '45+';
+export type TargetGender = 'male' | 'female' | 'all';
+
 export interface ProductInfo {
   name: string;
   category: CategoryKey | '';
   price?: string;
   targetAudience: string;
+  targetAge: TargetAge[];
+  targetGender: TargetGender;
   shortDescription: string;
   keywords?: string[];
   imageUrl?: string;
+  mallUrl?: string;
 }
 
 // ===== USP (Unique Selling Point) =====

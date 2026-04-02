@@ -8,9 +8,12 @@ const initialProductInfo: ProductInfo = {
   category: '',
   price: '',
   targetAudience: '',
+  targetAge: [],
+  targetGender: 'all',
   shortDescription: '',
   keywords: [],
   imageUrl: '',
+  mallUrl: '',
 };
 // Note: price and keywords are optional in ProductInfo; initial values kept for compatibility
 

@@ -347,7 +347,7 @@ export async function POST(request: NextRequest) {
       const { productInfo, extractedUSPs } = body as { productInfo?: ProductInfo; extractedUSPs?: USP[] };
       return NextResponse.json({
         sections: buildFallbackSections(
-          productInfo || { name: '', category: '', price: '', targetAudience: '', shortDescription: '', keywords: [] },
+          productInfo || { name: '', category: '' as const, price: '', targetAudience: '', targetAge: [], targetGender: 'all' as const, shortDescription: '', keywords: [] },
           extractedUSPs || []
         ),
       });

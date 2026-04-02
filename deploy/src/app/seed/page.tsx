@@ -10,6 +10,8 @@ const sampleState: DetailPageState = {
     category: 'cosmetics',
     price: '32,000',
     targetAudience: '피부 트러블·모공 고민이 있는 20~40대',
+    targetAge: ['25-34', '35-44'],
+    targetGender: 'all',
     shortDescription: 'AHA/BHA/PHA + 펩타이드 복합 티트리 세럼. 티트리 25,000ppm 고함량 배합으로 28일간 피부 진정·각질 케어·모공 관리를 동시에.',
     keywords: ['티트리세럼', '여드름세럼', '피부진정', 'AHA BHA PHA', '트러블케어'],
     imageUrl: '',
