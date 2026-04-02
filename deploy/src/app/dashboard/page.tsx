@@ -92,7 +92,8 @@ export default function DashboardPage() {
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.05 }}
-                className="bg-white border border-[#E5E8EB] rounded-xl p-5 hover:border-[#3182F6]/30 transition-all group shadow-sm"
+                onClick={() => router.push(`/plan?id=${project.id}`)}
+                className="bg-white border border-[#E5E8EB] rounded-xl p-5 hover:border-[#3182F6]/30 transition-all group shadow-sm cursor-pointer"
               >
                 <div className="flex items-start justify-between gap-2 mb-3">
                   <h3 className="font-semibold text-[#191F28] text-sm line-clamp-2 leading-snug">
@@ -115,14 +116,14 @@ export default function DashboardPage() {
                   </span>
                   <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
-                      onClick={() => router.push('/design')}
+                      onClick={(e) => { e.stopPropagation(); router.push(`/design?id=${project.id}`); }}
                       className="p-1.5 rounded-lg text-[#8B95A1] hover:text-[#3182F6] hover:bg-[#3182F6]/10 transition-all"
                       title="이미지 제작으로 열기"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
                     </button>
                     <button
-                      onClick={() => project.id && handleDelete(project.id)}
+                      onClick={(e) => { e.stopPropagation(); project.id && handleDelete(project.id); }}
                       disabled={deletingId === project.id}
                       className="p-1.5 rounded-lg text-[#8B95A1] hover:text-[#F04452] hover:bg-[#F04452]/10 transition-all"
                       title="삭제"

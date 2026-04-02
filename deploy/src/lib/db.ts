@@ -1,16 +1,24 @@
 import { supabase } from './supabase';
-import { ManuscriptSection, ColorPalette, FontRecommendation, ProductInfo } from './types';
+import { ManuscriptSection, ColorPalette, FontRecommendation, ProductInfo, InterviewMessage, USP } from './types';
+
+export interface ProjectInterviewData {
+  messages: InterviewMessage[];
+  extractedUSPs: USP[];
+  completed: boolean;
+}
 
 export interface ProjectData {
   id?: string;
   title: string;
   status?: string;
   product_info?: ProductInfo | null;
+  interview_data?: ProjectInterviewData | null;
   manuscript_sections?: ManuscriptSection[] | null;
   color_palette?: ColorPalette | null;
   font_recommendation?: FontRecommendation | null;
   keywords?: string[] | null;
   tone?: string | null;
+  current_step?: number;
   created_at?: string;
   updated_at?: string;
 }
