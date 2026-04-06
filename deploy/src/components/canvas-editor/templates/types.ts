@@ -30,7 +30,7 @@ export interface TextObjectDef {
 }
 
 export interface ShapeObjectDef {
-  type: 'rect' | 'circle' | 'line';
+  type: 'rect' | 'circle' | 'line' | 'icon' | 'badge' | 'gradient-rect';
   left: number;
   top: number;
   width?: number;
@@ -44,6 +44,21 @@ export interface ShapeObjectDef {
   opacity?: number;
   selectable?: boolean;
   name: string;
+  // icon-specific
+  iconName?: string;
+  iconSize?: number;
+  iconStrokeWidth?: number;
+  // badge-specific (circle + text/icon composite)
+  badgeText?: string;
+  badgeIcon?: string;
+  badgeTextColor?: string;
+  badgeFontSize?: number;
+  // gradient-rect-specific
+  gradient?: {
+    type: 'linear' | 'radial';
+    coords?: { x1: number; y1: number; x2: number; y2: number };
+    colorStops: Array<{ offset: number; color: string }>;
+  };
 }
 
 export interface SectionTemplate {

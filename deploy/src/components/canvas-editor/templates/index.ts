@@ -2,6 +2,7 @@ import { ManuscriptSection } from '@/lib/types';
 import { SectionTemplate, TextObjectDef, ShapeObjectDef, CanvasColors, CanvasFonts } from './types';
 import { getTemplate } from './sections';
 import { getBodyPreview } from '../utils/textParsers';
+import { createIconObject, createBadge, createGradientRect, resolveGradientColors } from './iconRenderer';
 
 function resolveColor(value: string | undefined, colors: CanvasColors): string {
   if (!value) return colors.text;
@@ -127,6 +128,38 @@ export async function composeSectionCanvas(
         selectable: shapeDef.selectable !== false,
         evented: shapeDef.selectable !== false,
         name: shapeDef.name,
+      });
+    } else if (shapeDef.type === 'icon' && shapeDef.iconName) {
+      obj = createIconObject(fabricModule, shapeDef.iconName, {
+        left: shapeDef.left,
+        top: shapeDef.top,
+        size: shapeDef.iconSize || 24,
+        color: shapeColor,
+        strokeWidth: shapeDef.iconStrokeWidth,
+        opacity: shapeDef.opacity,
+      });
+    } else if (shapeDef.type === 'badge') {
+      obj = createBadge(fabricModule, {
+        left: shapeDef.left,
+        top: shapeDef.top,
+        radius: shapeDef.radius || 20,
+        bgColor: shapeColor,
+        text: shapeDef.badgeText,
+        iconName: shapeDef.badgeIcon,
+        textColor: resolveColor(shapeDef.badgeTextColor, colors),
+        fontSize: shapeDef.badgeFontSize,
+        opacity: shapeDef.opacity,
+      });
+    } else if (shapeDef.type === 'gradient-rect' && shapeDef.gradient) {
+      obj = createGradientRect(fabricModule, {
+        left: shapeDef.left,
+        top: shapeDef.top,
+        width: shapeDef.width || 860,
+        height: shapeDef.height || 60,
+        gradient: resolveGradientColors(shapeDef.gradient, colors),
+        rx: shapeDef.rx,
+        ry: shapeDef.ry,
+        opacity: shapeDef.opacity,
       });
     }
 

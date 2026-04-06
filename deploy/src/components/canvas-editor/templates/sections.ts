@@ -5,7 +5,7 @@ import { ManuscriptSectionType } from '@/lib/types';
 // Design principles:
 // 1. Alternating photo/solid backgrounds for visual rhythm
 // 2. NO CTA buttons (Korean detail pages don't have purchase buttons in images)
-// 3. Decorative elements: accent bars, circles, cards, dividers
+// 3. Decorative elements: icons, badges, gradients, accent bars
 // 4. Clean typography hierarchy with proper spacing
 // 5. Product photos prominently featured where appropriate
 // 6. Solid bg sections use dark text (#1a1a1a / #555555)
@@ -29,6 +29,8 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       ],
       shapes: [
         { type: 'rect', left: 60, top: 270, width: 40, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
+        { type: 'gradient-rect', left: 0, top: 480, width: 860, height: 60, gradient: { type: 'linear', coords: { x1: 0, y1: 0, x2: 0, y2: 60 }, colorStops: [{ offset: 0, color: 'rgba(0,0,0,0)' }, { offset: 1, color: 'rgba(0,0,0,0.15)' }] }, selectable: false, name: '하단 그라데이션' },
+        { type: 'icon', left: 60, top: 430, iconName: 'sparkles', iconSize: 20, fill: '{colors.accent}', opacity: 0.15, selectable: false, name: '장식 아이콘' },
       ],
     },
     // B: 중앙정렬 풀와이드
@@ -45,6 +47,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       ],
       shapes: [
         { type: 'rect', left: 400, top: 325, width: 60, height: 3, fill: '{colors.accent}', selectable: false, name: '중앙 구분선' },
+        { type: 'gradient-rect', left: 0, top: 500, width: 860, height: 60, gradient: { type: 'linear', coords: { x1: 0, y1: 0, x2: 0, y2: 60 }, colorStops: [{ offset: 0, color: 'rgba(0,0,0,0)' }, { offset: 1, color: 'rgba(0,0,0,0.15)' }] }, selectable: false, name: '하단 그라데이션' },
       ],
     },
     // C: 하단 텍스트 + 상단 이미지
@@ -62,6 +65,8 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       ],
       shapes: [
         { type: 'rect', left: 400, top: 360, width: 60, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
+        { type: 'gradient-rect', left: 0, top: 540, width: 860, height: 60, gradient: { type: 'linear', coords: { x1: 0, y1: 0, x2: 0, y2: 60 }, colorStops: [{ offset: 0, color: 'rgba(0,0,0,0)' }, { offset: 1, color: 'rgba(0,0,0,0.15)' }] }, selectable: false, name: '하단 그라데이션' },
+        { type: 'icon', left: 770, top: 350, iconName: 'sparkles', iconSize: 24, fill: '{colors.accent}', opacity: 0.12, selectable: false, name: '장식 아이콘' },
       ],
     },
   ],
@@ -82,6 +87,8 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       ],
       shapes: [
         { type: 'rect', left: 60, top: 270, width: 40, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
+        { type: 'gradient-rect', left: 0, top: 480, width: 860, height: 60, gradient: { type: 'linear', coords: { x1: 0, y1: 0, x2: 0, y2: 60 }, colorStops: [{ offset: 0, color: 'rgba(0,0,0,0)' }, { offset: 1, color: 'rgba(0,0,0,0.15)' }] }, selectable: false, name: '하단 그라데이션' },
+        { type: 'icon', left: 740, top: 430, iconName: 'sparkles', iconSize: 28, fill: '{colors.accent}', opacity: 0.12, selectable: false, name: '장식 아이콘' },
       ],
     },
   ],
@@ -104,6 +111,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       shapes: [
         { type: 'rect', left: 400, top: 210, width: 60, height: 3, fill: '{colors.accent}', selectable: false, name: '중앙 구분선' },
         { type: 'circle', left: 720, top: 40, radius: 80, fill: '{colors.accent}', opacity: 0.06, selectable: false, name: '장식 서클' },
+        { type: 'badge', left: 405, top: 25, radius: 20, fill: '{colors.accent}', badgeIcon: 'circle-help', badgeTextColor: '#FFFFFF', opacity: 0.85, selectable: false, name: '문제 뱃지' },
       ],
     },
     // B: 좌정렬 + 우측 제품
@@ -123,6 +131,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       shapes: [
         { type: 'rect', left: 60, top: 200, width: 32, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
         { type: 'rect', left: 48, top: 108, width: 4, height: 70, fill: '{colors.accent}', opacity: 0.4, selectable: false, name: '좌측 악센트' },
+        { type: 'icon', left: 60, top: 420, iconName: 'circle-help', iconSize: 20, fill: '{colors.accent}', opacity: 0.2, selectable: false, name: '문제 아이콘' },
       ],
     },
     // C: 카드형 중앙정렬
@@ -141,6 +150,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       shapes: [
         { type: 'rect', left: 110, top: 100, width: 640, height: 370, fill: '#F5F5F5', rx: 16, ry: 16, selectable: false, name: '카드 배경' },
         { type: 'rect', left: 400, top: 225, width: 60, height: 3, fill: '{colors.accent}', selectable: false, name: '카드 내 구분선' },
+        { type: 'badge', left: 405, top: 105, radius: 16, fill: '{colors.accent}', badgeIcon: 'circle-help', badgeTextColor: '#FFFFFF', opacity: 0.8, selectable: false, name: '문제 뱃지' },
       ],
     },
   ],
@@ -162,6 +172,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       ],
       shapes: [
         { type: 'rect', left: 440, top: 235, width: 32, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
+        { type: 'badge', left: 780, top: 80, radius: 18, fill: '{colors.accent}', badgeIcon: 'circle-check', badgeTextColor: '#FFFFFF', opacity: 0.85, selectable: false, name: '솔루션 뱃지' },
       ],
     },
     // B: 중앙정렬 풀와이드
@@ -178,6 +189,8 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       ],
       shapes: [
         { type: 'rect', left: 400, top: 205, width: 60, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
+        { type: 'gradient-rect', left: 0, top: 420, width: 860, height: 60, gradient: { type: 'linear', coords: { x1: 0, y1: 0, x2: 0, y2: 60 }, colorStops: [{ offset: 0, color: 'rgba(0,0,0,0)' }, { offset: 1, color: 'rgba(0,0,0,0.12)' }] }, selectable: false, name: '하단 그라데이션' },
+        { type: 'icon', left: 60, top: 400, iconName: 'circle-check', iconSize: 22, fill: '{colors.accent}', opacity: 0.15, selectable: false, name: '솔루션 아이콘' },
       ],
     },
     // C: 우제품 + 좌텍스트
@@ -195,6 +208,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       ],
       shapes: [
         { type: 'rect', left: 60, top: 235, width: 32, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
+        { type: 'badge', left: 60, top: 380, radius: 18, fill: '{colors.accent}', badgeIcon: 'check', badgeTextColor: '#FFFFFF', opacity: 0.8, selectable: false, name: '체크 뱃지' },
       ],
     },
   ],
@@ -217,6 +231,9 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       ],
       shapes: [
         { type: 'rect', left: 400, top: 175, width: 60, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
+        { type: 'badge', left: 200, top: 90, radius: 18, fill: '{colors.accent}', badgeText: '01', badgeTextColor: '#FFFFFF', badgeFontSize: 12, selectable: false, name: '넘버 뱃지 1' },
+        { type: 'badge', left: 420, top: 90, radius: 18, fill: '{colors.accent}', badgeText: '02', badgeTextColor: '#FFFFFF', badgeFontSize: 12, opacity: 0.7, selectable: false, name: '넘버 뱃지 2' },
+        { type: 'badge', left: 640, top: 90, radius: 18, fill: '{colors.accent}', badgeText: '03', badgeTextColor: '#FFFFFF', badgeFontSize: 12, opacity: 0.5, selectable: false, name: '넘버 뱃지 3' },
       ],
     },
     // B: 좌정렬 + 넘버링 스타일
@@ -234,9 +251,9 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       ],
       shapes: [
         { type: 'rect', left: 60, top: 175, width: 40, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
-        { type: 'circle', left: 680, top: 50, radius: 32, fill: '{colors.accent}', opacity: 0.08, selectable: false, name: '장식 원 1' },
-        { type: 'circle', left: 750, top: 100, radius: 20, fill: '{colors.accent}', opacity: 0.06, selectable: false, name: '장식 원 2' },
         { type: 'rect', left: 48, top: 98, width: 4, height: 80, fill: '{colors.accent}', opacity: 0.3, selectable: false, name: '좌측 악센트 바' },
+        { type: 'badge', left: 700, top: 60, radius: 22, fill: '{colors.accent}', badgeIcon: 'circle-check', badgeTextColor: '#FFFFFF', opacity: 0.8, selectable: false, name: '체크 뱃지' },
+        { type: 'gradient-rect', left: 60, top: 530, width: 740, height: 4, gradient: { type: 'linear', coords: { x1: 0, y1: 0, x2: 740, y2: 0 }, colorStops: [{ offset: 0, color: '{colors.accent}' }, { offset: 1, color: 'rgba(0,0,0,0)' }] }, opacity: 0.3, selectable: false, name: '하단 악센트 라인' },
       ],
     },
     // C: 좌텍스트 + 우측 제품 영역
@@ -256,6 +273,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       shapes: [
         { type: 'rect', left: 60, top: 185, width: 32, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
         { type: 'rect', left: 460, top: 0, width: 400, height: 580, fill: '#F8F8F8', selectable: false, name: '우측 배경 영역' },
+        { type: 'icon', left: 60, top: 480, iconName: 'sparkles', iconSize: 22, fill: '{colors.accent}', opacity: 0.12, selectable: false, name: '장식 아이콘' },
       ],
     },
   ],
@@ -278,6 +296,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       ],
       shapes: [
         { type: 'rect', left: 400, top: 400, width: 60, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
+        { type: 'icon', left: 60, top: 310, iconName: 'badge-check', iconSize: 22, fill: '{colors.accent}', opacity: 0.7, selectable: false, name: '상세 아이콘' },
       ],
     },
     // B: 좌정렬 라이트그레이
@@ -296,6 +315,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       shapes: [
         { type: 'rect', left: 60, top: 175, width: 40, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
         { type: 'rect', left: 48, top: 98, width: 4, height: 70, fill: '{colors.accent}', opacity: 0.3, selectable: false, name: '좌측 악센트' },
+        { type: 'icon', left: 750, top: 60, iconName: 'list-checks', iconSize: 22, fill: '{colors.accent}', opacity: 0.25, selectable: false, name: '리스트 아이콘' },
       ],
     },
     // C: 좌텍스트 + 우제품
@@ -314,6 +334,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       ],
       shapes: [
         { type: 'rect', left: 60, top: 185, width: 32, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
+        { type: 'icon', left: 60, top: 450, iconName: 'badge-check', iconSize: 20, fill: '{colors.accent}', opacity: 0.2, selectable: false, name: '인증 아이콘' },
       ],
     },
   ],
@@ -336,7 +357,9 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       ],
       shapes: [
         { type: 'rect', left: 60, top: 175, width: 32, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
-        { type: 'circle', left: 60, top: 380, radius: 24, fill: '{colors.accent}', opacity: 0.08, selectable: false, name: '장식 원' },
+        { type: 'badge', left: 60, top: 370, radius: 16, fill: '{colors.accent}', badgeText: '1', badgeTextColor: '#FFFFFF', badgeFontSize: 12, selectable: false, name: '스텝 1' },
+        { type: 'badge', left: 110, top: 370, radius: 16, fill: '{colors.accent}', badgeText: '2', badgeTextColor: '#FFFFFF', badgeFontSize: 12, opacity: 0.7, selectable: false, name: '스텝 2' },
+        { type: 'badge', left: 160, top: 370, radius: 16, fill: '{colors.accent}', badgeText: '3', badgeTextColor: '#FFFFFF', badgeFontSize: 12, opacity: 0.5, selectable: false, name: '스텝 3' },
       ],
     },
     // B: 중앙정렬 라이트그레이
@@ -354,6 +377,10 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       ],
       shapes: [
         { type: 'rect', left: 400, top: 175, width: 60, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
+        { type: 'icon', left: 60, top: 60, iconName: 'clipboard-check', iconSize: 24, fill: '{colors.accent}', opacity: 0.2, selectable: false, name: '체크리스트 아이콘' },
+        { type: 'badge', left: 300, top: 460, radius: 16, fill: '{colors.accent}', badgeText: '1', badgeTextColor: '#FFFFFF', badgeFontSize: 12, selectable: false, name: '스텝 1' },
+        { type: 'badge', left: 400, top: 460, radius: 16, fill: '{colors.accent}', badgeText: '2', badgeTextColor: '#FFFFFF', badgeFontSize: 12, opacity: 0.7, selectable: false, name: '스텝 2' },
+        { type: 'badge', left: 500, top: 460, radius: 16, fill: '{colors.accent}', badgeText: '3', badgeTextColor: '#FFFFFF', badgeFontSize: 12, opacity: 0.5, selectable: false, name: '스텝 3' },
       ],
     },
   ],
@@ -374,6 +401,11 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       ],
       shapes: [
         { type: 'rect', left: 400, top: 200, width: 60, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
+        { type: 'icon', left: 340, top: 410, iconName: 'star', iconSize: 18, fill: '{colors.accent}', opacity: 0.9, selectable: false, name: '별 1' },
+        { type: 'icon', left: 375, top: 410, iconName: 'star', iconSize: 18, fill: '{colors.accent}', opacity: 0.9, selectable: false, name: '별 2' },
+        { type: 'icon', left: 410, top: 410, iconName: 'star', iconSize: 18, fill: '{colors.accent}', opacity: 0.9, selectable: false, name: '별 3' },
+        { type: 'icon', left: 445, top: 410, iconName: 'star', iconSize: 18, fill: '{colors.accent}', opacity: 0.9, selectable: false, name: '별 4' },
+        { type: 'icon', left: 480, top: 410, iconName: 'star', iconSize: 18, fill: '{colors.accent}', opacity: 0.9, selectable: false, name: '별 5' },
       ],
     },
     // B: 좌정렬 리뷰 스타일 — solid background
@@ -392,6 +424,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       shapes: [
         { type: 'rect', left: 68, top: 108, width: 4, height: 70, fill: '{colors.accent}', opacity: 0.4, selectable: false, name: '좌측 악센트' },
         { type: 'rect', left: 80, top: 200, width: 32, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
+        { type: 'icon', left: 720, top: 70, iconName: 'quote', iconSize: 32, fill: '{colors.accent}', opacity: 0.15, selectable: false, name: '인용 아이콘' },
       ],
     },
     // C: 수치 강조형 — photo background
@@ -408,6 +441,8 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       ],
       shapes: [
         { type: 'rect', left: 400, top: 235, width: 60, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
+        { type: 'gradient-rect', left: 0, top: 440, width: 860, height: 60, gradient: { type: 'linear', coords: { x1: 0, y1: 0, x2: 0, y2: 60 }, colorStops: [{ offset: 0, color: 'rgba(0,0,0,0)' }, { offset: 1, color: 'rgba(0,0,0,0.12)' }] }, selectable: false, name: '하단 그라데이션' },
+        { type: 'icon', left: 380, top: 380, iconName: 'thumbs-up', iconSize: 24, fill: '{colors.accent}', opacity: 0.25, selectable: false, name: '좋아요 아이콘' },
       ],
     },
   ],
@@ -430,6 +465,8 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
         { type: 'rect', left: 400, top: 175, width: 60, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
         { type: 'rect', left: 200, top: 330, width: 200, height: 100, fill: '#FFFFFF', rx: 12, ry: 12, selectable: false, name: '인증 카드 1' },
         { type: 'rect', left: 460, top: 330, width: 200, height: 100, fill: '#FFFFFF', rx: 12, ry: 12, selectable: false, name: '인증 카드 2' },
+        { type: 'badge', left: 275, top: 360, radius: 18, fill: '{colors.accent}', badgeIcon: 'shield-check', badgeTextColor: '#FFFFFF', opacity: 0.9, selectable: false, name: '방패 뱃지' },
+        { type: 'badge', left: 535, top: 360, radius: 18, fill: '{colors.accent}', badgeIcon: 'award', badgeTextColor: '#FFFFFF', opacity: 0.9, selectable: false, name: '수상 뱃지' },
       ],
     },
   ],
@@ -452,6 +489,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       ],
       shapes: [
         { type: 'rect', left: 60, top: 175, width: 32, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
+        { type: 'icon', left: 60, top: 430, iconName: 'clipboard-check', iconSize: 20, fill: '{colors.accent}', opacity: 0.2, selectable: false, name: '스펙 아이콘' },
       ],
     },
     // B: 카드 내부 중앙정렬
@@ -470,6 +508,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       shapes: [
         { type: 'rect', left: 110, top: 90, width: 640, height: 400, fill: '#FFFFFF', rx: 16, ry: 16, selectable: false, name: '카드 배경' },
         { type: 'rect', left: 400, top: 190, width: 60, height: 3, fill: '{colors.accent}', selectable: false, name: '카드 내 구분선' },
+        { type: 'icon', left: 130, top: 100, iconName: 'list-checks', iconSize: 20, fill: '{colors.accent}', opacity: 0.25, selectable: false, name: '리스트 아이콘' },
       ],
     },
   ],
@@ -490,6 +529,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       ],
       shapes: [
         { type: 'rect', left: 400, top: 195, width: 60, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
+        { type: 'badge', left: 405, top: 25, radius: 22, fill: '{colors.accent}', badgeIcon: 'shield-check', badgeTextColor: '#FFFFFF', opacity: 0.9, selectable: false, name: '보증 뱃지' },
       ],
     },
     // B: 카드형
@@ -507,6 +547,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       shapes: [
         { type: 'rect', left: 110, top: 95, width: 640, height: 340, fill: 'rgba(255,255,255,0.08)', rx: 16, ry: 16, selectable: false, name: '카드 배경' },
         { type: 'rect', left: 400, top: 205, width: 60, height: 3, fill: '{colors.accent}', selectable: false, name: '카드 내 구분선' },
+        { type: 'badge', left: 405, top: 100, radius: 18, fill: '{colors.accent}', badgeIcon: 'shield-check', badgeTextColor: '#FFFFFF', opacity: 0.85, selectable: false, name: '보증 뱃지' },
       ],
     },
   ],
@@ -524,7 +565,10 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
         { binding: 'title', left: 80, top: 100, width: 700, fontSize: 34, fontWeight: 900, useHeadline: true, fill: '#ffffff', textAlign: 'center', lineHeight: 1.25, name: '이벤트 타이틀' },
         { binding: 'bodyPreview', left: 100, top: 200, width: 660, fontSize: 16, fontWeight: 400, useHeadline: false, fill: '#ffffff', textAlign: 'center', opacity: 0.85, name: '가격/할인 정보' },
       ],
-      shapes: [],
+      shapes: [
+        { type: 'gradient-rect', left: 0, top: 0, width: 860, height: 300, gradient: { type: 'linear', coords: { x1: 0, y1: 0, x2: 860, y2: 300 }, colorStops: [{ offset: 0, color: '{colors.accent}' }, { offset: 1, color: 'rgba(0,0,0,0)' }] }, opacity: 0.15, selectable: false, name: '악센트 오버레이' },
+        { type: 'icon', left: 60, top: 55, iconName: 'zap', iconSize: 28, fill: '{colors.accent}', opacity: 0.6, selectable: false, name: '번개 아이콘' },
+      ],
     },
   ],
 
@@ -543,6 +587,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       ],
       shapes: [
         { type: 'rect', left: 400, top: 175, width: 60, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
+        { type: 'gradient-rect', left: 0, top: 280, width: 860, height: 60, gradient: { type: 'linear', coords: { x1: 0, y1: 0, x2: 0, y2: 60 }, colorStops: [{ offset: 0, color: 'rgba(0,0,0,0)' }, { offset: 1, color: 'rgba(0,0,0,0.15)' }] }, selectable: false, name: '하단 그라데이션' },
       ],
     },
     // B: 좌정렬 클로징
@@ -558,6 +603,8 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       ],
       shapes: [
         { type: 'rect', left: 60, top: 165, width: 40, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
+        { type: 'gradient-rect', left: 0, top: 260, width: 860, height: 60, gradient: { type: 'linear', coords: { x1: 0, y1: 0, x2: 0, y2: 60 }, colorStops: [{ offset: 0, color: 'rgba(0,0,0,0)' }, { offset: 1, color: 'rgba(0,0,0,0.15)' }] }, selectable: false, name: '하단 그라데이션' },
+        { type: 'icon', left: 740, top: 60, iconName: 'heart', iconSize: 24, fill: '{colors.accent}', opacity: 0.15, selectable: false, name: '장식 아이콘' },
       ],
     },
   ],
