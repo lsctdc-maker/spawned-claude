@@ -392,7 +392,7 @@ export default function CanvasEditor() {
                     <div>W: {Math.round((selectedObj.width || 0) * (selectedObj.scaleX || 1))}</div>
                     <div>H: {Math.round((selectedObj.height || 0) * (selectedObj.scaleY || 1))}</div>
                   </div>
-                  {selectedObj.type === 'i-text' && (
+                  {(selectedObj.type === 'i-text' || selectedObj.type === 'textbox') && (
                     <div className="text-[9px] text-[#8B95A1] mt-1">
                       더블클릭으로 텍스트 편집
                     </div>

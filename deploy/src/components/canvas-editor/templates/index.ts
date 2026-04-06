@@ -52,13 +52,17 @@ export async function composeSectionCanvas(
   if (bgImageUrl) {
     try {
       const bgImg = await loadImage(fabricModule, bgImageUrl);
-      // Scale to cover 860px width
+      // Scale to cover canvas (no gaps), then center
       const scale = Math.max(860 / bgImg.width!, template.canvasHeight / bgImg.height!);
+      const scaledWidth = bgImg.width! * scale;
+      const scaledHeight = bgImg.height! * scale;
+      const offsetX = (860 - scaledWidth) / 2;
+      const offsetY = (template.canvasHeight - scaledHeight) / 2;
       bgImg.set({
         scaleX: scale,
         scaleY: scale,
-        left: 0,
-        top: 0,
+        left: offsetX,
+        top: offsetY,
         originX: 'left',
         originY: 'top',
         selectable: false,
@@ -68,47 +72,24 @@ export async function composeSectionCanvas(
       canvas.add(bgImg);
     } catch (e) {
       console.warn('Failed to load background image:', e);
-      // No image: use alternating solid background from color palette
       canvas.backgroundColor = isEvenSection ? colors.bg : colors.bg2;
     }
   } else {
-    // No image: alternate between light and tinted backgrounds
     canvas.backgroundColor = isEvenSection ? colors.bg : colors.bg2;
   }
 
-  // 2. Overlay for text readability
-  // Learned pattern: alternating light/dark overlays per section order
+  // 2. Overlay for text readability — flat fill using template's overlayColor
   if (bgImageUrl && template.overlayColor) {
     const overlay = new fabricModule.Rect({
       left: 0,
       top: 0,
       width: 860,
       height: template.canvasHeight,
+      fill: template.overlayColor,
       selectable: false,
       evented: false,
       name: '오버레이',
     });
-
-    // Parse the base overlay opacity from template
-    const opacityMatch = template.overlayColor.match(/[\d.]+\)$/);
-    const baseOpacity = opacityMatch ? parseFloat(opacityMatch[0]) : 0.4;
-
-    // Alternate: even sections get lighter overlay, odd sections get darker
-    const adjustedOpacity = isEvenSection
-      ? Math.max(0.15, baseOpacity - 0.15)  // lighter: image more visible
-      : Math.min(0.65, baseOpacity + 0.1);  // darker: text more readable
-
-    // Apply gradient overlay
-    overlay.set('fill', new fabricModule.Gradient({
-      type: 'linear',
-      coords: { x1: 0, y1: 0, x2: 0, y2: template.canvasHeight },
-      colorStops: [
-        { offset: 0, color: `rgba(0,0,0,${Math.max(0.05, adjustedOpacity - 0.15).toFixed(2)})` },
-        { offset: 0.5, color: `rgba(0,0,0,${adjustedOpacity.toFixed(2)})` },
-        { offset: 1, color: `rgba(0,0,0,${Math.min(0.7, adjustedOpacity + 0.1).toFixed(2)})` },
-      ],
-    }));
-
     canvas.add(overlay);
   }
 
@@ -149,34 +130,7 @@ export async function composeSectionCanvas(
     if (obj) canvas.add(obj);
   }
 
-  // 4. Text objects
-  for (const textDef of template.textObjects) {
-    const text = resolveText(textDef.binding, section, textDef.customText);
-    const fillColor = resolveColor(textDef.fill, colors);
-    const fontFamily = textDef.useHeadline
-      ? `${fonts.headline}, Noto Sans KR, sans-serif`
-      : `${fonts.body}, Noto Sans KR, sans-serif`;
-
-    const textObj = new fabricModule.IText(text, {
-      left: textDef.left,
-      top: textDef.top,
-      width: textDef.width,
-      fontSize: textDef.fontSize,
-      fontWeight: textDef.fontWeight,
-      fontFamily,
-      fill: fillColor,
-      textAlign: textDef.textAlign || 'left',
-      lineHeight: textDef.lineHeight || 1.4,
-      charSpacing: (textDef.letterSpacing || 0) * 10,
-      opacity: textDef.opacity ?? 1,
-      name: textDef.name,
-      splitByGrapheme: true,
-    });
-
-    canvas.add(textObj);
-  }
-
-  // 5. Product image (누끼) if template supports it
+  // 4. Product image (누끼) — rendered BEFORE text so text is always readable
   if (template.hasProductImage && productPhotoUrl && template.productImagePosition) {
     try {
       const pos = template.productImagePosition;
@@ -196,6 +150,33 @@ export async function composeSectionCanvas(
     } catch (e) {
       console.warn('Failed to load product photo:', e);
     }
+  }
+
+  // 5. Text objects — always on top for readability
+  for (const textDef of template.textObjects) {
+    const text = resolveText(textDef.binding, section, textDef.customText);
+    const fillColor = resolveColor(textDef.fill, colors);
+    const fontFamily = textDef.useHeadline
+      ? `${fonts.headline}, Noto Sans KR, sans-serif`
+      : `${fonts.body}, Noto Sans KR, sans-serif`;
+
+    const textObj = new fabricModule.Textbox(text, {
+      left: textDef.left,
+      top: textDef.top,
+      width: textDef.width,
+      fontSize: textDef.fontSize,
+      fontWeight: textDef.fontWeight,
+      fontFamily,
+      fill: fillColor,
+      textAlign: textDef.textAlign || 'left',
+      lineHeight: textDef.lineHeight || 1.4,
+      charSpacing: (textDef.letterSpacing || 0) * 10,
+      opacity: textDef.opacity ?? 1,
+      name: textDef.name,
+      splitByGrapheme: true,
+    });
+
+    canvas.add(textObj);
   }
 
   canvas.renderAll();
