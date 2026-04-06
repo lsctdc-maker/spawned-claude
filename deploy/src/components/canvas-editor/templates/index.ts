@@ -48,8 +48,11 @@ export async function composeSectionCanvas(
   const sectionOrder = section.order ?? 0;
   const isEvenSection = sectionOrder % 2 === 0;
 
-  // 1. Set background image if available
-  if (bgImageUrl) {
+  // 1. Background: solid color OR photo image
+  if (template.solidBackground) {
+    // Solid background — clean fill, no photo needed
+    canvas.backgroundColor = template.solidBackground;
+  } else if (bgImageUrl) {
     try {
       const bgImg = await loadImage(fabricModule, bgImageUrl);
       // Scale to cover canvas (no gaps), then center
@@ -78,8 +81,8 @@ export async function composeSectionCanvas(
     canvas.backgroundColor = isEvenSection ? colors.bg : colors.bg2;
   }
 
-  // 2. Overlay for text readability — flat fill using template's overlayColor
-  if (bgImageUrl && template.overlayColor) {
+  // 2. Overlay for text readability — only for photo backgrounds
+  if (!template.solidBackground && bgImageUrl && template.overlayColor) {
     const overlay = new fabricModule.Rect({
       left: 0,
       top: 0,

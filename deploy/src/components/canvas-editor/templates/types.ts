@@ -50,7 +50,8 @@ export interface SectionTemplate {
   sectionType: ManuscriptSectionType;
   variantId: string;            // 'A' | 'B' | 'C' — layout variant identifier
   canvasHeight: number;
-  overlayColor: string;       // e.g. 'rgba(0,0,0,0.45)'
+  solidBackground?: string;     // e.g. '#FFFFFF' — when set, use solid fill instead of photo bg
+  overlayColor: string;         // e.g. 'rgba(0,0,0,0.45)' — only used with photo backgrounds
   hasProductImage: boolean;
   productImagePosition?: { left: number; top: number; maxWidth: number; maxHeight: number };
   textObjects: TextObjectDef[];

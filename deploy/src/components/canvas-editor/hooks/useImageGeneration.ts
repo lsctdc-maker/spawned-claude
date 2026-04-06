@@ -4,6 +4,7 @@ import { useCallback, useRef } from 'react';
 import { ManuscriptSection, ProductInfo, USP } from '@/lib/types';
 import { useCanvasEditorStore, SECTION_IMAGE_MAP } from '../state/canvasStore';
 import { authFetch } from '@/lib/auth-fetch';
+import { getTemplate } from '../templates/sections';
 
 interface GenerationContext {
   productInfo: ProductInfo;
@@ -87,6 +88,10 @@ export function useImageGeneration(ctx: GenerationContext) {
     for (const section of sections) {
       if (abortRef.current) break;
       if (store.hasImage(section.id)) continue;
+
+      // Skip image generation for solid background sections (no photo needed)
+      const template = getTemplate(section.sectionType, section.order, ctx.productInfo.category);
+      if (template.solidBackground) continue;
 
       await generateForSection(section);
 
