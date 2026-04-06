@@ -312,6 +312,8 @@ async function generateWithDallE3(
   category: string,
   tone: string,
   imageGuide?: string,
+  productName?: string,
+  usps?: string[],
 ): Promise<string | null> {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) return null;
@@ -340,11 +342,16 @@ async function generateWithDallE3(
   // imageGuide가 있으면 프롬프트에 포함
   const guideContext = imageGuide ? ` Scene description: ${imageGuide}.` : '';
 
+  // 제품 컨텍스트: 제품명과 USP를 분위기/환경 생성에 활용
+  const productContext = productName && productName !== '제품'
+    ? ` This background is for a product called "${productName}".${usps?.length ? ` Key selling points: ${usps.join(', ')}.` : ''} DO NOT draw the product itself — only create the environment, mood, and atmosphere that matches this product.`
+    : '';
+
   const prompts: Record<string, string> = {
-    hero: `${noText} Wide panoramic background scene for ${label} product landing page.${guideContext} Style: ${styleModifiers}. ${toneStyle}. High-end commercial photography, 8k.`,
-    background: `${noText} Beautiful background surface for ${label} product photography.${guideContext} Style: ${styleModifiers}. No product, just environment. ${toneStyle}. Shallow depth of field, 8k.`,
-    lifestyle: `${noText} Lifestyle scene environment for ${label} products.${guideContext} Style: ${styleModifiers}. ${toneStyle}. Natural, candid atmosphere. Commercial lifestyle photography, 8k.`,
-    feature: `${noText} Abstract close-up texture related to ${label}.${guideContext} Style: ${styleModifiers}. ${toneStyle}. Macro photography, studio lighting, 8k.`,
+    hero: `${noText} Wide panoramic background scene for ${label} product landing page.${guideContext}${productContext} Style: ${styleModifiers}. ${toneStyle}. High-end commercial photography, 8k.`,
+    background: `${noText} Beautiful background surface for ${label} product photography.${guideContext}${productContext} Style: ${styleModifiers}. No product, just environment. ${toneStyle}. Shallow depth of field, 8k.`,
+    lifestyle: `${noText} Lifestyle scene environment for ${label} products.${guideContext}${productContext} Style: ${styleModifiers}. ${toneStyle}. Natural, candid atmosphere. Commercial lifestyle photography, 8k.`,
+    feature: `${noText} Abstract close-up texture related to ${label}.${guideContext}${productContext} Style: ${styleModifiers}. ${toneStyle}. Macro photography, studio lighting, 8k.`,
   };
 
   try {
@@ -408,6 +415,7 @@ export async function POST(request: NextRequest) {
       category = 'others',
       tone = 'trust',
       imageGuide = '',
+      usps = [],
     } = body;
 
     const orientation = type === 'hero' ? 'landscape' : 'squarish';
@@ -462,7 +470,7 @@ export async function POST(request: NextRequest) {
 
     // ===== Step 3: DALL-E 3 직접 생성 (최종 fallback) =====
     console.log(`[image] Stock search failed → falling back to DALL-E 3 generation`);
-    const dalleBase64 = await generateWithDallE3(type as any, category, tone, imageGuide || undefined);
+    const dalleBase64 = await generateWithDallE3(type as any, category, tone, imageGuide || undefined, productName, usps);
     if (dalleBase64) {
       return NextResponse.json({
         success: true,

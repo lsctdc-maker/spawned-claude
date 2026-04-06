@@ -21,7 +21,9 @@ export async function generateManuscript(
   interviewMessages: InterviewMessage[],
   selectedTone?: ToneKey | '',
   productPhotoBase64?: string,
-  productPhotoMimeType?: string
+  productPhotoMimeType?: string,
+  priceInfo?: { originalPrice: number; salePrice: number; discountRate: number } | null,
+  packageItems?: { name: string; description: string }[] | null,
 ): Promise<APIResponse<GenerateManuscriptResponse>> {
   try {
     const response = await authFetch('/api/manuscript', {
@@ -34,6 +36,8 @@ export async function generateManuscript(
         selectedTone,
         productPhotoBase64,
         productPhotoMimeType,
+        priceInfo,
+        packageItems,
       }),
     });
     const data = await response.json();

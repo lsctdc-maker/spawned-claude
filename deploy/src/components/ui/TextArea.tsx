@@ -21,7 +21,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
           id={textAreaId}
           className={`
             w-full bg-transparent border-0 border-b-2 transition-all duration-200
-            py-3 px-1 text-[#191F28] placeholder:text-[#D1D6DB]
+            py-3 px-3 text-[#191F28] placeholder:text-[#D1D6DB]
             focus:outline-none focus:ring-0 resize-y min-h-[100px]
             ${error ? 'border-[#F04452] focus:border-[#F04452]' : 'border-[#E5E8EB] focus:border-[#3182F6]'}
             ${className}

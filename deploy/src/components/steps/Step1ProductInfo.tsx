@@ -134,6 +134,33 @@ export default function Step1ProductInfo() {
     if (result.targetCustomer) updates.targetAudience = result.targetCustomer;
     if (result.features) updates.shortDescription = result.features;
     if (Object.keys(updates).length > 0) dispatch({ type: 'UPDATE_PRODUCT', payload: updates });
+
+    // USPs from analysis
+    if (result.existingUSPs?.length) {
+      const usps = result.existingUSPs.map((usp: string | { title: string; description?: string }, i: number) => ({
+        id: `usp-analysis-${i}`,
+        title: typeof usp === 'string' ? usp : usp.title,
+        description: typeof usp === 'string' ? '' : (usp.description || ''),
+      }));
+      dispatch({ type: 'SET_USPS', payload: usps });
+    }
+
+    // Structured price info
+    if (result.originalPrice || result.salePrice) {
+      dispatch({
+        type: 'SET_PRICE_INFO',
+        payload: {
+          originalPrice: result.originalPrice || 0,
+          salePrice: result.salePrice || 0,
+          discountRate: result.discountRate || 0,
+        },
+      });
+    }
+
+    // Package items
+    if (result.packageItems?.length) {
+      dispatch({ type: 'SET_PACKAGE_ITEMS', payload: result.packageItems });
+    }
   };
 
   const handleAnalyzeUrl = async () => {

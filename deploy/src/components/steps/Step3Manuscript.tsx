@@ -45,7 +45,7 @@ const SECTION_COLORS: Record<ManuscriptSectionType, string> = {
 
 export default function Step3Manuscript() {
   const { state, dispatch } = useDetailPage();
-  const { productInfo, productPhotos, extractedUSPs, interviewMessages, manuscriptSections, selectedTone, colorPalette, fontRecommendation, layoutRationale, referenceGuide, isGenerating } = state;
+  const { productInfo, productPhotos, extractedUSPs, interviewMessages, manuscriptSections, selectedTone, colorPalette, fontRecommendation, layoutRationale, referenceGuide, isGenerating, priceInfo, packageItems } = state;
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
@@ -84,7 +84,9 @@ export default function Step3Manuscript() {
         interviewMessages,
         selectedTone,
         photoBase64,
-        photoMimeType
+        photoMimeType,
+        priceInfo,
+        packageItems,
       );
 
       if (result.success && result.data) {
@@ -192,7 +194,7 @@ export default function Step3Manuscript() {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="max-w-3xl mx-auto space-y-6"
+      className="space-y-6"
     >
       <div className="text-center">
         <h2 className="text-2xl font-bold text-[#191F28] mb-2">원고 확인 / 수정</h2>

@@ -22,14 +22,36 @@ const TONE_DESCRIPTIONS: Record<string, string> = {
   impact: '임팩트형 — 강렬한 카피, 긴급성, 혜택 강조 중심. 파워풀하고 단호한 어조.',
 };
 
-function buildPrompt(productInfo: ProductInfo, usps: USP[], interviewMessages: InterviewMessage[], tone?: ToneKey | ''): string {
+function buildPrompt(
+  productInfo: ProductInfo,
+  usps: USP[],
+  interviewMessages: InterviewMessage[],
+  tone?: ToneKey | '',
+  priceInfo?: { originalPrice: number; salePrice: number; discountRate: number } | null,
+  packageItems?: { name: string; description: string }[] | null,
+): string {
   const toneKey = tone || 'trust';
   const toneDesc = TONE_DESCRIPTIONS[toneKey] || TONE_DESCRIPTIONS.trust;
+
+  // 구조화된 가격 정보 (분석 데이터 기반)
+  const priceLines: string[] = [];
+  if (priceInfo && (priceInfo.originalPrice || priceInfo.salePrice)) {
+    if (priceInfo.originalPrice) priceLines.push(`정가: ${priceInfo.originalPrice.toLocaleString()}원`);
+    if (priceInfo.salePrice) priceLines.push(`할인가: ${priceInfo.salePrice.toLocaleString()}원`);
+    if (priceInfo.discountRate) priceLines.push(`할인율: ${priceInfo.discountRate}%`);
+  }
+
+  // 구성품 정보
+  const packageText = packageItems?.length
+    ? `구성품: ${packageItems.map(p => p.name + (p.description ? ` (${p.description})` : '')).join(', ')}`
+    : null;
 
   const productText = [
     `상품명: ${productInfo.name}`,
     `카테고리: ${productInfo.category}`,
     productInfo.price ? `가격: ${productInfo.price}` : null,
+    ...priceLines.map(l => l),
+    packageText,
     `타겟 고객: ${productInfo.targetAudience || '미정'}`,
     `간단 설명: ${productInfo.shortDescription}`,
     productInfo.keywords?.length ? `키워드: ${productInfo.keywords.join(', ')}` : null,
@@ -239,13 +261,15 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { productInfo, extractedUSPs, interviewMessages, selectedTone, productPhotoBase64, productPhotoMimeType } = body as {
+    const { productInfo, extractedUSPs, interviewMessages, selectedTone, productPhotoBase64, productPhotoMimeType, priceInfo, packageItems } = body as {
       productInfo: ProductInfo;
       extractedUSPs: USP[];
       interviewMessages: InterviewMessage[];
       selectedTone?: ToneKey | '';
       productPhotoBase64?: string;
       productPhotoMimeType?: string;
+      priceInfo?: { originalPrice: number; salePrice: number; discountRate: number } | null;
+      packageItems?: { name: string; description: string }[] | null;
     };
 
     const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -272,7 +296,7 @@ export async function POST(request: NextRequest) {
 
     userContent.push({
       type: 'text',
-      text: buildPrompt(productInfo, extractedUSPs, interviewMessages, selectedTone),
+      text: buildPrompt(productInfo, extractedUSPs, interviewMessages, selectedTone, priceInfo, packageItems),
     });
 
     const claudeResponse = await fetch('https://api.anthropic.com/v1/messages', {

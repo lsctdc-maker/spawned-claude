@@ -32,7 +32,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       variantId: 'B',
       canvasHeight: 560,
       overlayColor: 'rgba(0,0,0,0.45)',
-      hasProductImage: false,
+      hasProductImage: true,
       textObjects: [
         { binding: 'label', customText: 'FIRST IMPRESSION', left: 0, top: 80, width: 860, fontSize: 11, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 8, name: '카테고리', opacity: 0.8 },
         { binding: 'title', left: 80, top: 140, width: 700, fontSize: 48, fontWeight: 900, useHeadline: true, textAlign: 'center', lineHeight: 1.2, letterSpacing: -1, name: '메인 타이틀' },
@@ -89,7 +89,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       variantId: 'A',
       canvasHeight: 480,
       overlayColor: 'rgba(0,0,0,0.55)',
-      hasProductImage: false,
+      hasProductImage: true,
       textObjects: [
         { binding: 'label', customText: 'PAIN POINT', left: 0, top: 60, width: 860, fontSize: 10, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 6, name: '섹션 라벨', opacity: 0.7 },
         { binding: 'title', left: 80, top: 100, width: 700, fontSize: 30, fontWeight: 800, useHeadline: true, textAlign: 'center', lineHeight: 1.35, name: '문제 제시' },
@@ -103,7 +103,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       variantId: 'B',
       canvasHeight: 480,
       overlayColor: 'rgba(0,0,0,0.5)',
-      hasProductImage: false,
+      hasProductImage: true,
       textObjects: [
         { binding: 'label', customText: 'PAIN POINT', left: 80, top: 56, width: 400, fontSize: 10, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', letterSpacing: 6, name: '섹션 라벨', opacity: 0.7 },
         { binding: 'title', left: 80, top: 100, width: 500, fontSize: 28, fontWeight: 800, useHeadline: true, lineHeight: 1.35, name: '문제 제시' },
@@ -119,7 +119,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       variantId: 'C',
       canvasHeight: 500,
       overlayColor: 'rgba(0,0,0,0.4)',
-      hasProductImage: false,
+      hasProductImage: true,
       textObjects: [
         { binding: 'label', customText: 'PAIN POINT', left: 0, top: 50, width: 860, fontSize: 10, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 6, name: '섹션 라벨', opacity: 0.7 },
         { binding: 'title', left: 120, top: 110, width: 620, fontSize: 26, fontWeight: 800, useHeadline: true, textAlign: 'center', lineHeight: 1.35, name: '문제 제시' },
@@ -155,7 +155,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       variantId: 'B',
       canvasHeight: 480,
       overlayColor: 'rgba(0,0,0,0.5)',
-      hasProductImage: false,
+      hasProductImage: true,
       textObjects: [
         { binding: 'label', customText: 'SOLUTION', left: 0, top: 60, width: 860, fontSize: 10, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 6, name: '섹션 라벨' },
         { binding: 'title', left: 80, top: 100, width: 700, fontSize: 30, fontWeight: 800, useHeadline: true, textAlign: 'center', lineHeight: 1.35, name: '솔루션 타이틀' },
@@ -191,7 +191,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       variantId: 'A',
       canvasHeight: 560,
       overlayColor: 'rgba(0,0,0,0.5)',
-      hasProductImage: false,
+      hasProductImage: true,
       textObjects: [
         { binding: 'label', customText: 'FEATURES', left: 0, top: 56, width: 860, fontSize: 10, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 6, name: '섹션 라벨' },
         { binding: 'title', left: 80, top: 90, width: 700, fontSize: 30, fontWeight: 800, useHeadline: true, textAlign: 'center', lineHeight: 1.3, name: '특장점 타이틀' },
@@ -205,7 +205,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       variantId: 'B',
       canvasHeight: 560,
       overlayColor: 'rgba(0,0,0,0.5)',
-      hasProductImage: false,
+      hasProductImage: true,
       textObjects: [
         { binding: 'label', customText: 'FEATURES', left: 60, top: 56, width: 400, fontSize: 10, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', letterSpacing: 6, name: '섹션 라벨' },
         { binding: 'title', left: 60, top: 90, width: 500, fontSize: 28, fontWeight: 800, useHeadline: true, lineHeight: 1.3, name: '특장점 타이틀' },
@@ -238,7 +238,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       variantId: 'A',
       canvasHeight: 560,
       overlayColor: 'rgba(0,0,0,0.5)',
-      hasProductImage: false,
+      hasProductImage: true,
       textObjects: [
         { binding: 'label', customText: 'DETAIL', left: 0, top: 56, width: 860, fontSize: 10, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 6, name: '섹션 라벨' },
         { binding: 'title', left: 80, top: 90, width: 700, fontSize: 28, fontWeight: 800, useHeadline: true, textAlign: 'center', lineHeight: 1.3, name: '상세 타이틀' },
@@ -251,7 +251,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       variantId: 'B',
       canvasHeight: 560,
       overlayColor: 'rgba(0,0,0,0.45)',
-      hasProductImage: false,
+      hasProductImage: true,
       textObjects: [
         { binding: 'label', customText: 'DETAIL', left: 60, top: 56, width: 400, fontSize: 10, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', letterSpacing: 6, name: '섹션 라벨' },
         { binding: 'title', left: 60, top: 90, width: 500, fontSize: 26, fontWeight: 800, useHeadline: true, lineHeight: 1.3, name: '상세 타이틀' },
@@ -302,7 +302,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       variantId: 'B',
       canvasHeight: 520,
       overlayColor: 'rgba(0,0,0,0.5)',
-      hasProductImage: false,
+      hasProductImage: true,
       textObjects: [
         { binding: 'label', customText: 'HOW TO USE', left: 0, top: 56, width: 860, fontSize: 10, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 6, name: '섹션 라벨' },
         { binding: 'title', left: 80, top: 90, width: 700, fontSize: 28, fontWeight: 800, useHeadline: true, textAlign: 'center', lineHeight: 1.3, name: '사용법 타이틀' },
@@ -319,7 +319,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       variantId: 'A',
       canvasHeight: 480,
       overlayColor: 'rgba(0,0,0,0.5)',
-      hasProductImage: false,
+      hasProductImage: true,
       textObjects: [
         { binding: 'label', customText: 'SOCIAL PROOF', left: 0, top: 60, width: 860, fontSize: 10, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 6, name: '섹션 라벨' },
         { binding: 'title', left: 80, top: 100, width: 700, fontSize: 28, fontWeight: 800, useHeadline: true, textAlign: 'center', lineHeight: 1.35, name: '사회적 증거' },
@@ -333,7 +333,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       variantId: 'B',
       canvasHeight: 480,
       overlayColor: 'rgba(0,0,0,0.5)',
-      hasProductImage: false,
+      hasProductImage: true,
       textObjects: [
         { binding: 'label', customText: 'REVIEWS', left: 80, top: 56, width: 400, fontSize: 10, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', letterSpacing: 6, name: '섹션 라벨', opacity: 0.7 },
         { binding: 'title', left: 80, top: 100, width: 600, fontSize: 26, fontWeight: 800, useHeadline: true, lineHeight: 1.35, name: '사회적 증거' },
@@ -349,7 +349,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       variantId: 'C',
       canvasHeight: 480,
       overlayColor: 'rgba(0,0,0,0.45)',
-      hasProductImage: false,
+      hasProductImage: true,
       textObjects: [
         { binding: 'label', customText: 'PROVEN RESULTS', left: 0, top: 50, width: 860, fontSize: 10, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 6, name: '섹션 라벨', opacity: 0.7 },
         { binding: 'title', left: 80, top: 90, width: 700, fontSize: 48, fontWeight: 900, useHeadline: true, textAlign: 'center', lineHeight: 1.2, name: '핵심 수치' },
@@ -367,7 +367,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       variantId: 'A',
       canvasHeight: 440,
       overlayColor: 'rgba(0,0,0,0.5)',
-      hasProductImage: false,
+      hasProductImage: true,
       textObjects: [
         { binding: 'label', customText: 'TRUST', left: 0, top: 56, width: 860, fontSize: 10, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 6, name: '섹션 라벨' },
         { binding: 'title', left: 80, top: 90, width: 700, fontSize: 26, fontWeight: 800, useHeadline: true, textAlign: 'center', name: '신뢰 타이틀' },
@@ -384,7 +384,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       variantId: 'A',
       canvasHeight: 480,
       overlayColor: 'rgba(0,0,0,0.55)',
-      hasProductImage: false,
+      hasProductImage: true,
       textObjects: [
         { binding: 'label', customText: 'SPECIFICATIONS', left: 60, top: 56, width: 400, fontSize: 10, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', letterSpacing: 6, name: '섹션 라벨' },
         { binding: 'title', left: 60, top: 90, width: 700, fontSize: 26, fontWeight: 800, useHeadline: true, name: '스펙 타이틀' },
@@ -398,7 +398,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       variantId: 'B',
       canvasHeight: 500,
       overlayColor: 'rgba(0,0,0,0.4)',
-      hasProductImage: false,
+      hasProductImage: true,
       textObjects: [
         { binding: 'label', customText: 'SPECIFICATIONS', left: 0, top: 50, width: 860, fontSize: 10, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 6, name: '섹션 라벨' },
         { binding: 'title', left: 120, top: 105, width: 620, fontSize: 24, fontWeight: 800, useHeadline: true, textAlign: 'center', name: '스펙 타이틀' },
@@ -417,7 +417,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       variantId: 'A',
       canvasHeight: 440,
       overlayColor: 'rgba(0,0,0,0.45)',
-      hasProductImage: false,
+      hasProductImage: true,
       textObjects: [
         { binding: 'label', customText: 'GUARANTEE', left: 0, top: 56, width: 860, fontSize: 10, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 6, name: '섹션 라벨' },
         { binding: 'title', left: 80, top: 95, width: 700, fontSize: 26, fontWeight: 800, useHeadline: true, textAlign: 'center', name: '보증 타이틀' },
@@ -431,7 +431,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       variantId: 'B',
       canvasHeight: 460,
       overlayColor: 'rgba(0,0,0,0.4)',
-      hasProductImage: false,
+      hasProductImage: true,
       textObjects: [
         { binding: 'label', customText: 'GUARANTEE', left: 0, top: 50, width: 860, fontSize: 10, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 6, name: '섹션 라벨' },
         { binding: 'title', left: 120, top: 105, width: 620, fontSize: 24, fontWeight: 800, useHeadline: true, textAlign: 'center', name: '보증 타이틀' },
@@ -449,7 +449,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       variantId: 'A',
       canvasHeight: 280,
       overlayColor: 'rgba(0,0,0,0.3)',
-      hasProductImage: false,
+      hasProductImage: true,
       textObjects: [
         { binding: 'label', customText: 'LIMITED OFFER', left: 0, top: 50, width: 860, fontSize: 10, fontWeight: 700, useHeadline: false, fill: '#ffffff', textAlign: 'center', letterSpacing: 5, name: '오퍼 라벨', opacity: 0.7 },
         { binding: 'title', left: 80, top: 90, width: 700, fontSize: 32, fontWeight: 900, useHeadline: true, fill: '#ffffff', textAlign: 'center', lineHeight: 1.25, name: '이벤트 타이틀' },
@@ -466,7 +466,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       variantId: 'A',
       canvasHeight: 320,
       overlayColor: 'rgba(0,0,0,0.35)',
-      hasProductImage: false,
+      hasProductImage: true,
       textObjects: [
         { binding: 'title', left: 80, top: 70, width: 700, fontSize: 36, fontWeight: 900, useHeadline: true, fill: '#ffffff', textAlign: 'center', lineHeight: 1.3, name: 'CTA 타이틀' },
         { binding: 'bodyPreview', left: 100, top: 170, width: 660, fontSize: 16, fontWeight: 400, useHeadline: false, fill: '#ffffff', textAlign: 'center', opacity: 0.85, lineHeight: 1.6, name: 'CTA 서브' },
@@ -482,7 +482,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       variantId: 'B',
       canvasHeight: 300,
       overlayColor: 'rgba(0,0,0,0.4)',
-      hasProductImage: false,
+      hasProductImage: true,
       textObjects: [
         { binding: 'title', left: 60, top: 70, width: 480, fontSize: 32, fontWeight: 900, useHeadline: true, fill: '#ffffff', lineHeight: 1.3, name: 'CTA 타이틀' },
         { binding: 'bodyPreview', left: 60, top: 170, width: 440, fontSize: 15, fontWeight: 400, useHeadline: false, fill: '#ffffff', opacity: 0.8, lineHeight: 1.6, name: 'CTA 서브' },

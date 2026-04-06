@@ -280,8 +280,8 @@ function PlanPageInner() {
           </aside>
 
           {/* Center: Step Content */}
-          <main className="flex-1 overflow-y-auto">
-            <div className="max-w-2xl mx-auto px-6 py-8">
+          <main className="flex-1 overflow-y-auto min-w-0">
+            <div className="max-w-3xl mx-auto px-6 py-8">
               <AnimatePresence mode="wait">
                 <div key={state.currentStep}>
                   {renderStep()}
