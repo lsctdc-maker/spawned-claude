@@ -1,9 +1,13 @@
 /**
  * Renders HTML design templates to PNG data URLs for use as fabric.js backgrounds.
  * Uses html-to-image for client-side rendering (no server dependency).
+ * Includes in-memory cache to avoid re-rendering the same design.
  */
 
 import { getHtmlDesignTemplate, DesignColors } from './htmlDesignTemplates';
+
+/** In-memory cache: key → dataUrl */
+const designCache = new Map<string, string>();
 
 /** Render an HTML design template to a PNG data URL */
 export async function renderDesignBackground(
@@ -19,6 +23,11 @@ export async function renderDesignBackground(
 
   const template = getHtmlDesignTemplate(sectionType, variantId);
   if (!template) return null;
+
+  // Check cache first
+  const cacheKey = `${sectionType}-${variantId}-${colors.accent}-${colors.bg}-${width}-${height}`;
+  const cached = designCache.get(cacheKey);
+  if (cached) return cached;
 
   // Dynamic import to avoid SSR issues
   const { toPng } = await import('html-to-image');
@@ -38,13 +47,14 @@ export async function renderDesignBackground(
   document.body.appendChild(container);
 
   try {
-    // Render to PNG
+    // Render to PNG (cacheBust removed for performance)
     const dataUrl = await toPng(container, {
       width,
       height,
       pixelRatio: 2, // 2x for crisp output
-      cacheBust: true,
     });
+    // Store in cache
+    designCache.set(cacheKey, dataUrl);
     return dataUrl;
   } catch (err) {
     console.error('[htmlRenderer] Failed to render design template:', err);

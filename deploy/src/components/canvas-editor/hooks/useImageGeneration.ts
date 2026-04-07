@@ -85,20 +85,18 @@ export function useImageGeneration(ctx: GenerationContext) {
   const generateAll = useCallback(async (sections: ManuscriptSection[]) => {
     abortRef.current = false;
 
-    for (const section of sections) {
-      if (abortRef.current) break;
-      if (store.hasImage(section.id)) continue;
-
-      // Skip image generation for solid background sections (no photo needed)
+    // Filter to only sections that need image generation
+    const needsImage = sections.filter(section => {
+      if (store.hasImage(section.id)) return false;
       const template = getTemplate(section.sectionType, section.order, ctx.productInfo.category);
-      if (template.solidBackground) continue;
+      return !template.solidBackground;
+    });
 
-      await generateForSection(section);
-
-      // Small delay between requests to avoid rate limiting
-      if (!abortRef.current) {
-        await new Promise(r => setTimeout(r, 500));
-      }
+    // Generate 2 at a time (parallel batches to avoid rate limiting)
+    for (let i = 0; i < needsImage.length; i += 2) {
+      if (abortRef.current) break;
+      const batch = needsImage.slice(i, i + 2);
+      await Promise.allSettled(batch.map(s => generateForSection(s)));
     }
   }, [generateForSection]);
 

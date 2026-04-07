@@ -275,7 +275,7 @@ export async function composeSectionCanvas(
 
 async function loadImage(fabricModule: any, url: string): Promise<any> {
   const timeout = new Promise<never>((_, reject) =>
-    setTimeout(() => reject(new Error('Image load timed out')), 8000)
+    setTimeout(() => reject(new Error('Image load timed out')), 4000)
   );
   const img = await Promise.race([
     fabricModule.Image.fromURL(url, { crossOrigin: 'anonymous' }),

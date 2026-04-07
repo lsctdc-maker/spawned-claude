@@ -18,7 +18,7 @@ interface CanvasWorkspaceProps {
   fonts: CanvasFonts;
   productPhotoUrl: string | null;
   onSelectionChange: (obj: any | null) => void;
-  onCanvasReady?: (canvasRef: React.MutableRefObject<any>) => void;
+  onCanvasReady?: (canvasRef: React.MutableRefObject<any>, getFabricModule: () => any) => void;
   category?: string;
 }
 
@@ -45,7 +45,7 @@ export default function CanvasWorkspace({
   // Notify parent when canvas is ready
   useEffect(() => {
     if (ready && onCanvasReady) {
-      onCanvasReady(fabricCanvas);
+      onCanvasReady(fabricCanvas, getFabricModule);
     }
   }, [ready, onCanvasReady]);
 
@@ -76,11 +76,13 @@ export default function CanvasWorkspace({
     store.saveCanvasState(sectionId, json, canvas.getHeight());
     store.pushHistory(sectionId, json);
 
-    // Generate thumbnail
-    try {
-      const thumb = canvas.toDataURL({ format: 'png', multiplier: 0.2, quality: 0.7 });
-      store.setThumbnail(sectionId, thumb);
-    } catch {}
+    // Generate thumbnail (delayed to avoid blocking compose)
+    setTimeout(() => {
+      try {
+        const thumb = canvas.toDataURL({ format: 'png', multiplier: 0.2, quality: 0.7 });
+        store.setThumbnail(sectionId, thumb);
+      } catch {}
+    }, 300);
 
     lastImageUrlRef.current = imageUrl;
   }, [fabricCanvas, getFabricModule, ready, section, sectionId, colors, fonts, productPhotoUrl, category]);
@@ -165,14 +167,16 @@ export default function CanvasWorkspace({
     const canvas = fabricCanvas.current;
     if (!canvas || !ready) return;
 
+    let thumbTimer: ReturnType<typeof setTimeout> | null = null;
     const updateThumb = () => {
-      requestAnimationFrame(() => {
+      if (thumbTimer) clearTimeout(thumbTimer);
+      thumbTimer = setTimeout(() => {
         if (!canvas) return;
         try {
           const thumb = canvas.toDataURL({ format: 'png', multiplier: 0.2, quality: 0.7 });
           store.setThumbnail(sectionId, thumb);
         } catch {}
-      });
+      }, 800);
     };
 
     canvas.on('object:modified', updateThumb);

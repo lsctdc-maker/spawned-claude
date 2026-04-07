@@ -9,12 +9,14 @@ import { extractFontName, loadGoogleFont, FONT_OPTIONS } from './utils/fontUtils
 import { CanvasColors, CanvasFonts } from './templates/types';
 import CanvasWorkspace from './CanvasWorkspace';
 import TextControls from './toolbar/TextControls';
+import TextPresets from './toolbar/TextPresets';
 import ImageControls from './toolbar/ImageControls';
 import LayerPanel from './panels/LayerPanel';
+import { createTextbox, createRect, createCircle, createLine } from './utils/shapeFactory';
 import Button from '@/components/ui/Button';
 import {
   Download, RefreshCw, ChevronLeft, ChevronRight, Layers, Type, Palette,
-  Image as ImageIcon,
+  Image as ImageIcon, Plus, Square, Circle, Minus,
 } from 'lucide-react';
 
 export default function CanvasEditor() {
@@ -25,7 +27,9 @@ export default function CanvasEditor() {
   const [selectedObj, setSelectedObj] = useState<any>(null);
   const [downloading, setDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
+  const [shapeMenuOpen, setShapeMenuOpen] = useState(false);
   const canvasRef = useRef<React.MutableRefObject<any>>({ current: null });
+  const fabricModuleGetterRef = useRef<(() => any) | null>(null);
 
   // Sorted visible sections
   const visibleSections = useMemo(() =>
@@ -187,6 +191,51 @@ export default function CanvasEditor() {
           </button>
         </div>
 
+        {/* Center-Right: Add Element */}
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => {
+              const canvas = canvasRef.current?.current;
+              const fab = fabricModuleGetterRef.current?.();
+              if (canvas && fab) createTextbox(fab, canvas);
+            }}
+            className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] text-[#4E5968] bg-[#F4F5F7] border border-[#E5E8EB] rounded-lg hover:border-[#3182F6]/30 transition-all"
+          >
+            <Plus className="w-3 h-3" /><Type className="w-3 h-3" />
+          </button>
+          <div className="relative">
+            <button
+              onClick={() => setShapeMenuOpen(!shapeMenuOpen)}
+              className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] text-[#4E5968] bg-[#F4F5F7] border border-[#E5E8EB] rounded-lg hover:border-[#3182F6]/30 transition-all"
+            >
+              <Plus className="w-3 h-3" /><Square className="w-3 h-3" />
+            </button>
+            {shapeMenuOpen && (
+              <div className="absolute top-full left-0 mt-1 bg-white border border-[#E5E8EB] rounded-lg shadow-lg z-50 py-1 min-w-[120px]">
+                {[
+                  { label: '사각형', icon: Square, fn: createRect },
+                  { label: '원', icon: Circle, fn: createCircle },
+                  { label: '직선', icon: Minus, fn: createLine },
+                ].map(item => (
+                  <button
+                    key={item.label}
+                    onClick={() => {
+                      const canvas = canvasRef.current?.current;
+                      const fab = fabricModuleGetterRef.current?.();
+                      if (canvas && fab) item.fn(fab, canvas, colors.accent);
+                      setShapeMenuOpen(false);
+                    }}
+                    className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] text-[#4E5968] hover:bg-[#F4F5F7] transition-all"
+                  >
+                    <item.icon className="w-3.5 h-3.5" />
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Right: Actions */}
         <div className="flex items-center gap-2">
           {/* Regenerate image */}
@@ -292,7 +341,7 @@ export default function CanvasEditor() {
               fonts={fonts}
               productPhotoUrl={productPhotoUrl}
               onSelectionChange={setSelectedObj}
-              onCanvasReady={(ref) => { canvasRef.current = ref; }}
+              onCanvasReady={(ref, getFab) => { canvasRef.current = ref; fabricModuleGetterRef.current = getFab; }}
               category={productInfo.category || undefined}
             />
           )}
@@ -358,6 +407,15 @@ export default function CanvasEditor() {
               <TextControls
                 fabricCanvas={canvasRef.current}
                 selectedObj={selectedObj}
+              />
+            )}
+
+            {/* Text Presets */}
+            {selectedObj && (selectedObj.type === 'i-text' || selectedObj.type === 'textbox') && (
+              <TextPresets
+                fabricCanvas={canvasRef.current}
+                selectedObj={selectedObj}
+                accentColor={colors.accent}
               />
             )}
 
