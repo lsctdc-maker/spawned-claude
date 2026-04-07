@@ -3,6 +3,7 @@ import { SectionTemplate, TextObjectDef, ShapeObjectDef, CanvasColors, CanvasFon
 import { getTemplate } from './sections';
 import { getBodyPreview } from '../utils/textParsers';
 import { createIconObject, createBadge, createGradientRect, resolveGradientColors } from './iconRenderer';
+import { renderDesignBackground } from './htmlRenderer';
 
 function resolveColor(value: string | undefined, colors: CanvasColors): string {
   if (!value) return colors.text;
@@ -49,8 +50,37 @@ export async function composeSectionCanvas(
   const sectionOrder = section.order ?? 0;
   const isEvenSection = sectionOrder % 2 === 0;
 
-  // 1. Background: solid color OR photo image
-  if (template.solidBackground) {
+  // 1. Background: HTML design template OR solid color OR photo image
+  if (template.useHtmlDesign && template.solidBackground) {
+    // HTML/CSS design background — rich visual design layer
+    canvas.backgroundColor = template.solidBackground;
+    try {
+      const designUrl = await renderDesignBackground(
+        section.sectionType,
+        template.variantId,
+        { accent: colors.accent, bg: colors.bg, bg2: colors.bg2, text: colors.text },
+        860,
+        template.canvasHeight,
+      );
+      if (designUrl) {
+        const designImg = await loadImage(fabricModule, designUrl);
+        // Scale to exact canvas size (html-to-image renders at 2x pixelRatio)
+        const scale = Math.min(860 / designImg.width!, template.canvasHeight / designImg.height!);
+        designImg.set({
+          left: 0,
+          top: 0,
+          scaleX: scale,
+          scaleY: scale,
+          selectable: false,
+          evented: false,
+          name: '디자인 배경',
+        });
+        canvas.add(designImg);
+      }
+    } catch (e) {
+      console.warn('Failed to render HTML design, falling back to solid bg:', e);
+    }
+  } else if (template.solidBackground) {
     // Solid background — clean fill, no photo needed
     canvas.backgroundColor = template.solidBackground;
   } else if (bgImageUrl) {
@@ -97,8 +127,11 @@ export async function composeSectionCanvas(
     canvas.add(overlay);
   }
 
-  // 3. Shape objects (backgrounds for buttons, dividers, etc.)
-  for (const shapeDef of template.shapes) {
+  // 3. Shape objects — skip for HTML design sections (design is in the background)
+  if (template.useHtmlDesign) {
+    // Shapes are handled by the HTML design template — skip
+  }
+  for (const shapeDef of (template.useHtmlDesign ? [] : template.shapes)) {
     const shapeColor = resolveColor(shapeDef.fill, colors);
     let obj: any;
 

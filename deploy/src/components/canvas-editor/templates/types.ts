@@ -66,6 +66,7 @@ export interface SectionTemplate {
   variantId: string;            // 'A' | 'B' | 'C' — layout variant identifier
   canvasHeight: number;
   solidBackground?: string;     // e.g. '#FFFFFF' — when set, use solid fill instead of photo bg
+  useHtmlDesign?: boolean;      // when true, render HTML/CSS design template as background instead of shapes
   overlayColor: string;         // e.g. 'rgba(0,0,0,0.45)' — only used with photo backgrounds
   hasProductImage: boolean;
   productImagePosition?: { left: number; top: number; maxWidth: number; maxHeight: number };
