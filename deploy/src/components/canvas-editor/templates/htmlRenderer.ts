@@ -12,6 +12,7 @@ export async function renderDesignBackground(
   colors: DesignColors,
   width: number,
   height: number,
+  _category?: string,
 ): Promise<string | null> {
   // Only runs client-side
   if (typeof window === 'undefined') return null;
@@ -22,8 +23,8 @@ export async function renderDesignBackground(
   // Dynamic import to avoid SSR issues
   const { toPng } = await import('html-to-image');
 
-  // Generate HTML
-  const html = template.render(colors, width, height);
+  // Generate HTML (pass category for category-specific styling)
+  const html = template.render(colors, width, height, _category);
 
   // Create hidden container
   const container = document.createElement('div');

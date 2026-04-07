@@ -95,7 +95,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
 
   // ========== PROBLEM — solid background (공감/문제 제기) ==========
   problem: [
-    // A: 중앙정렬 클린 화이트
+    // A: 공감 카드 (좌 accent bar + 큰 ? 장식)
     {
       sectionType: 'problem',
       variantId: 'A',
@@ -105,17 +105,13 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       overlayColor: '',
       hasProductImage: false,
       textObjects: [
-        { binding: 'label', customText: '이런 고민, 하고 계신가요?', left: 0, top: 70, width: 860, fontSize: 13, fontWeight: 600, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 2, name: '섹션 라벨' },
-        { binding: 'title', left: 80, top: 120, width: 700, fontSize: 30, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', textAlign: 'center', lineHeight: 1.4, name: '문제 제시' },
-        { binding: 'body', left: 100, top: 240, width: 660, fontSize: 15, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, textAlign: 'center', name: '공감 설명' },
+        { binding: 'label', customText: '이런 고민, 하고 계신가요?', left: 60, top: 60, width: 700, fontSize: 13, fontWeight: 600, useHeadline: false, fill: '{colors.accent}', letterSpacing: 2, name: '섹션 라벨' },
+        { binding: 'title', left: 60, top: 100, width: 700, fontSize: 30, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', lineHeight: 1.4, name: '문제 제시' },
+        { binding: 'body', left: 80, top: 200, width: 660, fontSize: 15, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, name: '공감 설명' },
       ],
-      shapes: [
-        { type: 'rect', left: 400, top: 210, width: 60, height: 3, fill: '{colors.accent}', selectable: false, name: '중앙 구분선' },
-        { type: 'circle', left: 720, top: 40, radius: 80, fill: '{colors.accent}', opacity: 0.06, selectable: false, name: '장식 서클' },
-        { type: 'badge', left: 405, top: 25, radius: 20, fill: '{colors.accent}', badgeIcon: 'circle-help', badgeTextColor: '#FFFFFF', opacity: 0.85, selectable: false, name: '문제 뱃지' },
-      ],
+      shapes: [],
     },
-    // B: 좌정렬 + 우측 제품
+    // B: 중앙 카드 + 상단 아이콘
     {
       sectionType: 'problem',
       variantId: 'B',
@@ -123,38 +119,30 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       solidBackground: '#F8F8F8',
       useHtmlDesign: true,
       overlayColor: '',
-      hasProductImage: true,
-      productImagePosition: { left: 520, top: 80, maxWidth: 280, maxHeight: 340 },
+      hasProductImage: false,
       textObjects: [
-        { binding: 'label', customText: 'PROBLEM', left: 60, top: 70, width: 400, fontSize: 11, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', letterSpacing: 5, name: '섹션 라벨' },
-        { binding: 'title', left: 60, top: 110, width: 420, fontSize: 28, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', lineHeight: 1.4, name: '문제 제시' },
-        { binding: 'body', left: 60, top: 230, width: 420, fontSize: 15, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, name: '공감 설명' },
+        { binding: 'label', customText: 'PROBLEM', left: 0, top: 60, width: 860, fontSize: 11, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 5, name: '섹션 라벨' },
+        { binding: 'title', left: 120, top: 140, width: 620, fontSize: 28, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', textAlign: 'center', lineHeight: 1.4, name: '문제 제시' },
+        { binding: 'body', left: 140, top: 260, width: 580, fontSize: 15, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, textAlign: 'center', name: '공감 설명' },
       ],
-      shapes: [
-        { type: 'rect', left: 60, top: 200, width: 32, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
-        { type: 'rect', left: 48, top: 108, width: 4, height: 70, fill: '{colors.accent}', opacity: 0.4, selectable: false, name: '좌측 악센트' },
-        { type: 'icon', left: 60, top: 420, iconName: 'circle-help', iconSize: 20, fill: '{colors.accent}', opacity: 0.2, selectable: false, name: '문제 아이콘' },
-      ],
+      shapes: [],
     },
-    // C: 카드형 중앙정렬
+    // C: 좌정렬 + 우측 제품
     {
       sectionType: 'problem',
       variantId: 'C',
-      canvasHeight: 520,
+      canvasHeight: 500,
       solidBackground: '#FFFFFF',
       useHtmlDesign: true,
       overlayColor: '',
-      hasProductImage: false,
+      hasProductImage: true,
+      productImagePosition: { left: 490, top: 70, maxWidth: 320, maxHeight: 360 },
       textObjects: [
-        { binding: 'label', customText: 'PAIN POINT', left: 0, top: 60, width: 860, fontSize: 11, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 5, name: '섹션 라벨' },
-        { binding: 'title', left: 130, top: 135, width: 600, fontSize: 26, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', textAlign: 'center', lineHeight: 1.4, name: '문제 제시' },
-        { binding: 'body', left: 150, top: 250, width: 560, fontSize: 14, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, textAlign: 'center', name: '공감 설명' },
+        { binding: 'label', customText: 'PROBLEM', left: 60, top: 60, width: 380, fontSize: 11, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', letterSpacing: 5, name: '섹션 라벨' },
+        { binding: 'title', left: 60, top: 100, width: 380, fontSize: 26, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', lineHeight: 1.4, name: '문제 제시' },
+        { binding: 'body', left: 60, top: 220, width: 380, fontSize: 14, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, name: '공감 설명' },
       ],
-      shapes: [
-        { type: 'rect', left: 110, top: 100, width: 640, height: 370, fill: '#F5F5F5', rx: 16, ry: 16, selectable: false, name: '카드 배경' },
-        { type: 'rect', left: 400, top: 225, width: 60, height: 3, fill: '{colors.accent}', selectable: false, name: '카드 내 구분선' },
-        { type: 'badge', left: 405, top: 105, radius: 16, fill: '{colors.accent}', badgeIcon: 'circle-help', badgeTextColor: '#FFFFFF', opacity: 0.8, selectable: false, name: '문제 뱃지' },
-      ],
+      shapes: [],
     },
   ],
 
@@ -218,7 +206,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
 
   // ========== FEATURES — solid background (핵심 특장점) ==========
   features: [
-    // A: 중앙정렬 + 하단 제품 이미지
+    // A: 3열 아이콘 카드 그리드 (icon-grid-3col, 35% — 가장 빈도 높음)
     {
       sectionType: 'features',
       variantId: 'A',
@@ -226,21 +214,15 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       solidBackground: '#FFFFFF',
       useHtmlDesign: true,
       overlayColor: '',
-      hasProductImage: true,
-      productImagePosition: { left: 280, top: 340, maxWidth: 300, maxHeight: 220 },
+      hasProductImage: false,
       textObjects: [
-        { binding: 'label', customText: 'KEY FEATURES', left: 0, top: 60, width: 860, fontSize: 11, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 5, name: '섹션 라벨' },
-        { binding: 'title', left: 80, top: 100, width: 700, fontSize: 30, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', textAlign: 'center', lineHeight: 1.35, name: '특장점 타이틀' },
-        { binding: 'body', left: 100, top: 200, width: 660, fontSize: 15, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, textAlign: 'center', name: '특장점 설명' },
+        { binding: 'label', customText: 'KEY FEATURES', left: 0, top: 50, width: 860, fontSize: 11, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 5, name: '섹션 라벨' },
+        { binding: 'title', left: 80, top: 90, width: 700, fontSize: 30, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', textAlign: 'center', lineHeight: 1.35, name: '특장점 타이틀' },
+        { binding: 'body', left: 100, top: 180, width: 660, fontSize: 15, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, textAlign: 'center', name: '특장점 설명' },
       ],
-      shapes: [
-        { type: 'rect', left: 400, top: 175, width: 60, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
-        { type: 'badge', left: 200, top: 90, radius: 18, fill: '{colors.accent}', badgeText: '01', badgeTextColor: '#FFFFFF', badgeFontSize: 12, selectable: false, name: '넘버 뱃지 1' },
-        { type: 'badge', left: 420, top: 90, radius: 18, fill: '{colors.accent}', badgeText: '02', badgeTextColor: '#FFFFFF', badgeFontSize: 12, opacity: 0.7, selectable: false, name: '넘버 뱃지 2' },
-        { type: 'badge', left: 640, top: 90, radius: 18, fill: '{colors.accent}', badgeText: '03', badgeTextColor: '#FFFFFF', badgeFontSize: 12, opacity: 0.5, selectable: false, name: '넘버 뱃지 3' },
-      ],
+      shapes: [],
     },
-    // B: 좌정렬 + 넘버링 스타일
+    // B: Point 넘버링 패턴 (numbered-points, 15%)
     {
       sectionType: 'features',
       variantId: 'B',
@@ -252,16 +234,11 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       textObjects: [
         { binding: 'label', customText: 'POINT', left: 60, top: 60, width: 400, fontSize: 11, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', letterSpacing: 5, name: '섹션 라벨' },
         { binding: 'title', left: 60, top: 100, width: 500, fontSize: 28, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', lineHeight: 1.35, name: '특장점 타이틀' },
-        { binding: 'body', left: 60, top: 200, width: 740, fontSize: 15, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, name: '특장점 설명' },
+        { binding: 'body', left: 60, top: 200, width: 700, fontSize: 15, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, name: '특장점 설명' },
       ],
-      shapes: [
-        { type: 'rect', left: 60, top: 175, width: 40, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
-        { type: 'rect', left: 48, top: 98, width: 4, height: 80, fill: '{colors.accent}', opacity: 0.3, selectable: false, name: '좌측 악센트 바' },
-        { type: 'badge', left: 700, top: 60, radius: 22, fill: '{colors.accent}', badgeIcon: 'circle-check', badgeTextColor: '#FFFFFF', opacity: 0.8, selectable: false, name: '체크 뱃지' },
-        { type: 'gradient-rect', left: 60, top: 530, width: 740, height: 4, gradient: { type: 'linear', coords: { x1: 0, y1: 0, x2: 740, y2: 0 }, colorStops: [{ offset: 0, color: '{colors.accent}' }, { offset: 1, color: 'rgba(0,0,0,0)' }] }, opacity: 0.3, selectable: false, name: '하단 악센트 라인' },
-      ],
+      shapes: [],
     },
-    // C: 좌텍스트 + 우측 제품 영역
+    // C: 좌텍스트/우제품 분할 (split-layout)
     {
       sectionType: 'features',
       variantId: 'C',
@@ -276,17 +253,13 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
         { binding: 'title', left: 60, top: 100, width: 380, fontSize: 26, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', lineHeight: 1.35, name: '특장점 타이틀' },
         { binding: 'body', left: 60, top: 210, width: 380, fontSize: 14, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, name: '특장점 설명' },
       ],
-      shapes: [
-        { type: 'rect', left: 60, top: 185, width: 32, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
-        { type: 'rect', left: 460, top: 0, width: 400, height: 580, fill: '#F8F8F8', selectable: false, name: '우측 배경 영역' },
-        { type: 'icon', left: 60, top: 480, iconName: 'sparkles', iconSize: 22, fill: '{colors.accent}', opacity: 0.12, selectable: false, name: '장식 아이콘' },
-      ],
+      shapes: [],
     },
   ],
 
   // ========== DETAIL — solid background (상세 정보) ==========
   detail: [
-    // A: 중앙정렬 + 상단 제품
+    // A: 중앙정렬 + 상단 제품 영역
     {
       sectionType: 'detail',
       variantId: 'A',
@@ -295,18 +268,15 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       useHtmlDesign: true,
       overlayColor: '',
       hasProductImage: true,
-      productImagePosition: { left: 280, top: 40, maxWidth: 300, maxHeight: 240 },
+      productImagePosition: { left: 280, top: 40, maxWidth: 300, maxHeight: 220 },
       textObjects: [
-        { binding: 'label', customText: 'DETAIL', left: 0, top: 300, width: 860, fontSize: 11, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 5, name: '섹션 라벨' },
-        { binding: 'title', left: 80, top: 335, width: 700, fontSize: 26, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', textAlign: 'center', lineHeight: 1.35, name: '상세 타이틀' },
-        { binding: 'body', left: 100, top: 420, width: 660, fontSize: 14, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, textAlign: 'center', name: '상세 설명' },
+        { binding: 'label', customText: 'DETAIL', left: 0, top: 290, width: 860, fontSize: 11, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 5, name: '섹션 라벨' },
+        { binding: 'title', left: 80, top: 325, width: 700, fontSize: 26, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', textAlign: 'center', lineHeight: 1.35, name: '상세 타이틀' },
+        { binding: 'body', left: 120, top: 400, width: 620, fontSize: 14, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, textAlign: 'center', name: '상세 설명' },
       ],
-      shapes: [
-        { type: 'rect', left: 400, top: 400, width: 60, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
-        { type: 'icon', left: 60, top: 310, iconName: 'badge-check', iconSize: 22, fill: '{colors.accent}', opacity: 0.7, selectable: false, name: '상세 아이콘' },
-      ],
+      shapes: [],
     },
-    // B: 좌정렬 라이트그레이
+    // B: 좌정렬 카드
     {
       sectionType: 'detail',
       variantId: 'B',
@@ -317,16 +287,12 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       hasProductImage: false,
       textObjects: [
         { binding: 'label', customText: 'DETAIL', left: 60, top: 60, width: 400, fontSize: 11, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', letterSpacing: 5, name: '섹션 라벨' },
-        { binding: 'title', left: 60, top: 100, width: 500, fontSize: 26, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', lineHeight: 1.35, name: '상세 타이틀' },
-        { binding: 'body', left: 60, top: 200, width: 740, fontSize: 14, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, name: '상세 설명' },
+        { binding: 'title', left: 60, top: 100, width: 700, fontSize: 26, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', lineHeight: 1.35, name: '상세 타이틀' },
+        { binding: 'body', left: 60, top: 200, width: 700, fontSize: 14, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, name: '상세 설명' },
       ],
-      shapes: [
-        { type: 'rect', left: 60, top: 175, width: 40, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
-        { type: 'rect', left: 48, top: 98, width: 4, height: 70, fill: '{colors.accent}', opacity: 0.3, selectable: false, name: '좌측 악센트' },
-        { type: 'icon', left: 750, top: 60, iconName: 'list-checks', iconSize: 22, fill: '{colors.accent}', opacity: 0.25, selectable: false, name: '리스트 아이콘' },
-      ],
+      shapes: [],
     },
-    // C: 좌텍스트 + 우제품
+    // C: 좌텍스트/우제품 분할
     {
       sectionType: 'detail',
       variantId: 'C',
@@ -341,16 +307,13 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
         { binding: 'title', left: 60, top: 100, width: 380, fontSize: 26, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', lineHeight: 1.35, name: '상세 타이틀' },
         { binding: 'body', left: 60, top: 210, width: 380, fontSize: 14, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, name: '상세 설명' },
       ],
-      shapes: [
-        { type: 'rect', left: 60, top: 185, width: 32, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
-        { type: 'icon', left: 60, top: 450, iconName: 'badge-check', iconSize: 20, fill: '{colors.accent}', opacity: 0.2, selectable: false, name: '인증 아이콘' },
-      ],
+      shapes: [],
     },
   ],
 
   // ========== HOWTO — solid background (사용법) ==========
   howto: [
-    // A: 좌텍스트 + 우제품
+    // A: Step 1→2→3 연결선 카드 (numbered-steps, 25%)
     {
       sectionType: 'howto',
       variantId: 'A',
@@ -358,21 +321,15 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       solidBackground: '#FFFFFF',
       useHtmlDesign: true,
       overlayColor: '',
-      hasProductImage: true,
-      productImagePosition: { left: 500, top: 80, maxWidth: 320, maxHeight: 380 },
+      hasProductImage: false,
       textObjects: [
-        { binding: 'label', customText: 'HOW TO USE', left: 60, top: 60, width: 400, fontSize: 11, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', letterSpacing: 5, name: '섹션 라벨' },
-        { binding: 'title', left: 60, top: 100, width: 400, fontSize: 28, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', lineHeight: 1.35, name: '사용법 타이틀' },
-        { binding: 'body', left: 60, top: 200, width: 400, fontSize: 14, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, name: '사용법 설명' },
+        { binding: 'label', customText: 'HOW TO USE', left: 60, top: 50, width: 400, fontSize: 11, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', letterSpacing: 5, name: '섹션 라벨' },
+        { binding: 'title', left: 60, top: 90, width: 700, fontSize: 28, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', lineHeight: 1.35, name: '사용법 타이틀' },
+        { binding: 'body', left: 60, top: 190, width: 740, fontSize: 14, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, name: '사용법 설명' },
       ],
-      shapes: [
-        { type: 'rect', left: 60, top: 175, width: 32, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
-        { type: 'badge', left: 60, top: 370, radius: 16, fill: '{colors.accent}', badgeText: '1', badgeTextColor: '#FFFFFF', badgeFontSize: 12, selectable: false, name: '스텝 1' },
-        { type: 'badge', left: 110, top: 370, radius: 16, fill: '{colors.accent}', badgeText: '2', badgeTextColor: '#FFFFFF', badgeFontSize: 12, opacity: 0.7, selectable: false, name: '스텝 2' },
-        { type: 'badge', left: 160, top: 370, radius: 16, fill: '{colors.accent}', badgeText: '3', badgeTextColor: '#FFFFFF', badgeFontSize: 12, opacity: 0.5, selectable: false, name: '스텝 3' },
-      ],
+      shapes: [],
     },
-    // B: 중앙정렬 라이트그레이
+    // B: 중앙 3스텝 카드 (step-icons, 15%)
     {
       sectionType: 'howto',
       variantId: 'B',
@@ -382,17 +339,11 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       overlayColor: '',
       hasProductImage: false,
       textObjects: [
-        { binding: 'label', customText: 'HOW TO USE', left: 0, top: 60, width: 860, fontSize: 11, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 5, name: '섹션 라벨' },
-        { binding: 'title', left: 80, top: 100, width: 700, fontSize: 28, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', textAlign: 'center', lineHeight: 1.35, name: '사용법 타이틀' },
-        { binding: 'body', left: 100, top: 200, width: 660, fontSize: 14, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, textAlign: 'center', name: '사용법 설명' },
+        { binding: 'label', customText: 'HOW TO USE', left: 0, top: 50, width: 860, fontSize: 11, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 5, name: '섹션 라벨' },
+        { binding: 'title', left: 80, top: 90, width: 700, fontSize: 28, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', textAlign: 'center', lineHeight: 1.35, name: '사용법 타이틀' },
+        { binding: 'body', left: 100, top: 190, width: 660, fontSize: 14, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, textAlign: 'center', name: '사용법 설명' },
       ],
-      shapes: [
-        { type: 'rect', left: 400, top: 175, width: 60, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
-        { type: 'icon', left: 60, top: 60, iconName: 'clipboard-check', iconSize: 24, fill: '{colors.accent}', opacity: 0.2, selectable: false, name: '체크리스트 아이콘' },
-        { type: 'badge', left: 300, top: 460, radius: 16, fill: '{colors.accent}', badgeText: '1', badgeTextColor: '#FFFFFF', badgeFontSize: 12, selectable: false, name: '스텝 1' },
-        { type: 'badge', left: 400, top: 460, radius: 16, fill: '{colors.accent}', badgeText: '2', badgeTextColor: '#FFFFFF', badgeFontSize: 12, opacity: 0.7, selectable: false, name: '스텝 2' },
-        { type: 'badge', left: 500, top: 460, radius: 16, fill: '{colors.accent}', badgeText: '3', badgeTextColor: '#FFFFFF', badgeFontSize: 12, opacity: 0.5, selectable: false, name: '스텝 3' },
-      ],
+      shapes: [],
     },
   ],
 
@@ -419,7 +370,7 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
         { type: 'icon', left: 480, top: 410, iconName: 'star', iconSize: 18, fill: '{colors.accent}', opacity: 0.9, selectable: false, name: '별 5' },
       ],
     },
-    // B: 좌정렬 리뷰 스타일 — solid background
+    // B: 리뷰 카드 (review-cards, 45% — 가장 빈도 높음) — solid background
     {
       sectionType: 'social_proof',
       variantId: 'B',
@@ -429,15 +380,11 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       overlayColor: '',
       hasProductImage: false,
       textObjects: [
-        { binding: 'label', customText: 'REVIEW', left: 80, top: 70, width: 400, fontSize: 11, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', letterSpacing: 5, name: '섹션 라벨' },
-        { binding: 'title', left: 80, top: 110, width: 700, fontSize: 26, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', lineHeight: 1.4, name: '사회적 증거' },
-        { binding: 'body', left: 80, top: 230, width: 700, fontSize: 15, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, name: '리뷰/증거 내용' },
+        { binding: 'label', customText: 'REVIEW', left: 60, top: 50, width: 400, fontSize: 11, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', letterSpacing: 5, name: '섹션 라벨' },
+        { binding: 'title', left: 60, top: 90, width: 700, fontSize: 26, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', lineHeight: 1.4, name: '사회적 증거' },
+        { binding: 'body', left: 80, top: 220, width: 680, fontSize: 15, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, name: '리뷰/증거 내용' },
       ],
-      shapes: [
-        { type: 'rect', left: 68, top: 108, width: 4, height: 70, fill: '{colors.accent}', opacity: 0.4, selectable: false, name: '좌측 악센트' },
-        { type: 'rect', left: 80, top: 200, width: 32, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
-        { type: 'icon', left: 720, top: 70, iconName: 'quote', iconSize: 32, fill: '{colors.accent}', opacity: 0.15, selectable: false, name: '인용 아이콘' },
-      ],
+      shapes: [],
     },
     // C: 수치 강조형 — photo background
     {
@@ -459,8 +406,9 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
     },
   ],
 
-  // ========== TRUST — solid background ==========
+  // ========== TRUST — solid background (인증/수상) ==========
   trust: [
+    // A: 인증 뱃지 그리드 (certification-grid, 30%)
     {
       sectionType: 'trust',
       variantId: 'A',
@@ -470,23 +418,17 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       overlayColor: '',
       hasProductImage: false,
       textObjects: [
-        { binding: 'label', customText: 'WHY TRUST US', left: 0, top: 60, width: 860, fontSize: 11, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 5, name: '섹션 라벨' },
-        { binding: 'title', left: 80, top: 100, width: 700, fontSize: 26, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', textAlign: 'center', lineHeight: 1.35, name: '신뢰 타이틀' },
-        { binding: 'body', left: 100, top: 200, width: 660, fontSize: 14, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, textAlign: 'center', name: '신뢰 설명' },
+        { binding: 'label', customText: 'WHY TRUST US', left: 0, top: 50, width: 860, fontSize: 11, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 5, name: '섹션 라벨' },
+        { binding: 'title', left: 80, top: 90, width: 700, fontSize: 26, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', textAlign: 'center', lineHeight: 1.35, name: '신뢰 타이틀' },
+        { binding: 'body', left: 100, top: 180, width: 660, fontSize: 14, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, textAlign: 'center', name: '신뢰 설명' },
       ],
-      shapes: [
-        { type: 'rect', left: 400, top: 175, width: 60, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
-        { type: 'rect', left: 200, top: 330, width: 200, height: 100, fill: '#FFFFFF', rx: 12, ry: 12, selectable: false, name: '인증 카드 1' },
-        { type: 'rect', left: 460, top: 330, width: 200, height: 100, fill: '#FFFFFF', rx: 12, ry: 12, selectable: false, name: '인증 카드 2' },
-        { type: 'badge', left: 275, top: 360, radius: 18, fill: '{colors.accent}', badgeIcon: 'shield-check', badgeTextColor: '#FFFFFF', opacity: 0.9, selectable: false, name: '방패 뱃지' },
-        { type: 'badge', left: 535, top: 360, radius: 18, fill: '{colors.accent}', badgeIcon: 'award', badgeTextColor: '#FFFFFF', opacity: 0.9, selectable: false, name: '수상 뱃지' },
-      ],
+      shapes: [],
     },
   ],
 
-  // ========== SPECS — solid background ==========
+  // ========== SPECS — solid background (제품 사양) ==========
   specs: [
-    // A: 좌정렬 + 우측 제품
+    // A: 좌정렬 표 (left-aligned-table, 50% — 가장 빈도 높음)
     {
       sectionType: 'specs',
       variantId: 'A',
@@ -494,19 +436,15 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       solidBackground: '#FFFFFF',
       useHtmlDesign: true,
       overlayColor: '',
-      hasProductImage: true,
-      productImagePosition: { left: 520, top: 80, maxWidth: 280, maxHeight: 360 },
+      hasProductImage: false,
       textObjects: [
-        { binding: 'label', customText: 'SPECIFICATIONS', left: 60, top: 60, width: 400, fontSize: 11, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', letterSpacing: 5, name: '섹션 라벨' },
-        { binding: 'title', left: 60, top: 100, width: 420, fontSize: 26, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', lineHeight: 1.3, name: '스펙 타이틀' },
-        { binding: 'body', left: 60, top: 200, width: 420, fontSize: 14, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, name: '스펙 내용' },
+        { binding: 'label', customText: 'SPECIFICATIONS', left: 60, top: 50, width: 400, fontSize: 11, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', letterSpacing: 5, name: '섹션 라벨' },
+        { binding: 'title', left: 60, top: 90, width: 700, fontSize: 26, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', lineHeight: 1.3, name: '스펙 타이틀' },
+        { binding: 'body', left: 80, top: 190, width: 700, fontSize: 14, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, name: '스펙 내용' },
       ],
-      shapes: [
-        { type: 'rect', left: 60, top: 175, width: 32, height: 3, fill: '{colors.accent}', selectable: false, name: '구분선' },
-        { type: 'icon', left: 60, top: 430, iconName: 'clipboard-check', iconSize: 20, fill: '{colors.accent}', opacity: 0.2, selectable: false, name: '스펙 아이콘' },
-      ],
+      shapes: [],
     },
-    // B: 카드 내부 중앙정렬
+    // B: 중앙 카드 (center-card, 30%)
     {
       sectionType: 'specs',
       variantId: 'B',
@@ -516,15 +454,11 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       overlayColor: '',
       hasProductImage: false,
       textObjects: [
-        { binding: 'label', customText: 'SPECIFICATIONS', left: 0, top: 55, width: 860, fontSize: 11, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 5, name: '섹션 라벨' },
-        { binding: 'title', left: 130, top: 120, width: 600, fontSize: 24, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', textAlign: 'center', lineHeight: 1.3, name: '스펙 타이틀' },
-        { binding: 'body', left: 150, top: 210, width: 560, fontSize: 13, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, name: '스펙 내용' },
+        { binding: 'label', customText: 'SPECIFICATIONS', left: 0, top: 50, width: 860, fontSize: 11, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 5, name: '섹션 라벨' },
+        { binding: 'title', left: 130, top: 110, width: 600, fontSize: 24, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', textAlign: 'center', lineHeight: 1.3, name: '스펙 타이틀' },
+        { binding: 'body', left: 150, top: 200, width: 560, fontSize: 13, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.85, name: '스펙 내용' },
       ],
-      shapes: [
-        { type: 'rect', left: 110, top: 90, width: 640, height: 400, fill: '#FFFFFF', rx: 16, ry: 16, selectable: false, name: '카드 배경' },
-        { type: 'rect', left: 400, top: 190, width: 60, height: 3, fill: '{colors.accent}', selectable: false, name: '카드 내 구분선' },
-        { type: 'icon', left: 130, top: 100, iconName: 'list-checks', iconSize: 20, fill: '{colors.accent}', opacity: 0.25, selectable: false, name: '리스트 아이콘' },
-      ],
+      shapes: [],
     },
   ],
 

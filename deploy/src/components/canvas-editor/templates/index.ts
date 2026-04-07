@@ -61,6 +61,7 @@ export async function composeSectionCanvas(
         { accent: colors.accent, bg: colors.bg, bg2: colors.bg2, text: colors.text },
         860,
         template.canvasHeight,
+        category,
       );
       if (designUrl) {
         const designImg = await loadImage(fabricModule, designUrl);
