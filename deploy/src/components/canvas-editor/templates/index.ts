@@ -93,6 +93,11 @@ export async function composeSectionCanvas(
       const scaledHeight = bgImg.height! * scale;
       const offsetX = (860 - scaledWidth) / 2;
       const offsetY = (template.canvasHeight - scaledHeight) / 2;
+      // Apply subtle blur for professional depth-of-field effect
+      if (bgImg.filters) {
+        bgImg.filters.push(new fabricModule.filters.Blur({ blur: 0.08 }));
+        bgImg.applyFilters();
+      }
       bgImg.set({
         scaleX: scale,
         scaleY: scale,
@@ -215,6 +220,12 @@ export async function composeSectionCanvas(
         scaleX: scale,
         scaleY: scale,
         name: '제품 이미지',
+        shadow: new fabricModule.Shadow({
+          color: 'rgba(0,0,0,0.18)',
+          offsetX: 0,
+          offsetY: 8,
+          blur: 24,
+        }),
       });
       canvas.add(prodImg);
     } catch (e) {
@@ -244,6 +255,16 @@ export async function composeSectionCanvas(
       opacity: textDef.opacity ?? 1,
       name: textDef.name,
       splitByGrapheme: true,
+      // Text shadow for depth
+      ...(textDef.shadow ? {
+        shadow: new fabricModule.Shadow(textDef.shadow),
+      } : {}),
+      // Text stroke/outline for readability
+      ...(textDef.stroke ? {
+        stroke: textDef.stroke,
+        strokeWidth: textDef.strokeWidth || 0,
+        paintFirst: 'stroke',
+      } : {}),
     });
 
     canvas.add(textObj);

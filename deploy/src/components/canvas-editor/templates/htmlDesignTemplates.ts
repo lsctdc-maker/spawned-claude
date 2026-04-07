@@ -63,7 +63,7 @@ function cardEl(left: number, top: number, w: number, h: number, opts: {
 } = {}): string {
   const bg = opts.bg ?? '#FFFFFF';
   const r = opts.radius ?? 16;
-  const sh = opts.shadow ?? '0 2px 20px rgba(0,0,0,0.06)';
+  const sh = opts.shadow ?? '0 4px 24px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)';
   const bt = opts.borderTop ? `border-top:3px solid ${opts.borderTop};` : '';
   const bl = opts.borderLeft ? `border-left:4px solid ${opts.borderLeft};` : '';
   return `<div style="position:absolute;left:${left}px;top:${top}px;width:${w}px;height:${h}px;background:${bg};border-radius:${r}px;box-shadow:${sh};${bt}${bl}"></div>`;
@@ -111,7 +111,7 @@ export const htmlDesignTemplates: HtmlDesignTemplate[] = [
     render: (c, w, h) => wrap(w, h, '#FFFFFF', `
       ${vBar(0, 0, h, c.accent, 0.6)}
       <div style="position:absolute;right:60px;top:30px;font-size:120px;font-weight:900;color:${hexToRgba(c.accent, 0.06)};line-height:1;">?</div>
-      ${cardEl(60, 160, w - 120, h - 240, { bg: '#FAFAFA', borderLeft: c.accent, shadow: '0 4px 24px rgba(0,0,0,0.05)' })}
+      ${cardEl(60, 160, w - 120, h - 240, { bg: '#FAFAFA', borderLeft: c.accent, shadow: '0 4px 24px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)' })}
       ${hLine(80, h - 60, 120, c.accent, 0.3)}
     `),
   },
@@ -122,7 +122,7 @@ export const htmlDesignTemplates: HtmlDesignTemplate[] = [
     variantId: 'B',
     render: (c, w, h) => wrap(w, h, '#F8F8F8', `
       ${iconBubble(w / 2 - 28, 25, 56, c.accent, 0.12, svg.questionCircle(c.accent, 28))}
-      ${cardEl(80, 100, w - 160, h - 160, { bg: '#FFFFFF', borderTop: c.accent, shadow: '0 6px 32px rgba(0,0,0,0.06)' })}
+      ${cardEl(80, 100, w - 160, h - 160, { bg: '#FFFFFF', borderTop: c.accent, shadow: '0 6px 32px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)' })}
       <div style="position:absolute;left:80px;top:100px;width:${w - 160}px;height:${h - 160}px;border-radius:16px;background:linear-gradient(180deg,${hexToRgba(c.accent, 0.03)} 0%,transparent 40%);pointer-events:none;"></div>
     `),
   },
@@ -155,7 +155,7 @@ export const htmlDesignTemplates: HtmlDesignTemplate[] = [
       const cards = [0, 1, 2].map(i => {
         const x = startX + i * (cardW + gap);
         return `
-          <div style="position:absolute;left:${x}px;top:${cardY}px;width:${cardW}px;height:${cardH}px;background:#FAFAFA;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,0.05);border-top:3px solid ${hexToRgba(c.accent, 1 - i * 0.2)};text-align:center;">
+          <div style="position:absolute;left:${x}px;top:${cardY}px;width:${cardW}px;height:${cardH}px;background:#FAFAFA;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);border-top:3px solid ${hexToRgba(c.accent, 1 - i * 0.2)};text-align:center;">
             ${numBadge(cardW / 2 - 20, 20, 40, hexToRgba(c.accent, 1 - i * 0.15), `0${i + 1}`)}
           </div>`;
       }).join('');
@@ -174,7 +174,7 @@ export const htmlDesignTemplates: HtmlDesignTemplate[] = [
     variantId: 'B',
     render: (c, w, h) => wrap(w, h, '#F5F5F5', `
       ${vBar(0, 0, h, c.accent, 0.5)}
-      ${cardEl(40, 40, w - 80, h - 80, { bg: '#FFFFFF', borderLeft: c.accent, shadow: '0 4px 24px rgba(0,0,0,0.05)' })}
+      ${cardEl(40, 40, w - 80, h - 80, { bg: '#FFFFFF', borderLeft: c.accent, shadow: '0 4px 24px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)' })}
       <div style="position:absolute;right:80px;top:50px;font-size:72px;font-weight:900;color:${hexToRgba(c.accent, 0.07)};line-height:1;letter-spacing:-3px;">POINT</div>
       ${hLine(60, h - 50, w - 120, c.accent, 0.15)}
     `),
@@ -201,7 +201,7 @@ export const htmlDesignTemplates: HtmlDesignTemplate[] = [
     render: (c, w, h) => wrap(w, h, '#FFFFFF', `
       <div style="position:absolute;top:0;left:0;right:0;height:260px;background:linear-gradient(180deg,#F8F8F8 0%,#FFFFFF 100%);"></div>
       ${hLine(w / 2 - 30, 275, 60, c.accent, 0.3)}
-      ${cardEl(100, 340, w - 200, h - 400, { bg: '#FAFAFA', shadow: '0 2px 16px rgba(0,0,0,0.04)' })}
+      ${cardEl(100, 340, w - 200, h - 400, { bg: '#FAFAFA', shadow: '0 4px 20px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)' })}
     `),
   },
 
@@ -211,7 +211,7 @@ export const htmlDesignTemplates: HtmlDesignTemplate[] = [
     variantId: 'B',
     render: (c, w, h) => wrap(w, h, '#F5F5F5', `
       ${vBar(0, 0, h, c.accent, 0.5)}
-      ${cardEl(40, 40, w - 80, h - 80, { bg: '#FFFFFF', borderLeft: c.accent, shadow: '0 4px 24px rgba(0,0,0,0.05)' })}
+      ${cardEl(40, 40, w - 80, h - 80, { bg: '#FFFFFF', borderLeft: c.accent, shadow: '0 4px 24px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)' })}
       ${hLine(60, h - 30, w - 120, c.accent, 0.12)}
     `),
   },
@@ -238,7 +238,7 @@ export const htmlDesignTemplates: HtmlDesignTemplate[] = [
       const stepCards = [0, 1, 2].map(i => {
         const x = 80 + i * 250;
         return `
-          <div style="position:absolute;left:${x}px;top:${stepY}px;width:200px;height:80px;background:#FAFAFA;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.05);border-top:3px solid ${hexToRgba(c.accent, 1 - i * 0.2)};text-align:center;">
+          <div style="position:absolute;left:${x}px;top:${stepY}px;width:200px;height:80px;background:#FAFAFA;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);border-top:3px solid ${hexToRgba(c.accent, 1 - i * 0.2)};text-align:center;">
             ${numBadge(80, -16, 32, hexToRgba(c.accent, 1 - i * 0.15), `${i + 1}`)}
           </div>
           ${i < 2 ? `<div style="position:absolute;left:${x + 205}px;top:${stepY + 35}px;width:40px;height:2px;background:${hexToRgba(c.accent, 0.25)};"></div>` : ''}`;
@@ -259,7 +259,7 @@ export const htmlDesignTemplates: HtmlDesignTemplate[] = [
       const cards = [0, 1, 2].map(i => {
         const x = 70 + i * 250;
         return `
-          <div style="position:absolute;left:${x}px;top:${cardY}px;width:210px;height:100px;background:#fff;border-radius:14px;box-shadow:0 2px 16px rgba(0,0,0,0.05);border-top:3px solid ${hexToRgba(c.accent, 1 - i * 0.2)};text-align:center;">
+          <div style="position:absolute;left:${x}px;top:${cardY}px;width:210px;height:100px;background:#fff;border-radius:14px;box-shadow:0 4px 20px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);border-top:3px solid ${hexToRgba(c.accent, 1 - i * 0.2)};text-align:center;">
             ${numBadge(85, -16, 32, hexToRgba(c.accent, 1 - i * 0.15), `${i + 1}`)}
           </div>
           ${i < 2 ? `<div style="position:absolute;left:${x + 216}px;top:${cardY + 45}px;color:${hexToRgba(c.accent, 0.3)};font-size:18px;">→</div>` : ''}`;
@@ -286,7 +286,7 @@ export const htmlDesignTemplates: HtmlDesignTemplate[] = [
       return wrap(w, h, '#FFFFFF', `
         ${vBar(0, 0, h, c.accent, 0.5)}
         <div style="position:absolute;right:60px;top:40px;">${svg.quote(c.accent, 48)}</div>
-        ${cardEl(60, cardY, w - 120, cardH, { bg: '#FAFAFA', borderLeft: c.accent, shadow: '0 4px 24px rgba(0,0,0,0.05)' })}
+        ${cardEl(60, cardY, w - 120, cardH, { bg: '#FAFAFA', borderLeft: c.accent, shadow: '0 4px 24px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)' })}
         <div style="position:absolute;left:80px;top:${cardY + cardH - 36}px;display:flex;gap:3px;">${starsRow(c.accent)}</div>
         ${hLine(60, h - 40, 120, c.accent, 0.2)}
       `);
@@ -305,7 +305,7 @@ export const htmlDesignTemplates: HtmlDesignTemplate[] = [
       const badges = [0, 1, 2, 3].map(i => {
         const x = 90 + i * 180;
         return `
-          <div style="position:absolute;left:${x}px;top:${badgeY}px;width:140px;height:120px;background:#fff;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,0.05);border-top:3px solid ${hexToRgba(c.accent, 1 - i * 0.15)};text-align:center;">
+          <div style="position:absolute;left:${x}px;top:${badgeY}px;width:140px;height:120px;background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);border-top:3px solid ${hexToRgba(c.accent, 1 - i * 0.15)};text-align:center;">
             ${iconBubble(48, 16, 44, c.accent, 0.1, i % 2 === 0 ? svg.shield(c.accent, 22) : svg.award(c.accent, 22))}
           </div>`;
       }).join('');
@@ -345,7 +345,7 @@ export const htmlDesignTemplates: HtmlDesignTemplate[] = [
     sectionType: 'specs',
     variantId: 'B',
     render: (c, w, h) => wrap(w, h, '#F5F5F5', `
-      ${cardEl(90, 70, w - 180, h - 140, { bg: '#FFFFFF', borderTop: c.accent, radius: 20, shadow: '0 6px 32px rgba(0,0,0,0.06)' })}
+      ${cardEl(90, 70, w - 180, h - 140, { bg: '#FFFFFF', borderTop: c.accent, radius: 20, shadow: '0 6px 32px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)' })}
       <div style="position:absolute;left:90px;top:70px;width:${w - 180}px;height:${h - 140}px;border-radius:20px;background:linear-gradient(180deg,${hexToRgba(c.accent, 0.03)} 0%,transparent 30%);pointer-events:none;"></div>
     `),
   },

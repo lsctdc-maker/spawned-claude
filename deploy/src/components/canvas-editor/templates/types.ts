@@ -27,6 +27,11 @@ export interface TextObjectDef {
   letterSpacing?: number;
   name: string;        // display name in layer panel
   opacity?: number;
+  // Text shadow (fabric.js Shadow)
+  shadow?: { color: string; offsetX: number; offsetY: number; blur: number };
+  // Text stroke/outline
+  stroke?: string;
+  strokeWidth?: number;
 }
 
 export interface ShapeObjectDef {
