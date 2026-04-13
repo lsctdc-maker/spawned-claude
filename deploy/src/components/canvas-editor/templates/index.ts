@@ -379,10 +379,38 @@ async function applyFigmaTemplate(
 
 async function loadImage(fabricModule: any, url: string): Promise<any> {
   const timeout = new Promise<never>((_, reject) =>
-    setTimeout(() => reject(new Error('Image load timed out')), 4000)
+    setTimeout(() => reject(new Error('Image load timed out')), 8000)
   );
+
+  // 외부 URL → data URL 변환 (loadFromJSON 복원 시 재다운로드 방지)
+  let effectiveUrl = url;
+  if (url.startsWith('http')) {
+    try {
+      const htmlImg = new window.Image();
+      htmlImg.crossOrigin = 'anonymous';
+      await Promise.race([
+        new Promise<void>((resolve, reject) => {
+          htmlImg.onload = () => resolve();
+          htmlImg.onerror = reject;
+          htmlImg.src = url;
+        }),
+        timeout,
+      ]);
+      const temp = document.createElement('canvas');
+      temp.width = htmlImg.naturalWidth;
+      temp.height = htmlImg.naturalHeight;
+      const ctx = temp.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(htmlImg, 0, 0);
+        effectiveUrl = temp.toDataURL('image/jpeg', 0.75);
+      }
+    } catch {
+      // CORS 실패 시 원본 URL 유지
+    }
+  }
+
   const img = await Promise.race([
-    fabricModule.Image.fromURL(url, { crossOrigin: 'anonymous' }),
+    fabricModule.Image.fromURL(effectiveUrl, { crossOrigin: 'anonymous' }),
     timeout,
   ]);
   if (!img) throw new Error('Failed to load image');
