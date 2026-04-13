@@ -31,13 +31,13 @@ export default function CanvasWorkspace({
   onCanvasReady,
   category,
 }: CanvasWorkspaceProps) {
-  const canvasElRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const store = useCanvasEditorStore();
   const sectionId = section.id;
   const [canvasHeight, setCanvasHeight] = useState(520);
   const [composing, setComposing] = useState(true);
 
-  const { fabricCanvas, ready, getFabricModule } = useFabricCanvas(canvasElRef, CANVAS_W, canvasHeight);
+  const { fabricCanvas, ready, getFabricModule } = useFabricCanvas(containerRef, CANVAS_W, canvasHeight);
   const { undo, redo, canUndo, canRedo } = useCanvasHistory(fabricCanvas, sectionId, ready);
 
   useKeyboardShortcuts(fabricCanvas, ready, { onUndo: undo, onRedo: redo });
@@ -112,13 +112,19 @@ export default function CanvasWorkspace({
           // Load saved canvas state
           setCanvasHeight(saved.canvasHeight);
           canvas.setDimensions({ width: CANVAS_W, height: saved.canvasHeight });
-          await new Promise<void>(resolve => {
-            canvas.loadFromJSON(saved.canvasJSON, () => {
-              canvas.renderAll();
-              resolve();
+          try {
+            await new Promise<void>((resolve, reject) => {
+              canvas.loadFromJSON(saved.canvasJSON, () => {
+                canvas.renderAll();
+                resolve();
+              });
             });
-          });
-          lastImageUrlRef.current = saved.imageUrl;
+            lastImageUrlRef.current = saved.imageUrl;
+          } catch (e) {
+            console.warn('Canvas state restore failed, recomposing:', e);
+            const imageUrl = store.sections[sectionId]?.imageUrl || null;
+            await composeCanvas(imageUrl);
+          }
         } else {
           // Compose new canvas from template + AI image
           const imageUrl = store.sections[sectionId]?.imageUrl || null;
@@ -244,7 +250,7 @@ export default function CanvasWorkspace({
             <span className="text-[10px] text-[#8B95A1]">캔버스 로딩 중...</span>
           </div>
         )}
-        <canvas ref={canvasElRef} />
+        <div ref={containerRef} />
       </div>
 
       {/* Width badge */}
