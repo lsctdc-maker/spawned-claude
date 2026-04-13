@@ -4,6 +4,7 @@ import { getTemplate } from './sections';
 import { getBodyPreview } from '../utils/textParsers';
 import { createIconObject, createBadge, createGradientRect, resolveGradientColors } from './iconRenderer';
 import { renderDesignBackground } from './htmlRenderer';
+import { getFigmaTemplate, getFigmaTemplateById, FigmaTemplate, TextSlotDef } from '@/lib/figma-templates';
 
 function resolveColor(value: string | undefined, colors: CanvasColors): string {
   if (!value) return colors.text;
@@ -35,7 +36,25 @@ export async function composeSectionCanvas(
   fonts: CanvasFonts,
   productPhotoUrl: string | null,
   category?: string,
+  figmaTemplateId?: string,
 ): Promise<void> {
+  // Figma 템플릿 우선 시도 (환경변수로 비활성화 가능)
+  if (process.env.NEXT_PUBLIC_DISABLE_FIGMA_TEMPLATES !== 'true') {
+    try {
+      const figmaTemplate = figmaTemplateId
+        ? await getFigmaTemplateById(figmaTemplateId)
+        : await getFigmaTemplate(section.sectionType, category);
+
+      if (figmaTemplate) {
+        await applyFigmaTemplate(canvas, fabricModule, figmaTemplate, section, colors, fonts, productPhotoUrl);
+        return;
+      }
+    } catch (e) {
+      console.warn('Figma 템플릿 로드 실패, 기존 템플릿 사용:', e);
+    }
+  }
+
+  // 폴백: 기존 하드코딩 템플릿
   // Use section.order for variant selection to ensure visual diversity
   const template = getTemplate(section.sectionType, section.order, category);
 
@@ -263,6 +282,112 @@ export async function composeSectionCanvas(
       ...(textDef.stroke ? {
         stroke: textDef.stroke,
         strokeWidth: textDef.strokeWidth || 0,
+        paintFirst: 'stroke',
+      } : {}),
+    });
+
+    canvas.add(textObj);
+  }
+
+  canvas.renderAll();
+}
+
+// ─── Figma 템플릿 적용 ───
+
+async function applyFigmaTemplate(
+  canvas: any,
+  fabricModule: any,
+  template: FigmaTemplate,
+  section: ManuscriptSection,
+  colors: CanvasColors,
+  fonts: CanvasFonts,
+  productPhotoUrl: string | null,
+): Promise<void> {
+  canvas.clear();
+  canvas.setDimensions({ width: 860, height: template.bgImageHeight });
+
+  // Layer 0: 배경 PNG 또는 솔리드 배경
+  if (template.bgImageUrl && template.bgImageUrl.length > 5) {
+    try {
+      const bgImg = await loadImage(fabricModule, template.bgImageUrl);
+      const scale = Math.min(860 / bgImg.width!, template.bgImageHeight / bgImg.height!);
+      bgImg.set({
+        left: 0,
+        top: 0,
+        scaleX: scale,
+        scaleY: scale,
+        selectable: false,
+        evented: false,
+        name: '디자인 배경',
+      });
+      canvas.add(bgImg);
+    } catch (e) {
+      console.warn('Figma 배경 이미지 로드 실패, 솔리드 배경 사용:', e);
+      canvas.backgroundColor = template.colorScheme === 'dark' ? '#181818' : '#F5F5F5';
+    }
+  } else {
+    // bg_image_url 없음 → color_scheme 기반 솔리드 배경
+    canvas.backgroundColor = template.colorScheme === 'dark' ? '#181818'
+      : template.colorScheme === 'accent' ? colors.accent
+      : '#F5F5F5';
+  }
+
+  // Layer 1: 이미지 슬롯
+  for (const slot of template.imageSlots) {
+    if (slot.binding === 'product' && productPhotoUrl) {
+      try {
+        const prodImg = await loadImage(fabricModule, productPhotoUrl);
+        const scale = Math.min(
+          slot.maxWidth / prodImg.width!,
+          slot.maxHeight / prodImg.height!,
+        );
+        prodImg.set({
+          left: slot.left,
+          top: slot.top,
+          scaleX: scale,
+          scaleY: scale,
+          name: '제품 이미지',
+          shadow: new fabricModule.Shadow({
+            color: 'rgba(0,0,0,0.18)',
+            offsetX: 0,
+            offsetY: 8,
+            blur: 24,
+          }),
+        });
+        canvas.add(prodImg);
+      } catch (e) {
+        console.warn('제품 이미지 로드 실패:', e);
+      }
+    }
+  }
+
+  // Layer 2: 텍스트 슬롯
+  for (const slot of template.textSlots) {
+    const text = resolveText(slot.binding as TextObjectDef['binding'], section, slot.customText);
+    const fontFamily = slot.useHeadline
+      ? `${fonts.headline}, Noto Sans KR, sans-serif`
+      : `${fonts.body}, Noto Sans KR, sans-serif`;
+
+    const textObj = new fabricModule.Textbox(text, {
+      left: slot.left,
+      top: slot.top,
+      width: slot.width,
+      fontSize: slot.fontSize,
+      fontWeight: slot.fontWeight,
+      fontFamily,
+      fill: slot.fill || colors.text,
+      textAlign: slot.textAlign || 'left',
+      lineHeight: slot.lineHeight || 1.4,
+      charSpacing: (slot.letterSpacing || 0) * 10,
+      opacity: slot.opacity ?? 1,
+      name: slot.name,
+      splitByGrapheme: true,
+      ...(slot.shadow ? {
+        shadow: new fabricModule.Shadow(slot.shadow),
+      } : {}),
+      ...(slot.stroke ? {
+        stroke: slot.stroke,
+        strokeWidth: slot.strokeWidth || 0,
         paintFirst: 'stroke',
       } : {}),
     });

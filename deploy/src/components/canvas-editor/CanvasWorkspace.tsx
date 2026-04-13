@@ -59,6 +59,7 @@ export default function CanvasWorkspace({
     const fabricModule = getFabricModule();
     if (!canvas || !ready || !fabricModule) return;
 
+    const figmaTemplateId = store.sections[sectionId]?.figmaTemplateId || undefined;
     await composeSectionCanvas(
       canvas,
       fabricModule,
@@ -68,6 +69,7 @@ export default function CanvasWorkspace({
       fonts,
       productPhotoUrl,
       category,
+      figmaTemplateId,
     );
     setCanvasHeight(canvas.getHeight());
 
@@ -133,6 +135,20 @@ export default function CanvasWorkspace({
       composeCanvas(currentImageUrl).finally(() => setComposing(false));
     }
   }, [currentImageUrl, ready, composeCanvas]);
+
+  // Recompose when Figma template changes
+  const currentFigmaTemplateId = store.sections[sectionId]?.figmaTemplateId || null;
+  const lastFigmaTemplateRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!ready) return;
+    if (currentFigmaTemplateId && currentFigmaTemplateId !== lastFigmaTemplateRef.current) {
+      lastFigmaTemplateRef.current = currentFigmaTemplateId;
+      setComposing(true);
+      userEditedRef.current = false;
+      const imageUrl = store.sections[sectionId]?.imageUrl || null;
+      composeCanvas(imageUrl).finally(() => setComposing(false));
+    }
+  }, [currentFigmaTemplateId, ready, composeCanvas, sectionId]);
 
   // Track user edits (so we don't overwrite manual changes)
   useEffect(() => {

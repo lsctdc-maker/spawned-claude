@@ -1,7 +1,7 @@
 {
-  "analyzedCount": 26,
-  "analyzedAt": "2026-04-01",
-  "source": "NAS: \\\\NAS_02\\tong2\\01.디자인\\01.2026년도 + 2025년도 + 2024년도",
+  "analyzedCount": 32,
+  "analyzedAt": "2026-04-08",
+  "source": "NAS: \\\\NAS_02\\tong2\\01.디자인\\01.2026년도 + 2025년도 + 2024년도 + 2023년도 (64 files collected, 32 analyzed)",
 
   "globalPatterns": {
     "avgSectionCount": 9,
@@ -47,8 +47,8 @@
 
   "categoryPatterns": {
     "food": {
-      "sampleCount": 5,
-      "samples": ["스위트몬스터", "임자도돌김", "동해형씨", "다인음료_감귤", "해담은_미역국"],
+      "sampleCount": 6,
+      "samples": ["스위트몬스터", "임자도돌김", "동해형씨", "다인음료_감귤", "해담은_미역국", "완도세계로_미역"],
       "avgSectionCount": 10,
       "commonSectionOrder": ["hero", "features", "detail", "social_proof", "process", "product_lineup", "guarantee", "specs", "cta"],
       "colorPalettes": {
@@ -65,8 +65,8 @@
       "specialElements": ["제조공정 사진 그리드 (6-8장)", "제품 라인업 좌우 교차", "보관방법/유의사항 섹션 필수"]
     },
     "cosmetics": {
-      "sampleCount": 7,
-      "samples": ["미라이크", "슈에뜨코스메틱", "문코스메틱_마스크팩", "문코스메틱_아웃도어패치", "나누리_실크샴푸", "에스테팜01_ORIGIN", "에스테팜02_QTCell"],
+      "sampleCount": 9,
+      "samples": ["미라이크", "슈에뜨코스메틱", "문코스메틱_마스크팩", "문코스메틱_아웃도어패치", "나누리_실크샴푸", "에스테팜01_ORIGIN", "에스테팜02_QTCell", "코사이언스_개조아크림", "아쿠아그린텍_세럼"],
       "avgSectionCount": 11,
       "commonSectionOrder": ["hero", "problem", "solution", "features", "data_proof", "social_proof", "certification", "detail", "howto", "specs", "cta"],
       "colorPalettes": {
@@ -287,6 +287,78 @@
         "브랜드 철학/미션 섹션 강조",
         "핸드메이드/장인 이미지",
         "영문+한글 혼합 레이아웃 (수출용)"
+      ]
+    },
+    "electronics": {
+      "sampleCount": 1,
+      "samples": ["테크커넥트_전자칠판"],
+      "avgSectionCount": 14,
+      "commonSectionOrder": ["hero", "problem", "features", "feature_detail", "feature_detail", "feature_detail", "comparison", "certification", "specs", "shipping"],
+      "colorPalettes": {
+        "primary": ["#1565C0", "#212121"],
+        "secondary": ["#FFFFFF", "#F5F5F5", "#E3F2FD"],
+        "accent": ["#2196F3", "#00BCD4"],
+        "backgrounds": [
+          ["#212121-gradient", "#FFFFFF", "#F5F5F5", "#FFFFFF", "#1565C0", "#FFFFFF", "#F5F5F5", "#FFFFFF"]
+        ]
+      },
+      "backgroundAlternation": "dark-hero-then-white-alternating",
+      "dominantLayouts": ["center-text", "numbered-points", "icon-grid", "full-width-image"],
+      "specialElements": [
+        "다크 히어로 (교실/회의실 실사 배경)",
+        "기능별 개별 섹션 (AI기능, 노트, 화면공유 등)",
+        "실사 사용 장면 사진 중심",
+        "기술 스펙 상세 표",
+        "POINT 1/2/3 넘버링",
+        "가격/견적 안내 배너"
+      ]
+    },
+    "health_device": {
+      "sampleCount": 1,
+      "samples": ["이쁜이_저주파마사지기"],
+      "avgSectionCount": 10,
+      "commonSectionOrder": ["hero", "product_intro", "problem", "solution", "features", "detail", "special_care", "components", "howto", "specs"],
+      "colorPalettes": {
+        "primary": ["#7B1FA2", "#512DA8"],
+        "secondary": ["#FFFFFF", "#F3E5F5", "#F5F5F5"],
+        "accent": ["#00BCD4", "#4CAF50"],
+        "backgrounds": [
+          ["#7B1FA2-gradient", "#FFFFFF", "#F5F5F5", "#FFFFFF", "#E8EAF6", "#FFFFFF", "#F5F5F5"]
+        ]
+      },
+      "backgroundAlternation": "accent-hero-then-white",
+      "dominantLayouts": ["center-text", "left-text-right-image", "icon-grid"],
+      "specialElements": [
+        "모델 착용 사진 (사용 장면)",
+        "통증 부위 포인트 표시",
+        "6가지 모드 아이콘 그리드",
+        "기본 구성품 나열",
+        "사용 시 주의사항 섹션",
+        "SPECIAL CARE 강조 섹션"
+      ]
+    },
+    "smart_home": {
+      "sampleCount": 1,
+      "samples": ["호서텔넷_레이홈"],
+      "avgSectionCount": 8,
+      "commonSectionOrder": ["hero", "value_prop", "features", "product_lineup", "feature_detail", "components", "specs", "cta"],
+      "colorPalettes": {
+        "primary": ["#424242", "#212121"],
+        "secondary": ["#FFFFFF", "#F5F5F5", "#FAFAFA"],
+        "accent": ["#FF5722", "#2196F3"],
+        "backgrounds": [
+          ["#FFFFFF", "#FFFFFF", "#F5F5F5", "#FFFFFF", "#1565C0-gradient", "#FFFFFF", "#F5F5F5"]
+        ]
+      },
+      "backgroundAlternation": "mostly-white-clean",
+      "dominantLayouts": ["center-text", "icon-grid", "product-lineup"],
+      "specialElements": [
+        "DIY 설치 강조 (아이콘+텍스트)",
+        "스마트폰 앱 연동 UI 스크린샷",
+        "다양한 센서 제품 라인업 (카메라, 감지기 등)",
+        "야간 촬영 기능 강조",
+        "인식률/판별능력 수치 데이터",
+        "KSA 인증마크"
       ]
     },
     "lighting": {
@@ -944,6 +1016,139 @@
       ],
       "colorPalette": {"primary": "#1B5E20", "secondary": "#FFFFFF", "accent": "#2E7D32"},
       "overallStyle": "natural-eco-english"
+    },
+    {
+      "fileName": "[최종]코사이언스-개조아크림-상세페이지(국문).jpg",
+      "clientName": "코사이언스",
+      "category": "cosmetics",
+      "dimensions": {"width": 1000, "height": 33128},
+      "sectionCount": 14,
+      "sections": [
+        {"order": 0, "type": "hero", "layout": "center-brand-product", "bgColor": "#E0F2F1", "hasProductImage": true, "textAlign": "center"},
+        {"order": 1, "type": "social_proof", "layout": "certification-grid", "bgColor": "#FFFFFF", "hasProductImage": true, "textAlign": "center"},
+        {"order": 2, "type": "detail", "layout": "center-text-list", "bgColor": "#E8F5E9", "hasProductImage": false, "textAlign": "center"},
+        {"order": 3, "type": "comparison", "layout": "before-after", "bgColor": "#FFFFFF", "hasProductImage": true, "textAlign": "center"},
+        {"order": 4, "type": "social_proof", "layout": "text-reviews", "bgColor": "#F5F5F5", "hasProductImage": false, "textAlign": "center"},
+        {"order": 5, "type": "features", "layout": "icon-grid-3col", "bgColor": "#FFFFFF", "hasProductImage": false, "textAlign": "center"},
+        {"order": 6, "type": "detail", "layout": "center-text-list", "bgColor": "#E0F2F1", "hasProductImage": true, "textAlign": "center"},
+        {"order": 7, "type": "social_proof", "layout": "data-proof", "bgColor": "#FFFFFF", "hasProductImage": false, "textAlign": "center"},
+        {"order": 8, "type": "detail", "layout": "full-width-image", "bgColor": "#F1F8E9", "hasProductImage": true, "textAlign": "center"},
+        {"order": 9, "type": "detail", "layout": "center-text-list", "bgColor": "#FFFFFF", "hasProductImage": true, "textAlign": "center"},
+        {"order": 10, "type": "product_lineup", "layout": "grid-lineup", "bgColor": "#FFFFFF", "hasProductImage": true, "textAlign": "center"},
+        {"order": 11, "type": "social_proof", "layout": "certification-grid", "bgColor": "#F5F5F5", "hasProductImage": true, "textAlign": "center"},
+        {"order": 12, "type": "specs", "layout": "left-aligned-table", "bgColor": "#FFFFFF", "hasProductImage": false, "textAlign": "left"},
+        {"order": 13, "type": "cta", "layout": "center-button", "bgColor": "#E0F2F1", "hasProductImage": true, "textAlign": "center"}
+      ],
+      "colorPalette": {"primary": "#00897B", "secondary": "#E0F2F1", "accent": "#4CAF50"},
+      "overallStyle": "medical-cosmetic-trust"
+    },
+    {
+      "fileName": "테크커넥트 상세페이지-최종.jpg",
+      "clientName": "테크커넥트",
+      "category": "electronics",
+      "dimensions": {"width": 900, "height": 39895},
+      "sectionCount": 16,
+      "sections": [
+        {"order": 0, "type": "hero", "layout": "dramatic-gradient", "bgColor": "#212121", "hasProductImage": true, "textAlign": "center"},
+        {"order": 1, "type": "features", "layout": "icon-grid-3col", "bgColor": "#FFFFFF", "hasProductImage": false, "textAlign": "center"},
+        {"order": 2, "type": "detail", "layout": "center-text-list", "bgColor": "#F5F5F5", "hasProductImage": true, "textAlign": "center"},
+        {"order": 3, "type": "detail", "layout": "center-text-list", "bgColor": "#FFFFFF", "hasProductImage": true, "textAlign": "center"},
+        {"order": 4, "type": "detail", "layout": "center-text-list", "bgColor": "#F5F5F5", "hasProductImage": true, "textAlign": "center"},
+        {"order": 5, "type": "detail", "layout": "center-text-list", "bgColor": "#FFFFFF", "hasProductImage": true, "textAlign": "center"},
+        {"order": 6, "type": "detail", "layout": "center-text-list", "bgColor": "#F5F5F5", "hasProductImage": true, "textAlign": "center"},
+        {"order": 7, "type": "detail", "layout": "center-text-list", "bgColor": "#FFFFFF", "hasProductImage": true, "textAlign": "center"},
+        {"order": 8, "type": "detail", "layout": "center-text-list", "bgColor": "#F5F5F5", "hasProductImage": true, "textAlign": "center"},
+        {"order": 9, "type": "detail", "layout": "center-text-list", "bgColor": "#FFFFFF", "hasProductImage": true, "textAlign": "center"},
+        {"order": 10, "type": "comparison", "layout": "side-by-side", "bgColor": "#F5F5F5", "hasProductImage": true, "textAlign": "center"},
+        {"order": 11, "type": "social_proof", "layout": "certification-grid", "bgColor": "#FFFFFF", "hasProductImage": true, "textAlign": "center"},
+        {"order": 12, "type": "detail", "layout": "full-width-image", "bgColor": "#1565C0", "hasProductImage": true, "textAlign": "center"},
+        {"order": 13, "type": "specs", "layout": "horizontal-table", "bgColor": "#FFFFFF", "hasProductImage": false, "textAlign": "left"},
+        {"order": 14, "type": "detail", "layout": "center-text-list", "bgColor": "#F5F5F5", "hasProductImage": true, "textAlign": "center"},
+        {"order": 15, "type": "cta", "layout": "center-button", "bgColor": "#FFFFFF", "hasProductImage": false, "textAlign": "center"}
+      ],
+      "colorPalette": {"primary": "#1565C0", "secondary": "#FFFFFF", "accent": "#212121"},
+      "overallStyle": "tech-professional-feature-heavy"
+    },
+    {
+      "fileName": "미역상세페이지.jpg",
+      "clientName": "완도세계로",
+      "category": "food",
+      "dimensions": {"width": 800, "height": 10000},
+      "sectionCount": 9,
+      "sections": [
+        {"order": 0, "type": "hero", "layout": "center-brand-product", "bgColor": "#FFFFFF", "hasProductImage": true, "textAlign": "center"},
+        {"order": 1, "type": "features", "layout": "icon-grid-4col", "bgColor": "#F5F5F5", "hasProductImage": false, "textAlign": "center"},
+        {"order": 2, "type": "detail", "layout": "center-text-list", "bgColor": "#FFFFFF", "hasProductImage": true, "textAlign": "center"},
+        {"order": 3, "type": "detail", "layout": "full-width-image", "bgColor": "#1B5E20", "hasProductImage": true, "textAlign": "center"},
+        {"order": 4, "type": "brand_story", "layout": "center-text-list", "bgColor": "#FFFFFF", "hasProductImage": true, "textAlign": "center"},
+        {"order": 5, "type": "social_proof", "layout": "certification-grid", "bgColor": "#F5F5F5", "hasProductImage": true, "textAlign": "center"},
+        {"order": 6, "type": "detail", "layout": "center-text-list", "bgColor": "#FFFFFF", "hasProductImage": true, "textAlign": "center"},
+        {"order": 7, "type": "specs", "layout": "left-aligned-table", "bgColor": "#FAFAFA", "hasProductImage": false, "textAlign": "left"},
+        {"order": 8, "type": "cta", "layout": "brand-footer", "bgColor": "#FFFFFF", "hasProductImage": true, "textAlign": "center"}
+      ],
+      "colorPalette": {"primary": "#1B5E20", "secondary": "#FFFFFF", "accent": "#5D4037"},
+      "overallStyle": "clean-export-bilingual"
+    },
+    {
+      "fileName": "저주파목마사지기상세페이지.jpg",
+      "clientName": "이쁜이",
+      "category": "health_device",
+      "dimensions": {"width": 900, "height": 14076},
+      "sectionCount": 10,
+      "sections": [
+        {"order": 0, "type": "hero", "layout": "center-brand-product", "bgColor": "#7B1FA2-gradient", "hasProductImage": true, "textAlign": "center"},
+        {"order": 1, "type": "product_intro", "layout": "icon-grid-3col", "bgColor": "#FFFFFF", "hasProductImage": true, "textAlign": "center"},
+        {"order": 2, "type": "problem", "layout": "center-text-list", "bgColor": "#F5F5F5", "hasProductImage": true, "textAlign": "center"},
+        {"order": 3, "type": "solution", "layout": "center-text-list", "bgColor": "#FFFFFF", "hasProductImage": true, "textAlign": "center"},
+        {"order": 4, "type": "features", "layout": "left-text-right-image", "bgColor": "#FFFFFF", "hasProductImage": true, "textAlign": "left"},
+        {"order": 5, "type": "detail", "layout": "icon-grid-3col", "bgColor": "#F5F5F5", "hasProductImage": true, "textAlign": "center"},
+        {"order": 6, "type": "detail", "layout": "center-text-list", "bgColor": "#E8EAF6", "hasProductImage": true, "textAlign": "center"},
+        {"order": 7, "type": "product_lineup", "layout": "grid-lineup", "bgColor": "#FFFFFF", "hasProductImage": true, "textAlign": "center"},
+        {"order": 8, "type": "howto", "layout": "step-icons", "bgColor": "#F5F5F5", "hasProductImage": true, "textAlign": "center"},
+        {"order": 9, "type": "specs", "layout": "left-aligned-table", "bgColor": "#FFFFFF", "hasProductImage": false, "textAlign": "left"}
+      ],
+      "colorPalette": {"primary": "#7B1FA2", "secondary": "#FFFFFF", "accent": "#00BCD4"},
+      "overallStyle": "health-device-lifestyle"
+    },
+    {
+      "fileName": "세럼상세페이지_국문.jpg",
+      "clientName": "아쿠아그린텍",
+      "category": "cosmetics",
+      "dimensions": {"width": 900, "height": 8914},
+      "sectionCount": 10,
+      "sections": [
+        {"order": 0, "type": "hero", "layout": "center-brand-product", "bgColor": "#FFFFFF", "hasProductImage": true, "textAlign": "center"},
+        {"order": 1, "type": "features", "layout": "center-text-list", "bgColor": "#E3F2FD", "hasProductImage": true, "textAlign": "center"},
+        {"order": 2, "type": "detail", "layout": "left-text-right-image", "bgColor": "#FFFFFF", "hasProductImage": true, "textAlign": "left"},
+        {"order": 3, "type": "social_proof", "layout": "certification-grid", "bgColor": "#F5F5F5", "hasProductImage": true, "textAlign": "center"},
+        {"order": 4, "type": "detail", "layout": "center-text-list", "bgColor": "#FFFFFF", "hasProductImage": false, "textAlign": "center"},
+        {"order": 5, "type": "detail", "layout": "full-width-image", "bgColor": "#E3F2FD", "hasProductImage": true, "textAlign": "center"},
+        {"order": 6, "type": "detail", "layout": "center-text-list", "bgColor": "#FFF8E1", "hasProductImage": true, "textAlign": "center"},
+        {"order": 7, "type": "howto", "layout": "step-icons", "bgColor": "#FFFFFF", "hasProductImage": true, "textAlign": "center"},
+        {"order": 8, "type": "product_lineup", "layout": "grid-lineup", "bgColor": "#F5F5F5", "hasProductImage": true, "textAlign": "center"},
+        {"order": 9, "type": "specs", "layout": "left-aligned-table", "bgColor": "#FFFFFF", "hasProductImage": false, "textAlign": "left"}
+      ],
+      "colorPalette": {"primary": "#1976D2", "secondary": "#E3F2FD", "accent": "#8D6E63"},
+      "overallStyle": "ocean-fresh-cosmetic"
+    },
+    {
+      "fileName": "레이홈_상세페이지_최종.jpg",
+      "clientName": "호서텔넷",
+      "category": "smart_home",
+      "dimensions": {"width": 1000, "height": 8000},
+      "sectionCount": 8,
+      "sections": [
+        {"order": 0, "type": "hero", "layout": "center-brand-product", "bgColor": "#FFFFFF", "hasProductImage": true, "textAlign": "center"},
+        {"order": 1, "type": "features", "layout": "icon-grid-4col", "bgColor": "#FFFFFF", "hasProductImage": false, "textAlign": "center"},
+        {"order": 2, "type": "detail", "layout": "left-text-right-image", "bgColor": "#F5F5F5", "hasProductImage": true, "textAlign": "left"},
+        {"order": 3, "type": "product_lineup", "layout": "grid-lineup", "bgColor": "#FFFFFF", "hasProductImage": true, "textAlign": "center"},
+        {"order": 4, "type": "detail", "layout": "full-width-image", "bgColor": "#1565C0-gradient", "hasProductImage": true, "textAlign": "center"},
+        {"order": 5, "type": "features", "layout": "center-text-list", "bgColor": "#FFFFFF", "hasProductImage": true, "textAlign": "center"},
+        {"order": 6, "type": "detail", "layout": "icon-grid-3col", "bgColor": "#F5F5F5", "hasProductImage": true, "textAlign": "center"},
+        {"order": 7, "type": "cta", "layout": "brand-footer", "bgColor": "#FFFFFF", "hasProductImage": false, "textAlign": "center"}
+      ],
+      "colorPalette": {"primary": "#424242", "secondary": "#FFFFFF", "accent": "#FF5722"},
+      "overallStyle": "clean-tech-iot"
     }
   ]
 }

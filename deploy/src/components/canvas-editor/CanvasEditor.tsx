@@ -13,10 +13,11 @@ import TextPresets from './toolbar/TextPresets';
 import ImageControls from './toolbar/ImageControls';
 import LayerPanel from './panels/LayerPanel';
 import { createTextbox, createRect, createCircle, createLine } from './utils/shapeFactory';
+import { TemplateSelector } from './panels/TemplateSelector';
 import Button from '@/components/ui/Button';
 import {
   Download, RefreshCw, ChevronLeft, ChevronRight, Layers, Type, Palette,
-  Image as ImageIcon, Plus, Square, Circle, Minus,
+  Image as ImageIcon, Plus, Square, Circle, Minus, LayoutTemplate,
 } from 'lucide-react';
 
 export default function CanvasEditor() {
@@ -28,6 +29,7 @@ export default function CanvasEditor() {
   const [downloading, setDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [shapeMenuOpen, setShapeMenuOpen] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
   const canvasRef = useRef<React.MutableRefObject<any>>({ current: null });
   const fabricModuleGetterRef = useRef<(() => any) | null>(null);
 
@@ -236,6 +238,19 @@ export default function CanvasEditor() {
           </div>
         </div>
 
+        {/* Template Toggle */}
+        <button
+          onClick={() => setShowTemplates(!showTemplates)}
+          className={`flex items-center gap-1.5 px-3 py-1.5 text-xs border rounded-lg transition-all ${
+            showTemplates
+              ? 'text-[#3182F6] bg-[#EBF4FF] border-[#3182F6]/30'
+              : 'text-[#4E5968] bg-white border-[#E5E8EB] hover:border-[#3182F6]/30'
+          }`}
+        >
+          <LayoutTemplate className="w-3.5 h-3.5" />
+          템플릿
+        </button>
+
         {/* Right: Actions */}
         <div className="flex items-center gap-2">
           {/* Regenerate image */}
@@ -432,6 +447,21 @@ export default function CanvasEditor() {
               ready={!!canvasRef.current?.current}
               onSelectionChange={setSelectedObj}
             />
+
+            {/* Template Selector Panel */}
+            {showTemplates && activeSection && (
+              <TemplateSelector
+                sectionType={activeSection.sectionType}
+                category={productInfo.category || ''}
+                tone={selectedTone || 'trust'}
+                colorPalette={colorPalette}
+                selectedId={store.getFigmaTemplateId(activeSectionId)}
+                onSelect={(templateId) => {
+                  store.setFigmaTemplate(activeSectionId, templateId);
+                }}
+                onClose={() => setShowTemplates(false)}
+              />
+            )}
 
             {/* Selected Object Info */}
             {selectedObj && (

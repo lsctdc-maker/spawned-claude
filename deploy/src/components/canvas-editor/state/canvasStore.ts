@@ -13,6 +13,7 @@ export interface CanvasSectionState {
   isPlaceholder: boolean;
   thumbnail: string | null;
   dirty: boolean;
+  figmaTemplateId: string | null;
 }
 
 interface HistoryEntry {
@@ -49,6 +50,10 @@ interface CanvasEditorStore {
   setImage: (sectionId: string, url: string, isPlaceholder?: boolean) => void;
   hasImage: (sectionId: string) => boolean;
   setThumbnail: (sectionId: string, dataUrl: string) => void;
+
+  // Figma template
+  setFigmaTemplate: (sectionId: string, templateId: string | null) => void;
+  getFigmaTemplateId: (sectionId: string) => string | null;
 
   // Selection
   selectedObjectId: string | null;
@@ -152,6 +157,7 @@ export const useCanvasEditorStore = create<CanvasEditorStore>()(
               imageUrl: get().sections[sectionId]?.imageUrl || null,
               isPlaceholder: get().sections[sectionId]?.isPlaceholder || false,
               thumbnail: get().sections[sectionId]?.thumbnail || null,
+              figmaTemplateId: get().sections[sectionId]?.figmaTemplateId || null,
             },
           },
         }),
@@ -168,6 +174,7 @@ export const useCanvasEditorStore = create<CanvasEditorStore>()(
                 canvasHeight: 520,
                 thumbnail: null,
                 dirty: false,
+                figmaTemplateId: null,
               }),
               imageUrl: url,
               isPlaceholder,
@@ -189,6 +196,21 @@ export const useCanvasEditorStore = create<CanvasEditorStore>()(
             [sectionId]: { ...s, thumbnail: dataUrl },
           },
         });
+      },
+
+      setFigmaTemplate: (sectionId, templateId) => {
+        const s = get().sections[sectionId];
+        if (!s) return;
+        set({
+          sections: {
+            ...get().sections,
+            [sectionId]: { ...s, figmaTemplateId: templateId, dirty: true },
+          },
+        });
+      },
+
+      getFigmaTemplateId: (sectionId) => {
+        return get().sections[sectionId]?.figmaTemplateId ?? null;
       },
 
       setSelectedObjectId: (id) => set({ selectedObjectId: id }),

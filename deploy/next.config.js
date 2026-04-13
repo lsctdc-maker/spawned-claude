@@ -13,8 +13,9 @@ const nextConfig = {
     });
 
     // fabric.js uses browser canvas — skip node-canvas on server
+    // ag-psd + sharp are server-only native modules
     if (isServer) {
-      config.externals.push('canvas');
+      config.externals.push('canvas', 'sharp');
     }
 
     return config;
