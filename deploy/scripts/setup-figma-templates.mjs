@@ -25,7 +25,7 @@ const ROOT = resolve(__dirname, '..');
 // ─── .env.local 읽기 ───
 function loadEnv() {
   const envPath = resolve(ROOT, '.env.local');
-  const lines = readFileSync(envPath, 'utf-8').split('\n');
+  const lines = readFileSync(envPath, 'utf-8').split(/\r?\n/);
   const env = {};
   for (const line of lines) {
     const match = line.match(/^([^#=]+)=(.*)$/);

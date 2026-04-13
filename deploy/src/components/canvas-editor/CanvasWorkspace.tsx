@@ -52,13 +52,17 @@ export default function CanvasWorkspace({
   // Track whether user has manually edited the canvas
   const userEditedRef = useRef(false);
   const lastImageUrlRef = useRef<string | null>(null);
+  const composingRef = useRef(false);
 
   // Compose (or recompose) the canvas
   const composeCanvas = useCallback(async (imageUrl: string | null) => {
     const canvas = fabricCanvas.current;
     const fabricModule = getFabricModule();
     if (!canvas || !ready || !fabricModule) return;
+    if (composingRef.current) return; // guard against concurrent compose
+    composingRef.current = true;
 
+    try {
     const figmaTemplateId = store.sections[sectionId]?.figmaTemplateId || undefined;
     await composeSectionCanvas(
       canvas,
@@ -87,6 +91,9 @@ export default function CanvasWorkspace({
     }, 300);
 
     lastImageUrlRef.current = imageUrl;
+    } finally {
+      composingRef.current = false;
+    }
   }, [fabricCanvas, getFabricModule, ready, section, sectionId, colors, fonts, productPhotoUrl, category]);
 
   // Load or compose canvas when section changes
