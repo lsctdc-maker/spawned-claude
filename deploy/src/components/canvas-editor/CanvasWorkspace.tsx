@@ -49,75 +49,100 @@ export default function CanvasWorkspace({
     }
   }, [ready, onCanvasReady]);
 
-  // Track whether user has manually edited the canvas
+  // Track state for section switching
   const userEditedRef = useRef(false);
   const lastImageUrlRef = useRef<string | null>(null);
   const composingRef = useRef(false);
+  const prevSectionIdRef = useRef<string>(sectionId);
 
-  // Compose (or recompose) the canvas
+  // Save current canvas state to store
+  const saveCurrentState = useCallback(() => {
+    const canvas = fabricCanvas.current;
+    if (!canvas) return;
+    const currentId = prevSectionIdRef.current;
+    if (!currentId) return;
+    try {
+      const json = JSON.stringify(canvas.toJSON(['name', 'locked', 'selectable', 'evented']));
+      store.saveCanvasState(currentId, json, canvas.getHeight());
+      // Update thumbnail
+      try {
+        const thumb = canvas.toDataURL({ format: 'png', multiplier: 0.2, quality: 0.7 });
+        store.setThumbnail(currentId, thumb);
+      } catch {}
+    } catch {}
+  }, [fabricCanvas]);
+
+  // Compose canvas from template (only for first visit to a section)
   const composeCanvas = useCallback(async (imageUrl: string | null) => {
     const canvas = fabricCanvas.current;
     const fabricModule = getFabricModule();
     if (!canvas || !ready || !fabricModule) return;
-    if (composingRef.current) return; // guard against concurrent compose
+    if (composingRef.current) return;
     composingRef.current = true;
 
-    // Safety: auto-release after 15s to prevent permanent lock
     const safetyTimer = setTimeout(() => { composingRef.current = false; }, 15000);
 
     try {
-    const figmaTemplateId = store.sections[sectionId]?.figmaTemplateId || undefined;
-    await composeSectionCanvas(
-      canvas,
-      fabricModule,
-      section,
-      imageUrl,
-      colors,
-      fonts,
-      productPhotoUrl,
-      category,
-      figmaTemplateId,
-    );
-    setCanvasHeight(canvas.getHeight());
+      const figmaTemplateId = store.sections[sectionId]?.figmaTemplateId || undefined;
+      await composeSectionCanvas(
+        canvas,
+        fabricModule,
+        section,
+        imageUrl,
+        colors,
+        fonts,
+        productPhotoUrl,
+        category,
+        figmaTemplateId,
+      );
+      setCanvasHeight(canvas.getHeight());
 
-    // Save state
-    const json = JSON.stringify(canvas.toJSON(['name', 'locked', 'selectable', 'evented']));
-    store.saveCanvasState(sectionId, json, canvas.getHeight());
-    store.pushHistory(sectionId, json);
+      // Save state immediately (so future switches can restore instantly)
+      const json = JSON.stringify(canvas.toJSON(['name', 'locked', 'selectable', 'evented']));
+      store.saveCanvasState(sectionId, json, canvas.getHeight());
+      store.pushHistory(sectionId, json);
 
-    // Generate thumbnail (delayed to avoid blocking compose)
-    setTimeout(() => {
-      try {
-        const thumb = canvas.toDataURL({ format: 'png', multiplier: 0.2, quality: 0.7 });
-        store.setThumbnail(sectionId, thumb);
-      } catch {}
-    }, 300);
+      // Generate thumbnail (delayed)
+      setTimeout(() => {
+        try {
+          const thumb = canvas.toDataURL({ format: 'png', multiplier: 0.2, quality: 0.7 });
+          store.setThumbnail(sectionId, thumb);
+        } catch {}
+      }, 300);
 
-    lastImageUrlRef.current = imageUrl;
+      lastImageUrlRef.current = imageUrl;
     } finally {
       clearTimeout(safetyTimer);
       composingRef.current = false;
     }
   }, [fabricCanvas, getFabricModule, ready, section, sectionId, colors, fonts, productPhotoUrl, category]);
 
-  // Load or compose canvas when section changes
+  // === Main effect: Load/switch sections ===
   useEffect(() => {
     const canvas = fabricCanvas.current;
     const fabricModule = getFabricModule();
     if (!canvas || !ready || !fabricModule) return;
 
-    const loadCanvas = async () => {
+    const switchToSection = async () => {
       setComposing(true);
       try {
+        // 1. Save outgoing section's state (if switching)
+        if (prevSectionIdRef.current && prevSectionIdRef.current !== sectionId) {
+          saveCurrentState();
+          canvas.discardActiveObject();
+          onSelectionChange(null);
+        }
+
+        // 2. Load incoming section
         const saved = store.getCanvasState(sectionId);
         userEditedRef.current = false;
 
         if (saved && saved.canvasJSON && saved.dirty) {
-          // Load saved canvas state
+          // Restore saved state instantly (~50ms)
           setCanvasHeight(saved.canvasHeight);
           canvas.setDimensions({ width: CANVAS_W, height: saved.canvasHeight });
           try {
-            await new Promise<void>((resolve, reject) => {
+            await new Promise<void>((resolve) => {
               canvas.loadFromJSON(saved.canvasJSON, () => {
                 canvas.renderAll();
                 resolve();
@@ -130,23 +155,24 @@ export default function CanvasWorkspace({
             await composeCanvas(imageUrl);
           }
         } else {
-          // Compose new canvas from template + AI image
+          // First visit — compose from template + AI image
           const imageUrl = store.sections[sectionId]?.imageUrl || null;
           await composeCanvas(imageUrl);
         }
+
+        prevSectionIdRef.current = sectionId;
       } finally {
         setComposing(false);
       }
     };
 
-    loadCanvas();
+    switchToSection();
   }, [sectionId, ready]);
 
-  // Recompose when AI image URL arrives (fixes race condition)
+  // Recompose when AI image URL arrives
   const currentImageUrl = store.sections[sectionId]?.imageUrl || null;
   useEffect(() => {
     if (!ready) return;
-    // Only recompose if imageUrl actually changed AND canvas hasn't been user-edited
     if (currentImageUrl && currentImageUrl !== lastImageUrlRef.current && !userEditedRef.current) {
       setComposing(true);
       composeCanvas(currentImageUrl).finally(() => setComposing(false));
@@ -167,7 +193,7 @@ export default function CanvasWorkspace({
     }
   }, [currentFigmaTemplateId, ready, composeCanvas, sectionId]);
 
-  // Track user edits (so we don't overwrite manual changes)
+  // Track user edits
   useEffect(() => {
     const canvas = fabricCanvas.current;
     if (!canvas || !ready) return;

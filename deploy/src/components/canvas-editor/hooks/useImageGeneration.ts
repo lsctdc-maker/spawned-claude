@@ -92,10 +92,10 @@ export function useImageGeneration(ctx: GenerationContext) {
       return !template.solidBackground;
     });
 
-    // Generate 2 at a time (parallel batches to avoid rate limiting)
-    for (let i = 0; i < needsImage.length; i += 2) {
+    // Generate 5 at a time (parallel batches for faster initial load)
+    for (let i = 0; i < needsImage.length; i += 5) {
       if (abortRef.current) break;
-      const batch = needsImage.slice(i, i + 2);
+      const batch = needsImage.slice(i, i + 5);
       await Promise.allSettled(batch.map(s => generateForSection(s)));
     }
   }, [generateForSection]);

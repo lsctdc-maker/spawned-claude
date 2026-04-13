@@ -350,7 +350,6 @@ export default function CanvasEditor() {
         <div className="flex-1 overflow-auto flex items-start justify-center py-8 px-4 bg-[#F4F5F7]">
           {activeSection && (
             <CanvasWorkspace
-              key={activeSectionId}
               section={activeSection}
               colors={colors}
               fonts={fonts}

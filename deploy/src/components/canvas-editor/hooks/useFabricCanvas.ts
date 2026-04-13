@@ -2,6 +2,19 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 
+// Module-level cache — fabric.js is loaded once and reused across all mounts
+let fabricModuleCache: any = null;
+let fabricModulePromise: Promise<any> | null = null;
+
+async function loadFabricModule() {
+  if (fabricModuleCache) return fabricModuleCache;
+  if (!fabricModulePromise) {
+    fabricModulePromise = import('fabric');
+  }
+  fabricModuleCache = await fabricModulePromise;
+  return fabricModuleCache;
+}
+
 /**
  * fabric.js Canvas를 React DOM과 격리하여 초기화.
  * canvas 엘리먼트를 document.createElement로 생성해서
@@ -22,7 +35,7 @@ export function useFabricCanvas(
     let disposed = false;
 
     const init = async () => {
-      const fabricModule = await import('fabric');
+      const fabricModule = await loadFabricModule();
       fabricModuleRef.current = fabricModule;
 
       if (disposed || !containerRef.current) return;
