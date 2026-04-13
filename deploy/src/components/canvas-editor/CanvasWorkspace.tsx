@@ -62,6 +62,9 @@ export default function CanvasWorkspace({
     if (composingRef.current) return; // guard against concurrent compose
     composingRef.current = true;
 
+    // Safety: auto-release after 15s to prevent permanent lock
+    const safetyTimer = setTimeout(() => { composingRef.current = false; }, 15000);
+
     try {
     const figmaTemplateId = store.sections[sectionId]?.figmaTemplateId || undefined;
     await composeSectionCanvas(
@@ -92,6 +95,7 @@ export default function CanvasWorkspace({
 
     lastImageUrlRef.current = imageUrl;
     } finally {
+      clearTimeout(safetyTimer);
       composingRef.current = false;
     }
   }, [fabricCanvas, getFabricModule, ready, section, sectionId, colors, fonts, productPhotoUrl, category]);

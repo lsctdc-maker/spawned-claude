@@ -38,21 +38,21 @@ export async function composeSectionCanvas(
   category?: string,
   figmaTemplateId?: string,
 ): Promise<void> {
-  // Figma 템플릿 우선 시도 (환경변수로 비활성화 가능)
-  if (process.env.NEXT_PUBLIC_DISABLE_FIGMA_TEMPLATES !== 'true') {
-    try {
-      const figmaTemplate = figmaTemplateId
-        ? await getFigmaTemplateById(figmaTemplateId)
-        : await getFigmaTemplate(section.sectionType, category);
-
-      if (figmaTemplate) {
-        await applyFigmaTemplate(canvas, fabricModule, figmaTemplate, section, colors, fonts, productPhotoUrl);
-        return;
-      }
-    } catch (e) {
-      console.warn('Figma 템플릿 로드 실패, 기존 템플릿 사용:', e);
-    }
-  }
+  // Figma 템플릿 비활성화 — 솔리드 배경+텍스트만 렌더링되는 문제로 하드코딩 템플릿 사용
+  // TODO: Figma 템플릿에 shape/gradient 지원 추가 후 재활성화
+  // if (process.env.NEXT_PUBLIC_DISABLE_FIGMA_TEMPLATES !== 'true') {
+  //   try {
+  //     const figmaTemplate = figmaTemplateId
+  //       ? await getFigmaTemplateById(figmaTemplateId)
+  //       : await getFigmaTemplate(section.sectionType, category);
+  //     if (figmaTemplate) {
+  //       await applyFigmaTemplate(canvas, fabricModule, figmaTemplate, section, colors, fonts, productPhotoUrl);
+  //       return;
+  //     }
+  //   } catch (e) {
+  //     console.warn('Figma 템플릿 로드 실패, 기존 템플릿 사용:', e);
+  //   }
+  // }
 
   // 폴백: 기존 하드코딩 템플릿
   // Use section.order for variant selection to ensure visual diversity
