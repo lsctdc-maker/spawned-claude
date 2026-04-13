@@ -306,31 +306,10 @@ async function applyFigmaTemplate(
   canvas.clear();
   canvas.setDimensions({ width: 860, height: template.bgImageHeight });
 
-  // Layer 0: 배경 PNG 또는 솔리드 배경
-  if (template.bgImageUrl && template.bgImageUrl.length > 5) {
-    try {
-      const bgImg = await loadImage(fabricModule, template.bgImageUrl);
-      const scale = Math.min(860 / bgImg.width!, template.bgImageHeight / bgImg.height!);
-      bgImg.set({
-        left: 0,
-        top: 0,
-        scaleX: scale,
-        scaleY: scale,
-        selectable: false,
-        evented: false,
-        name: '디자인 배경',
-      });
-      canvas.add(bgImg);
-    } catch (e) {
-      console.warn('Figma 배경 이미지 로드 실패, 솔리드 배경 사용:', e);
-      canvas.backgroundColor = template.colorScheme === 'dark' ? '#181818' : '#F5F5F5';
-    }
-  } else {
-    // bg_image_url 없음 → color_scheme 기반 솔리드 배경
-    canvas.backgroundColor = template.colorScheme === 'dark' ? '#181818'
-      : template.colorScheme === 'accent' ? colors.accent
-      : '#F5F5F5';
-  }
+  // Layer 0: 솔리드 배경 (Figma PNG는 텍스트 포함이므로 미리보기용으로만 사용)
+  canvas.backgroundColor = template.colorScheme === 'dark' ? '#181818'
+    : template.colorScheme === 'accent' ? colors.accent
+    : '#F5F5F5';
 
   // Layer 1: 이미지 슬롯
   for (const slot of template.imageSlots) {
