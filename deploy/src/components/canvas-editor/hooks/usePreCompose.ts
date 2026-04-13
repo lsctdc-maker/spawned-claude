@@ -4,7 +4,6 @@ import { useEffect, useRef, useCallback } from 'react';
 import { ManuscriptSection } from '@/lib/types';
 import { useCanvasEditorStore } from '../state/canvasStore';
 import { composeSectionCanvas } from '../templates';
-import { getTemplate } from '../templates/sections';
 import { CanvasColors, CanvasFonts } from '../templates/types';
 
 /**
@@ -36,14 +35,11 @@ export function usePreCompose(
         if (section.id === store.activeSectionId) continue;
 
         const state = store.sections[section.id];
-        const template = getTemplate(section.sectionType, section.order, category);
         const imageUrl = state?.imageUrl || null;
 
-        // Skip if section needs AI image but doesn't have one yet
-        if (!template.solidBackground && !imageUrl) continue;
-
         // Skip if already composed with same imageUrl
-        const currentKey = imageUrl || '__solid__';
+        // (이미지 없는 섹션도 배경+텍스트로 미리 compose — 스피너보다 나은 UX)
+        const currentKey = imageUrl || '__no_image__';
         if (composedRef.current.get(section.id) === currentKey) continue;
 
         try {
@@ -94,7 +90,7 @@ export function usePreCompose(
 
   // Run pre-compose on mount (800ms delay) and when new images arrive
   useEffect(() => {
-    const timer = setTimeout(runPreCompose, 800);
+    const timer = setTimeout(runPreCompose, 300);
     return () => clearTimeout(timer);
   }, [runPreCompose, imageUrlsKey]);
 }
