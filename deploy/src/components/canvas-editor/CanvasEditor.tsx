@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useDetailPage } from '@/hooks/useDetailPage';
 import { useCanvasEditorStore, SECTION_LABEL_MAP } from './state/canvasStore';
 import { useImageGeneration } from './hooks/useImageGeneration';
+import { usePreCompose } from './hooks/usePreCompose';
 import { extractFontName, loadGoogleFont, FONT_OPTIONS } from './utils/fontUtils';
 import { CanvasColors, CanvasFonts } from './templates/types';
 import CanvasWorkspace from './CanvasWorkspace';
@@ -109,6 +110,9 @@ export default function CanvasEditor() {
       generateAll(visibleSections);
     }
   }, []); // Only on mount
+
+  // Pre-compose all sections in background (after first section loads)
+  usePreCompose(visibleSections, colors, fonts, productPhotoUrl, productInfo.category || undefined);
 
   // Handle section switch
   const switchSection = useCallback((sectionId: string) => {

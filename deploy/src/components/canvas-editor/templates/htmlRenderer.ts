@@ -51,7 +51,7 @@ export async function renderDesignBackground(
     const dataUrl = await toPng(container, {
       width,
       height,
-      pixelRatio: 2, // 2x for crisp output
+      pixelRatio: 1, // 1x — 860px already sufficient for web
     });
     // Store in cache
     designCache.set(cacheKey, dataUrl);

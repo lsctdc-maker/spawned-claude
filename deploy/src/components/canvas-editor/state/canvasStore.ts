@@ -164,12 +164,14 @@ export const useCanvasEditorStore = create<CanvasEditorStore>()(
 
       getCanvasState: (sectionId) => get().sections[sectionId] || null,
 
-      setImage: (sectionId, url, isPlaceholder = false) =>
+      setImage: (sectionId, url, isPlaceholder = false) => {
+        const existing = get().sections[sectionId];
+        const imageChanged = !existing || existing.imageUrl !== url;
         set({
           sections: {
             ...get().sections,
             [sectionId]: {
-              ...(get().sections[sectionId] || {
+              ...(existing || {
                 canvasJSON: '',
                 canvasHeight: 520,
                 thumbnail: null,
@@ -178,9 +180,12 @@ export const useCanvasEditorStore = create<CanvasEditorStore>()(
               }),
               imageUrl: url,
               isPlaceholder,
+              // 이미지 변경 시 stale 캐시 무효화 → 다음 클릭에서 재compose
+              ...(imageChanged && existing?.dirty ? { dirty: false } : {}),
             },
           },
-        }),
+        });
+      },
 
       hasImage: (sectionId) => {
         const s = get().sections[sectionId];
