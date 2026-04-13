@@ -271,7 +271,7 @@ export default function CanvasWorkspace({
         className="relative rounded-xl overflow-hidden border border-[#E5E8EB] shadow-[0_8px_32px_rgba(0,0,0,0.08)]"
         style={{ width: CANVAS_W }}
       >
-        {(!ready || composing) && (
+        {!ready && (
           <div
             className="absolute inset-0 flex flex-col items-center justify-center bg-[#1a1a1a] z-10 rounded-xl"
             style={{ minHeight: canvasHeight }}

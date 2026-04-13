@@ -69,6 +69,11 @@ export async function composeSectionCanvas(
   const sectionOrder = section.order ?? 0;
   const isEvenSection = sectionOrder % 2 === 0;
 
+  // Immediate background: show something before async work starts
+  const immediateBg = template.solidBackground || (isEvenSection ? colors.bg : colors.bg2);
+  canvas.backgroundColor = immediateBg;
+  canvas.renderAll();
+
   // 1. Background: HTML design template OR solid color OR photo image
   if (template.useHtmlDesign && template.solidBackground) {
     // HTML/CSS design background — rich visual design layer
