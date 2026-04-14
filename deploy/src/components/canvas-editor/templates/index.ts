@@ -38,38 +38,9 @@ export async function composeSectionCanvas(
   category?: string,
   figmaTemplateId?: string,
 ): Promise<void> {
-  // Gemini 이미지 감지: data URL이고 50KB 이상이면 텍스트+디자인 포함 완성 이미지
-  const isGeminiImage = bgImageUrl?.startsWith('data:') && bgImageUrl.length > 50000;
-
-  if (isGeminiImage) {
-    const template = getTemplate(section.sectionType, section.order, category);
-    canvas.setDimensions({ width: 860, height: template.canvasHeight });
-    canvas.clear();
-    canvas.backgroundColor = '#1a1a1a';
-
-    try {
-      const img = await loadImage(fabricModule, bgImageUrl!);
-      const scale = 860 / img.width!;
-      const scaledHeight = img.height! * scale;
-      canvas.setDimensions({ width: 860, height: scaledHeight });
-      img.set({
-        left: 0, top: 0, scaleX: scale, scaleY: scale,
-        selectable: false, evented: false, name: 'AI 생성 이미지',
-      });
-      canvas.add(img);
-    } catch (e) {
-      console.warn('Gemini image load failed, falling back to template:', e);
-      // Fall through to hardcoded template below
-      canvas.clear();
-    }
-
-    if (canvas.getObjects().length > 0) {
-      canvas.renderAll();
-      return;
-    }
-  }
-
-  // 하드코딩 템플릿 (스톡 이미지 폴백용 또는 Gemini 미설정 시)
+  // 하드코딩 템플릿 (Gemini 배경 이미지 + 하드코딩 텍스트 오버레이 또는 스톡 폴백)
+  // Gemini 이미지는 bgImageUrl로 전달되어 배경으로 사용됨
+  // 텍스트는 항상 fabric.js Textbox로 오버레이 (편집 가능)
   // Use section.order for variant selection to ensure visual diversity
   const template = getTemplate(section.sectionType, section.order, category);
 

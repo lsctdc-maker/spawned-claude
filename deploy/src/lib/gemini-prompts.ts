@@ -23,132 +23,149 @@ const SECTION_HEIGHTS: Record<string, number> = {
   cta: 600,
 };
 
+// Universal anchor prepended to ALL prompts — enforces NO TEXT rule strictly
+const NO_TEXT_ANCHOR = `=== ABSOLUTE CRITICAL RULE: NO TEXT OF ANY KIND ===
+- ZERO text, words, letters, characters, numbers of ANY language
+- NO Korean (한글), NO English, NO Japanese, NO Chinese, NO symbols
+- NO logos, NO brand names, NO product labels, NO watermarks
+- NO CTA buttons with text (empty buttons/shapes are OK)
+- NO signs, menus, banners, captions, or UI elements with writing
+- NO typography in the image whatsoever
+- If product has visible text/label, blur it or turn product to hide text
+- Leave clean empty areas where text will be overlaid by the app later
+- This is a BACKGROUND-ONLY image — text is rendered separately
+VIOLATION OF THIS RULE = UNUSABLE OUTPUT.
+
+=== STYLE ===
+- Photorealistic, Canon 5D Mark IV quality
+- Korean models with natural skin texture (if people shown)
+- Professional studio lighting
+- Amorepacific / Sulwhasoo advertising quality
+- NO illustration, cartoon, or vector art
+`;
+
 type PromptGenerator = (section: ManuscriptSection, ctx: DesignContext) => string;
 
 const SECTION_PROMPTS: Record<string, PromptGenerator> = {
-  hooking: (s, ctx) =>
-    `Create a hero section for a Korean product landing page.
-Product: ${ctx.productInfo.name} (${ctx.productInfo.category})
-Layout: Large bold headline centered, urgency badge top-right corner, CTA button bottom-center.
-Background: Gradient from ${ctx.colors.primary} to a darker shade, with subtle product imagery.
-Headline text: "${s.title}"
-${s.body ? `Subheadline: "${s.body.slice(0, 80)}"` : ''}
-${ctx.usps.length > 0 ? `Key selling point: ${ctx.usps[0].title}` : ''}
-Mood: Premium, trustworthy, action-oriented. Professional Korean marketing style.`,
+  hooking: (s, ctx) => `Create a HERO BACKGROUND scene for a Korean product detail page.
+Product context: ${ctx.productInfo.name || 'premium product'} (${ctx.productInfo.category || 'lifestyle'})
+Scene: Premium product photography with optional Korean model showcasing the product
+Background: Gradient from ${ctx.colors.primary} to darker shade, or relevant environmental scene
+Composition:
+- Upper 30% of image: CLEAN EMPTY AREA (headline will be overlaid here — do not put objects/text here)
+- Center 50%: Product and/or model as focal point
+- Lower 20%: CLEAN EMPTY AREA (CTA button will be overlaid)
+Mood: Premium, aspirational, trust-building
+Color palette: Dominant ${ctx.colors.primary}, accent ${ctx.colors.accent}`,
 
-  hero: (s, ctx) =>
-    SECTION_PROMPTS.hooking(s, ctx),
+  hero: (s, ctx) => SECTION_PROMPTS.hooking(s, ctx),
 
-  problem: (s, ctx) =>
-    `Create a pain points section for a Korean product landing page.
-Product: ${ctx.productInfo.name}
-Background: Light gray (#F3F4F6) or soft cream
-Layout: Section title at top center, 3-4 pain point cards arranged horizontally below, emotional hook text at bottom.
-Title: "${s.title}"
-${s.body ? `Pain points from: "${s.body.slice(0, 200)}"` : ''}
-Each card: rounded corners, subtle shadow, line-style icon + short Korean text.
-Mood: Empathetic, relatable. The viewer should think "that's exactly my problem."`,
+  problem: (s, ctx) => `Create a PAIN-POINT BACKGROUND scene for a Korean product detail page.
+Product context: ${ctx.productInfo.name || 'product'}
+Background: Light gray/cream tone, subtle and moody
+Composition:
+- Upper 20%: CLEAN AREA (section title will be overlaid)
+- Center: Visual representation of the problem (abstract/environmental, NO text)
+  Example: messy bathroom counter, tired-looking person from behind, dull surface, etc.
+- 3-4 empty card-shaped areas arranged horizontally (cards will have text overlaid)
+Mood: Empathetic, relatable, slightly melancholic
+Color: Muted, desaturated tones`,
 
-  solution: (s, ctx) =>
-    `Create a solution section for a Korean product landing page.
-Product: ${ctx.productInfo.name}
-Layout: Product photo on one side (60%) + text on other side (40%), split layout.
-Background: Clean white or soft gradient.
-Title: "${s.title}"
-${s.body ? `Key message: "${s.body.slice(0, 150)}"` : ''}
-${ctx.usps.length > 0 ? `USPs: ${ctx.usps.map(u => u.title).join(', ')}` : ''}
-Mood: Relief, confidence, anticipation. Show the product as the answer.`,
+  solution: (s, ctx) => `Create a SOLUTION BACKGROUND scene for a Korean product detail page.
+Product context: ${ctx.productInfo.name || 'product'}
+Scene: The product as the hero, beautifully lit, clean presentation
+Composition:
+- Left 60%: Product photography, centered, premium staging
+- Right 40%: CLEAN EMPTY AREA (description text will be overlaid)
+  OR: Soft lifestyle context that does not contain any text
+Background: Clean white or soft gradient, product-focused
+Mood: Clarity, relief, confidence
+Color palette: Mostly white/neutral with ${ctx.colors.accent} accents`,
 
-  features: (s, ctx) =>
-    `Create a features section for a Korean product landing page.
-Product: ${ctx.productInfo.name}
-Layout: 3-column icon + text grid (most common Korean layout, 17% of all sections).
-Background: ${s.order % 2 === 0 ? 'Light (white or #F5F5F5)' : 'Dark (' + ctx.colors.primary + ')'}.
-Title: "${s.title}"
-${s.body ? `Features to highlight: "${s.body.slice(0, 250)}"` : ''}
-Each feature: uniform icon (48-64px), bold title, 1-2 line description.
-${ctx.usps.length > 0 ? `Feature highlights: ${ctx.usps.slice(0, 3).map(u => u.title).join(', ')}` : ''}
-Mood: Organized, informative, systematic.`,
+  features: (s, ctx) => `Create a FEATURES BACKGROUND scene for a Korean product detail page.
+Product context: ${ctx.productInfo.name || 'product'}
+Background: ${s.order % 2 === 0 ? 'Light neutral (white, #F5F5F5, or cream)' : `Dark/deep ${ctx.colors.primary}`}
+Composition:
+- Upper 15%: CLEAN AREA (section title overlay)
+- Grid of 3 EMPTY icon placeholder areas arranged horizontally (32%/32%/32% width)
+  Each placeholder: circular or rounded-square shape, no text inside
+  Below each placeholder: empty space for feature text overlay
+Mood: Organized, systematic, trustworthy
+Style: Abstract, minimalist background. Icons should be simple geometric shapes WITHOUT text`,
 
-  detail: (s, ctx) =>
-    `Create a product detail section for a Korean landing page.
-Product: ${ctx.productInfo.name}
-Layout: Product close-up photo + detailed description text.
-Background: White or cream.
-Title: "${s.title}"
-${s.body ? `Details: "${s.body.slice(0, 200)}"` : ''}
-Mood: Thorough, professional, meticulous attention to detail.`,
+  detail: (s, ctx) => `Create a PRODUCT DETAIL BACKGROUND scene for a Korean product detail page.
+Product context: ${ctx.productInfo.name || 'product'}
+Scene: Extreme close-up of product details, texture, craftsmanship
+Composition:
+- Full-bleed detail photography
+- One side has CLEAN EMPTY AREA for description text overlay
+Mood: Meticulous, premium, artisanal
+Style: Macro photography, soft directional lighting`,
 
-  howto: (s, ctx) =>
-    `Create a how-to/usage section for a Korean product landing page.
-Product: ${ctx.productInfo.name}
-Layout: Step 1/2/3/4 numbered steps with photos for each step.
-Background: Light background.
-Title: "${s.title}"
-${s.body ? `Steps: "${s.body.slice(0, 200)}"` : ''}
-Each step: large number + photo + short Korean description.
-Mood: Easy, approachable, anyone-can-do-it feeling.`,
+  howto: (s, ctx) => `Create a HOW-TO USAGE BACKGROUND scene for a Korean product detail page.
+Product context: ${ctx.productInfo.name || 'product'}
+Composition:
+- 4 empty panel areas arranged in 2x2 or 1x4 grid
+- Each panel: photograph of a usage step (hands, product action, environment) WITHOUT any step number text
+- Step numbers will be overlaid by the app later
+Background: Light, clean, bright
+Mood: Easy, approachable, clear`,
 
-  social_proof: (s, ctx) =>
-    `Create a social proof/reviews section for a Korean product landing page.
-Product: ${ctx.productInfo.name}
-Layout: Review cards with quotes, or chat-bubble style reviews (KakaoTalk style, current trend).
-Background: Light tone.
-Title: "${s.title}"
-${s.body ? `Review content: "${s.body.slice(0, 250)}"` : ''}
-Include: Star ratings, reviewer names, satisfaction percentages if available.
-Mood: Trust, validation, "others love this too."`,
+  social_proof: (s, ctx) => `Create a SOCIAL PROOF BACKGROUND scene for a Korean product detail page.
+Product context: ${ctx.productInfo.name || 'product'}
+Composition:
+- Upper 15%: CLEAN AREA for section title
+- Grid of 3-4 EMPTY speech bubble / card placeholder shapes (rounded rectangles)
+  NO text inside the bubbles — they will be filled with review text overlay
+- Soft background with subtle lifestyle imagery
+Mood: Trust, community, warmth
+Color: Light tone, ${ctx.colors.accent} accents`,
 
-  trust: (s, ctx) =>
-    `Create a trust/certification section for a Korean product landing page.
-Product: ${ctx.productInfo.name}
-Layout: Certification badges and award icons arranged horizontally.
-Background: White or light gray.
-Title: "${s.title}"
-${s.body ? `Certifications: "${s.body.slice(0, 150)}"` : ''}
-Include: KC, ISO, or relevant certification marks. Gold accent styling.
-Mood: Authority, verified quality.`,
+  trust: (s, ctx) => `Create a TRUST/CERTIFICATION BACKGROUND scene for a Korean product detail page.
+Product context: ${ctx.productInfo.name || 'product'}
+Composition:
+- Empty circular/shield-shaped placeholder badges arranged horizontally (5-6 placeholders)
+  Placeholders: solid circles or shields WITHOUT any text/logos inside
+- Clean white or light gray background
+Mood: Authority, credibility
+Style: Minimal, official-looking. Gold accents. NO actual certification names visible`,
 
-  specs: (s, ctx) =>
-    `Create a specifications section for a Korean product landing page.
-Product: ${ctx.productInfo.name}
-Layout: Left-aligned table format with clean rows.
-Background: Light gray (#F5F5F5).
-Title: "${s.title}"
-${s.body ? `Specs: "${s.body.slice(0, 300)}"` : ''}
-Clean table with thin dividers, item name on left, value on right.
-Mood: Factual, practical, informative.`,
+  specs: (s, ctx) => `Create a SPECIFICATIONS BACKGROUND scene for a Korean product detail page.
+Product context: ${ctx.productInfo.name || 'product'}
+Composition:
+- Product photograph on one side
+- Opposite side: CLEAN EMPTY AREA with faint horizontal divider lines (specs table will be overlaid)
+  Divider lines OK, but NO text values in the lines
+Background: Light gray (#F5F5F5) or clean white
+Mood: Factual, precise, informative`,
 
-  guarantee: (s, ctx) =>
-    `Create a guarantee section for a Korean product landing page.
-Product: ${ctx.productInfo.name}
-Layout: Central icon + guarantee text.
-Background: Cream or light background.
-Title: "${s.title}"
-${s.body ? `Guarantee details: "${s.body.slice(0, 150)}"` : ''}
-Include: Warranty period, exchange/return policy.
-Mood: Reassurance, peace of mind.`,
+  guarantee: (s, ctx) => `Create a GUARANTEE BACKGROUND scene for a Korean product detail page.
+Product context: ${ctx.productInfo.name || 'product'}
+Composition:
+- Center: Large circular or shield EMPTY shape (icon placeholder — NO text/number inside)
+- Surrounding: clean empty space for guarantee description overlay
+Background: Cream or warm light tone
+Mood: Reassurance, safety, peace of mind
+Color: Warm, trustworthy palette`,
 
-  event_banner: (s, ctx) =>
-    `Create a promotional event banner for a Korean product landing page.
-Product: ${ctx.productInfo.name}
-Layout: Full-width banner, large bold text centered.
-Background: Vibrant color (red/yellow) or gradient.
-Title: "${s.title}"
-${s.body ? `Offer: "${s.body.slice(0, 100)}"` : ''}
-Include: Discount percentage, limited time urgency text.
-Mood: Urgency, excitement, "don't miss this."`,
+  event_banner: (s, ctx) => `Create a PROMOTIONAL BANNER BACKGROUND scene for a Korean product detail page.
+Product context: ${ctx.productInfo.name || 'product'}
+Composition:
+- Full-width dramatic background
+- Clean center area for promotional text overlay
+- Optional: subtle product imagery on sides
+Background: Vibrant color (red, yellow, or gradient) or energetic scene
+Mood: Urgency, excitement, energy
+NO discount numbers, NO percentage signs, NO sale text visible`,
 
-  cta: (s, ctx) =>
-    `Create a final CTA (call-to-action) section for a Korean product landing page.
-Product: ${ctx.productInfo.name}
-Layout: Centered CTA text + large prominent button.
-Background: ${ctx.colors.primary} solid or lifestyle photo.
-Title: "${s.title}"
-${s.body ? `CTA message: "${s.body.slice(0, 100)}"` : ''}
-Button text: "지금 구매하기" or similar action text.
-Large rounded button with high contrast color.
-Mood: Closure, final push, "buy now."`,
+  cta: (s, ctx) => `Create a FINAL CTA BACKGROUND scene for a Korean product detail page.
+Product context: ${ctx.productInfo.name || 'product'}
+Composition:
+- Upper 40%: Lifestyle scene or product beauty shot
+- Center: CLEAN EMPTY AREA for CTA headline overlay
+- Lower center: EMPTY rounded rectangle shape (button placeholder — NO text inside the button)
+Background: ${ctx.colors.primary} solid or lifestyle setting
+Mood: Aspirational closure, "this could be yours"`,
 };
 
 export function generateGeminiPrompt(
@@ -158,21 +175,17 @@ export function generateGeminiPrompt(
   const generator = SECTION_PROMPTS[section.sectionType];
   const height = SECTION_HEIGHTS[section.sectionType] || 520;
 
-  if (!generator) {
-    return {
-      prompt: `Create a professional section image for a Korean product landing page.
-Product: ${ctx.productInfo.name}
-Title: "${section.title}"
-${section.body ? `Content: "${section.body.slice(0, 200)}"` : ''}
-Background: Clean, professional. Colors: ${ctx.colors.primary} accent.
-Mood: Professional Korean e-commerce style.`,
-      width: 860,
-      height,
-    };
-  }
+  const body = generator
+    ? generator(section, ctx)
+    : `Create a generic BACKGROUND scene for a Korean product detail page section.
+Product: ${ctx.productInfo.name || 'product'}
+Clean, professional background with empty areas for text overlay.
+Color: ${ctx.colors.primary} dominant.
+Mood: Professional Korean e-commerce aesthetic.`;
 
   return {
-    prompt: generator(section, ctx),
+    prompt: `${NO_TEXT_ANCHOR}\n=== SCENE BRIEF ===\n${body}\n\n=== FINAL CHECK ===\nOutput must be a CLEAN BACKGROUND image with ZERO visible text/letters/numbers.
+Dimensions: 860x${height}px, full bleed.`,
     width: 860,
     height,
   };

@@ -230,6 +230,14 @@ export const useCanvasEditorStore = create<CanvasEditorStore>()(
     }),
     {
       name: 'dm_canvas_editor',
+      version: 2, // v2: Gemini 배경+Textbox 오버레이 아키텍처 (이전 완성이미지 구조 폐기)
+      migrate: (_persistedState: any, version: number) => {
+        if (version < 2) {
+          // 기존 상태 전체 폐기: 아키텍처 변경으로 호환 불가
+          return { sections: {}, resolution: 2, snapEnabled: true };
+        }
+        return _persistedState;
+      },
       partialize: (state) => ({
         sections: state.sections,
         resolution: state.resolution,

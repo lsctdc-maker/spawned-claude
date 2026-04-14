@@ -72,16 +72,21 @@ export default function CanvasWorkspace({
     } catch {}
   }, [fabricCanvas]);
 
+  // Track the latest compose "generation" — increments on every call so older composes can detect they're stale
+  const composeGenRef = useRef(0);
+
   // Compose canvas from template (only for first visit to a section)
   const composeCanvas = useCallback(async (imageUrl: string | null) => {
     const canvas = fabricCanvas.current;
     const fabricModule = getFabricModule();
     if (!canvas || !ready || !fabricModule) return;
-    if (composingRef.current) return;
-    composingRef.current = true;
 
-    const composeSectionId = sectionId; // Capture at start to detect stale closure
-    const safetyTimer = setTimeout(() => { composingRef.current = false; }, 15000);
+    const myGen = ++composeGenRef.current; // This compose's unique id
+    const composeSectionId = sectionId;
+    composingRef.current = true;
+    const safetyTimer = setTimeout(() => {
+      if (composeGenRef.current === myGen) composingRef.current = false;
+    }, 15000);
 
     try {
       const figmaTemplateId = store.sections[composeSectionId]?.figmaTemplateId || undefined;
@@ -97,18 +102,18 @@ export default function CanvasWorkspace({
         figmaTemplateId,
       );
 
-      // Discard if user switched to another section during compose
+      // Stale: another compose started after this one, or user switched section
+      if (composeGenRef.current !== myGen) return;
       if (composeSectionId !== prevSectionIdRef.current) return;
 
       setCanvasHeight(canvas.getHeight());
 
-      // Save state immediately (so future switches can restore instantly)
       const json = JSON.stringify(canvas.toJSON(['name', 'locked', 'selectable', 'evented']));
       store.saveCanvasState(composeSectionId, json, canvas.getHeight());
       store.pushHistory(composeSectionId, json);
 
-      // Generate thumbnail (delayed)
       setTimeout(() => {
+        if (composeGenRef.current !== myGen) return;
         try {
           const thumb = canvas.toDataURL({ format: 'png', multiplier: 0.2, quality: 0.7 });
           store.setThumbnail(composeSectionId, thumb);
@@ -118,7 +123,7 @@ export default function CanvasWorkspace({
       lastImageUrlRef.current = imageUrl;
     } finally {
       clearTimeout(safetyTimer);
-      composingRef.current = false;
+      if (composeGenRef.current === myGen) composingRef.current = false;
     }
   }, [fabricCanvas, getFabricModule, ready, section, sectionId, colors, fonts, productPhotoUrl, category]);
 
