@@ -1,5 +1,6 @@
 import { SectionTemplate } from './types';
 import { ManuscriptSectionType } from '@/lib/types';
+import { enrichTemplate } from './enrichTemplate';
 
 // ===== Korean e-commerce detail page templates =====
 // Design principles:
@@ -601,23 +602,29 @@ const CATEGORY_VARIANT_PREFERENCES: Record<string, Partial<Record<ManuscriptSect
  */
 export function getTemplate(sectionType: ManuscriptSectionType, order?: number, category?: string): SectionTemplate {
   const variants = templateVariants[sectionType] || templateVariants.features;
-  if (variants.length <= 1) return variants[0];
 
-  // 카테고리별 선호 variant가 있으면 우선 적용
-  if (category && CATEGORY_VARIANT_PREFERENCES[category]) {
-    const prefs = CATEGORY_VARIANT_PREFERENCES[category][sectionType];
-    if (prefs && prefs.length > 0) {
-      const prefIndex = (order ?? 0) % prefs.length;
-      const preferredId = prefs[prefIndex];
-      const found = variants.find(v => v.variantId === preferredId);
-      if (found) return found;
+  const pickVariant = (): SectionTemplate => {
+    if (variants.length <= 1) return variants[0];
+
+    // 카테고리별 선호 variant가 있으면 우선 적용
+    if (category && CATEGORY_VARIANT_PREFERENCES[category]) {
+      const prefs = CATEGORY_VARIANT_PREFERENCES[category][sectionType];
+      if (prefs && prefs.length > 0) {
+        const prefIndex = (order ?? 0) % prefs.length;
+        const preferredId = prefs[prefIndex];
+        const found = variants.find(v => v.variantId === preferredId);
+        if (found) return found;
+      }
     }
-  }
 
-  // 폴백: 기존 order 기반 순환
-  if (order === undefined) return variants[0];
-  const variantIndex = order % variants.length;
-  return variants[variantIndex];
+    // 폴백: 기존 order 기반 순환
+    if (order === undefined) return variants[0];
+    const variantIndex = order % variants.length;
+    return variants[variantIndex];
+  };
+
+  // Phase 5-1: 모든 템플릿에 데코레이티브 레이어 자동 추가 (10-15 레이어 보장)
+  return enrichTemplate(pickVariant());
 }
 
 export function getAllTemplates(): Record<ManuscriptSectionType, SectionTemplate[]> {
