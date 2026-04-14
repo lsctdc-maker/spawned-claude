@@ -77,7 +77,15 @@ export default function CanvasWorkspace({
     }
   }, [fabricCanvas, store]);
 
-  // === Main effect: load section JSON from store (no compose) ===
+  // Subscribe to this section's JSON so we re-load when pipeline saves or regenerate happens
+  const sectionJSON = useCanvasEditorStore(
+    (state) => state.sections[sectionId]?.canvasJSON || ''
+  );
+  const sectionHeight = useCanvasEditorStore(
+    (state) => state.sections[sectionId]?.canvasHeight || 520
+  );
+
+  // === Main effect: load section JSON from store ===
   useEffect(() => {
     const canvas = fabricCanvas.current;
     if (!canvas || !ready) return;
@@ -94,14 +102,17 @@ export default function CanvasWorkspace({
         onSelectionChange(null);
       }
 
-      // 2. Load incoming section's JSON (파이프라인이 이미 준비해둠)
-      const saved = store.getCanvasState(sectionId);
-      if (!cancelled && saved?.canvasJSON) {
+      // 2. Clear immediately to avoid showing previous section's content
+      canvas.clear();
+      canvas.backgroundColor = colors.bg;
+
+      // 3. Load incoming section's JSON
+      if (!cancelled && sectionJSON) {
         try {
-          setCanvasHeight(saved.canvasHeight);
-          canvas.setDimensions({ width: CANVAS_W, height: saved.canvasHeight });
+          setCanvasHeight(sectionHeight);
+          canvas.setDimensions({ width: CANVAS_W, height: sectionHeight });
           await new Promise<void>((resolve) => {
-            canvas.loadFromJSON(saved.canvasJSON, () => {
+            canvas.loadFromJSON(sectionJSON, () => {
               if (!cancelled) canvas.renderAll();
               resolve();
             });
@@ -110,9 +121,7 @@ export default function CanvasWorkspace({
           console.warn(`Failed to load section ${sectionId}:`, e);
         }
       } else if (!cancelled) {
-        // No saved JSON — empty canvas (파이프라인 미완성 or 에러)
-        canvas.clear();
-        canvas.backgroundColor = colors.bg;
+        // No saved JSON yet — empty canvas
         canvas.renderAll();
       }
 
@@ -123,26 +132,10 @@ export default function CanvasWorkspace({
     loadSection();
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sectionId, ready]);
+  }, [sectionId, ready, sectionJSON]);
 
-  // Track user edits (for history marking)
-  useEffect(() => {
-    const canvas = fabricCanvas.current;
-    if (!canvas || !ready) return;
-    const markEdited = () => {
-      // Save current state to store on every edit (for auto-save)
-      const json = JSON.stringify(canvas.toJSON(['name', 'locked', 'selectable', 'evented']));
-      store.saveCanvasState(sectionId, json, canvas.getHeight());
-    };
-    canvas.on('object:modified', markEdited);
-    canvas.on('object:added', markEdited);
-    canvas.on('object:removed', markEdited);
-    return () => {
-      canvas.off('object:modified', markEdited);
-      canvas.off('object:added', markEdited);
-      canvas.off('object:removed', markEdited);
-    };
-  }, [ready, sectionId, store]);
+  // NOTE: 편집 시 auto-save 제거 (subscription loop 방지).
+  // saveCurrentState는 섹션 전환 시에만 호출됨.
 
   // Wire selection events
   useEffect(() => {

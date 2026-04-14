@@ -365,9 +365,9 @@ export default function CanvasEditor() {
           </div>
         </div>
 
-        {/* Center: Canvas */}
+        {/* Center: Canvas — 파이프라인 ready 이후에만 마운트 (빈 store 읽는 레이스 방지) */}
         <div className="flex-1 overflow-auto flex items-start justify-center py-8 px-4 bg-[#F4F5F7]">
-          {activeSection && (
+          {activeSection && pipelineReady && (
             <CanvasWorkspace
               section={activeSection}
               colors={colors}
