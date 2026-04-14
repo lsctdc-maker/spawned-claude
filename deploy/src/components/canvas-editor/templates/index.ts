@@ -162,7 +162,7 @@ export async function composeSectionCanvas(
           left: 0, top: 0, scaleX: scale, scaleY: scale,
           selectable: false, evented: false, name: '디자인 배경',
         });
-        canvas.insertAt(designImg, bgInsertIndex);
+        canvas.insertAt(bgInsertIndex, designImg);
         bgInsertIndex++;
       }
     } catch (e) {
@@ -186,7 +186,7 @@ export async function composeSectionCanvas(
         bgImg.filters.push(new fabricModule.filters.Blur({ blur: 0.08 }));
         bgImg.applyFilters();
       }
-      canvas.insertAt(bgImg, bgInsertIndex);
+      canvas.insertAt(bgInsertIndex, bgImg);
       bgInsertIndex++;
     } catch (e) {
       console.warn('Failed to load background image:', e);
@@ -202,7 +202,7 @@ export async function composeSectionCanvas(
       left: 0, top: 0, width: 860, height: template.canvasHeight,
       fill: template.overlayColor, selectable: false, evented: false, name: '오버레이',
     });
-    canvas.insertAt(overlay, bgInsertIndex);
+    canvas.insertAt(bgInsertIndex, overlay);
     bgInsertIndex++;
   }
 
@@ -219,7 +219,7 @@ export async function composeSectionCanvas(
           color: 'rgba(0,0,0,0.18)', offsetX: 0, offsetY: 8, blur: 24,
         }),
       });
-      canvas.insertAt(prodImg, bgInsertIndex);
+      canvas.insertAt(bgInsertIndex, prodImg);
     } catch (e) {
       console.warn('Failed to load product photo:', e);
     }
