@@ -1,8 +1,24 @@
 'use client';
 
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage, StateStorage } from 'zustand/middleware';
 import { ManuscriptSectionType } from '@/lib/types';
+
+// Safe localStorage wrapper: silently swallows quota/access errors so UI never crashes
+const safeStorage: StateStorage = {
+  getItem: (name) => {
+    try { return typeof window !== 'undefined' ? window.localStorage.getItem(name) : null; }
+    catch { return null; }
+  },
+  setItem: (name, value) => {
+    try { if (typeof window !== 'undefined') window.localStorage.setItem(name, value); }
+    catch (e) { console.warn('localStorage write skipped:', (e as Error).message); }
+  },
+  removeItem: (name) => {
+    try { if (typeof window !== 'undefined') window.localStorage.removeItem(name); }
+    catch {}
+  },
+};
 
 // ===== Types =====
 
@@ -230,16 +246,16 @@ export const useCanvasEditorStore = create<CanvasEditorStore>()(
     }),
     {
       name: 'dm_canvas_editor',
-      version: 2, // v2: Gemini 배경+Textbox 오버레이 아키텍처 (이전 완성이미지 구조 폐기)
+      storage: createJSONStorage(() => safeStorage),
+      version: 3, // v3: sections 비저장 (Gemini data URL이 localStorage 5MB 한도 초과)
       migrate: (_persistedState: any, version: number) => {
-        if (version < 2) {
-          // 기존 상태 전체 폐기: 아키텍처 변경으로 호환 불가
-          return { sections: {}, resolution: 2, snapEnabled: true };
+        if (version < 3) {
+          return { resolution: 2, snapEnabled: true };
         }
         return _persistedState;
       },
+      // sections/history는 메모리 전용 — data URL 용량 때문에 localStorage 초과 위험
       partialize: (state) => ({
-        sections: state.sections,
         resolution: state.resolution,
         snapEnabled: state.snapEnabled,
       }),
