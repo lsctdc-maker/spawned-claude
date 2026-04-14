@@ -5,10 +5,11 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useDetailPage } from '@/hooks/useDetailPage';
 import { useCanvasEditorStore, SECTION_LABEL_MAP } from './state/canvasStore';
 import { useImageGeneration } from './hooks/useImageGeneration';
-import { usePreCompose } from './hooks/usePreCompose';
+import { useCanvasPipeline } from './hooks/useCanvasPipeline';
 import { extractFontName, loadGoogleFont, FONT_OPTIONS } from './utils/fontUtils';
 import { CanvasColors, CanvasFonts } from './templates/types';
 import CanvasWorkspace from './CanvasWorkspace';
+import GenerationProgress from './GenerationProgress';
 import TextControls from './toolbar/TextControls';
 import TextPresets from './toolbar/TextPresets';
 import ImageControls from './toolbar/ImageControls';
@@ -97,23 +98,24 @@ export default function CanvasEditor() {
 
   const productPhotoUrl = productPhotos.length > 0 ? productPhotos[0].dataUrl : null;
 
-  // Image generation (Gemini primary, stock fallback)
-  const { generateAll, regenerateSection } = useImageGeneration({
+  // Image regeneration (per-section "재생성" button only — pipeline does initial gen)
+  const { regenerateSection } = useImageGeneration({
     productInfo,
     extractedUSPs,
     selectedTone: selectedTone || 'trust',
     colors: { primary: colors.bg, accent: colors.accent, bg: colors.bg, text: colors.text },
   });
 
-  // Auto-generate images on mount
-  useEffect(() => {
-    if (visibleSections.length > 0) {
-      generateAll(visibleSections);
-    }
-  }, []); // Only on mount
-
-  // Pre-compose all sections in background (after first section loads)
-  usePreCompose(visibleSections, colors, fonts, productPhotoUrl, productInfo.category || undefined);
+  // Phase 5 파이프라인: 마운트 시 전체 생성+compose 1회만 실행
+  const { retry: retryPipeline } = useCanvasPipeline(visibleSections, {
+    productInfo,
+    extractedUSPs,
+    selectedTone: selectedTone || 'trust',
+    colors,
+    fonts,
+    productPhotoUrl,
+    category: productInfo.category || undefined,
+  });
 
   // Handle section switch
   const switchSection = useCallback((sectionId: string) => {
@@ -154,9 +156,21 @@ export default function CanvasEditor() {
   const isGenerating = store.generating[activeSectionId] || false;
   const hasError = store.generateError[activeSectionId] || false;
   const anyGenerating = store.isAnyGenerating();
+  const pipelineStatus = store.status;
+  const pipelineProgress = store.progress;
+  const pipelineReady = pipelineStatus === 'ready';
 
   return (
     <div className="flex flex-col bg-[#F4F5F7] fixed inset-0 z-50">
+      {/* Phase 5: 파이프라인 진행 중이면 풀스크린 모달 표시 */}
+      {!pipelineReady && (
+        <GenerationProgress
+          status={pipelineStatus}
+          progress={pipelineProgress}
+          onRetry={pipelineStatus === 'error' ? retryPipeline : undefined}
+        />
+      )}
+
       {/* ===== Top Bar ===== */}
       <div className="flex items-center justify-between px-4 py-2.5 bg-white border-b border-[#E5E8EB] flex-shrink-0">
         {/* Left: Back to Main + Title */}

@@ -5,7 +5,6 @@ import { useFabricCanvas } from './hooks/useFabricCanvas';
 import { useCanvasHistory } from './hooks/useCanvasHistory';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useCanvasEditorStore } from './state/canvasStore';
-import { composeSectionCanvas } from './templates';
 import { ManuscriptSection } from '@/lib/types';
 import { CanvasColors, CanvasFonts } from './templates/types';
 import { Undo2, Redo2, RefreshCw } from 'lucide-react';
@@ -22,6 +21,15 @@ interface CanvasWorkspaceProps {
   category?: string;
 }
 
+/**
+ * Phase 5: loadFromJSON-only workspace.
+ *
+ * 파이프라인이 모든 섹션을 사전 compose해둠 (canvasJSON 저장).
+ * Workspace는 단순히 섹션 전환 시 loadFromJSON만 수행.
+ * - compose 없음 (레이스 없음)
+ * - 이미지 도착 effect 없음
+ * - 오직 loadFromJSON + 사용자 편집
+ */
 export default function CanvasWorkspace({
   section,
   colors,
@@ -35,7 +43,7 @@ export default function CanvasWorkspace({
   const store = useCanvasEditorStore();
   const sectionId = section.id;
   const [canvasHeight, setCanvasHeight] = useState(520);
-  const [composing, setComposing] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   const { fabricCanvas, ready, getFabricModule } = useFabricCanvas(containerRef, CANVAS_W, canvasHeight);
   const { undo, redo, canUndo, canRedo } = useCanvasHistory(fabricCanvas, sectionId, ready);
@@ -49,13 +57,9 @@ export default function CanvasWorkspace({
     }
   }, [ready, onCanvasReady]);
 
-  // Track state for section switching
-  const userEditedRef = useRef(false);
-  const lastImageUrlRef = useRef<string | null>(null);
-  const composingRef = useRef(false);
-  const prevSectionIdRef = useRef<string>(sectionId);
+  const prevSectionIdRef = useRef<string>('');
 
-  // Save current canvas state to store
+  // Save current canvas state to store (for outgoing section)
   const saveCurrentState = useCallback(() => {
     const canvas = fabricCanvas.current;
     if (!canvas) return;
@@ -64,167 +68,81 @@ export default function CanvasWorkspace({
     try {
       const json = JSON.stringify(canvas.toJSON(['name', 'locked', 'selectable', 'evented']));
       store.saveCanvasState(currentId, json, canvas.getHeight());
-      // Update thumbnail
       try {
         const thumb = canvas.toDataURL({ format: 'png', multiplier: 0.2, quality: 0.7 });
         store.setThumbnail(currentId, thumb);
       } catch {}
-    } catch {}
-  }, [fabricCanvas]);
-
-  // Serialized compose queue: each compose awaits the previous one → no canvas race
-  const composeGenRef = useRef(0);
-  const composeQueueRef = useRef<Promise<void>>(Promise.resolve());
-
-  const composeCanvas = useCallback(async (imageUrl: string | null) => {
-    const canvas = fabricCanvas.current;
-    const fabricModule = getFabricModule();
-    if (!canvas || !ready || !fabricModule) return;
-
-    const myGen = ++composeGenRef.current;
-    const composeSectionId = sectionId;
-
-    // Wait for any in-flight compose to finish first — guarantees single canvas op at a time
-    const prevQueue = composeQueueRef.current;
-    const work = (async () => {
-      try { await prevQueue; } catch {}
-
-      // Skip if superseded by a newer compose or user navigated away
-      if (composeGenRef.current !== myGen) return;
-      if (composeSectionId !== sectionId) return;
-
-      composingRef.current = true;
-      const safetyTimer = setTimeout(() => { composingRef.current = false; }, 15000);
-
-      try {
-        const figmaTemplateId = store.sections[composeSectionId]?.figmaTemplateId || undefined;
-        await composeSectionCanvas(
-          canvas, fabricModule, section, imageUrl,
-          colors, fonts, productPhotoUrl, category, figmaTemplateId,
-        );
-
-        if (composeGenRef.current !== myGen) return;
-        if (composeSectionId !== prevSectionIdRef.current && prevSectionIdRef.current !== '') return;
-
-        setCanvasHeight(canvas.getHeight());
-        const json = JSON.stringify(canvas.toJSON(['name', 'locked', 'selectable', 'evented']));
-        store.saveCanvasState(composeSectionId, json, canvas.getHeight());
-        store.pushHistory(composeSectionId, json);
-
-        setTimeout(() => {
-          if (composeGenRef.current !== myGen) return;
-          try {
-            const thumb = canvas.toDataURL({ format: 'png', multiplier: 0.2, quality: 0.7 });
-            store.setThumbnail(composeSectionId, thumb);
-          } catch {}
-        }, 300);
-
-        lastImageUrlRef.current = imageUrl;
-      } finally {
-        clearTimeout(safetyTimer);
-        composingRef.current = false;
-      }
-    })();
-
-    composeQueueRef.current = work.catch(() => {});
-    await work;
-  }, [fabricCanvas, getFabricModule, ready, section, sectionId, colors, fonts, productPhotoUrl, category]);
-
-  // === Main effect: Load/switch sections ===
-  useEffect(() => {
-    const canvas = fabricCanvas.current;
-    const fabricModule = getFabricModule();
-    if (!canvas || !ready || !fabricModule) return;
-
-    const switchToSection = async () => {
-      setComposing(true);
-      try {
-        // 1. Save outgoing section's state (if switching)
-        if (prevSectionIdRef.current && prevSectionIdRef.current !== sectionId) {
-          saveCurrentState();
-          canvas.discardActiveObject();
-          onSelectionChange(null);
-        }
-
-        // 2. Load incoming section
-        const saved = store.getCanvasState(sectionId);
-        userEditedRef.current = false;
-
-        if (saved && saved.canvasJSON && saved.dirty) {
-          // Restore saved state instantly (~50ms)
-          const restoreSectionId = sectionId;
-          setCanvasHeight(saved.canvasHeight);
-          canvas.setDimensions({ width: CANVAS_W, height: saved.canvasHeight });
-          try {
-            await new Promise<void>((resolve) => {
-              canvas.loadFromJSON(saved.canvasJSON, () => {
-                // Only render if still on the same section
-                if (prevSectionIdRef.current === restoreSectionId) {
-                  canvas.renderAll();
-                }
-                resolve();
-              });
-            });
-            lastImageUrlRef.current = saved.imageUrl;
-          } catch (e) {
-            console.warn('Canvas state restore failed, recomposing:', e);
-            const imageUrl = store.sections[sectionId]?.imageUrl || null;
-            await composeCanvas(imageUrl);
-          }
-        } else {
-          // First visit — compose from template + AI image
-          const imageUrl = store.sections[sectionId]?.imageUrl || null;
-          await composeCanvas(imageUrl);
-        }
-
-        prevSectionIdRef.current = sectionId;
-      } finally {
-        setComposing(false);
-      }
-    };
-
-    switchToSection();
-  }, [sectionId, ready]);
-
-  // Stable ref for composeCanvas to avoid effect dependency churn
-  const composeCanvasRef = useRef(composeCanvas);
-  composeCanvasRef.current = composeCanvas;
-
-  // Recompose when AI image URL arrives — but only for the CURRENT section,
-  // and only after the main switch effect has settled (prevents double-compose)
-  const currentImageUrl = store.sections[sectionId]?.imageUrl || null;
-  useEffect(() => {
-    if (!ready) return;
-    // Skip if this effect fired during section switch (main effect handles it)
-    if (prevSectionIdRef.current !== sectionId) return;
-    if (currentImageUrl && currentImageUrl !== lastImageUrlRef.current && !userEditedRef.current) {
-      setComposing(true);
-      composeCanvasRef.current(currentImageUrl).finally(() => setComposing(false));
+    } catch (e) {
+      console.warn('Failed to save current state:', e);
     }
-  }, [currentImageUrl, ready, sectionId]);
+  }, [fabricCanvas, store]);
 
-  // Recompose when Figma template changes
-  const currentFigmaTemplateId = store.sections[sectionId]?.figmaTemplateId || null;
-  const lastFigmaTemplateRef = useRef<string | null>(null);
-  useEffect(() => {
-    if (!ready) return;
-    if (currentFigmaTemplateId && currentFigmaTemplateId !== lastFigmaTemplateRef.current) {
-      lastFigmaTemplateRef.current = currentFigmaTemplateId;
-      setComposing(true);
-      userEditedRef.current = false;
-      const imageUrl = store.sections[sectionId]?.imageUrl || null;
-      composeCanvasRef.current(imageUrl).finally(() => setComposing(false));
-    }
-  }, [currentFigmaTemplateId, ready, sectionId]);
-
-  // Track user edits
+  // === Main effect: load section JSON from store (no compose) ===
   useEffect(() => {
     const canvas = fabricCanvas.current;
     if (!canvas || !ready) return;
-    const markEdited = () => { userEditedRef.current = true; };
+
+    let cancelled = false;
+
+    const loadSection = async () => {
+      setLoading(true);
+
+      // 1. Save outgoing section's current state
+      if (prevSectionIdRef.current && prevSectionIdRef.current !== sectionId) {
+        saveCurrentState();
+        canvas.discardActiveObject();
+        onSelectionChange(null);
+      }
+
+      // 2. Load incoming section's JSON (파이프라인이 이미 준비해둠)
+      const saved = store.getCanvasState(sectionId);
+      if (!cancelled && saved?.canvasJSON) {
+        try {
+          setCanvasHeight(saved.canvasHeight);
+          canvas.setDimensions({ width: CANVAS_W, height: saved.canvasHeight });
+          await new Promise<void>((resolve) => {
+            canvas.loadFromJSON(saved.canvasJSON, () => {
+              if (!cancelled) canvas.renderAll();
+              resolve();
+            });
+          });
+        } catch (e) {
+          console.warn(`Failed to load section ${sectionId}:`, e);
+        }
+      } else if (!cancelled) {
+        // No saved JSON — empty canvas (파이프라인 미완성 or 에러)
+        canvas.clear();
+        canvas.backgroundColor = colors.bg;
+        canvas.renderAll();
+      }
+
+      prevSectionIdRef.current = sectionId;
+      if (!cancelled) setLoading(false);
+    };
+
+    loadSection();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sectionId, ready]);
+
+  // Track user edits (for history marking)
+  useEffect(() => {
+    const canvas = fabricCanvas.current;
+    if (!canvas || !ready) return;
+    const markEdited = () => {
+      // Save current state to store on every edit (for auto-save)
+      const json = JSON.stringify(canvas.toJSON(['name', 'locked', 'selectable', 'evented']));
+      store.saveCanvasState(sectionId, json, canvas.getHeight());
+    };
     canvas.on('object:modified', markEdited);
-    return () => { canvas.off('object:modified', markEdited); };
-  }, [ready]);
+    canvas.on('object:added', markEdited);
+    canvas.on('object:removed', markEdited);
+    return () => {
+      canvas.off('object:modified', markEdited);
+      canvas.off('object:added', markEdited);
+      canvas.off('object:removed', markEdited);
+    };
+  }, [ready, sectionId, store]);
 
   // Wire selection events
   useEffect(() => {
@@ -245,7 +163,7 @@ export default function CanvasWorkspace({
     };
   }, [ready, onSelectionChange]);
 
-  // Save thumbnail on modification
+  // Update thumbnail on edit (debounced)
   useEffect(() => {
     const canvas = fabricCanvas.current;
     if (!canvas || !ready) return;
@@ -263,8 +181,11 @@ export default function CanvasWorkspace({
     };
 
     canvas.on('object:modified', updateThumb);
-    return () => { canvas.off('object:modified', updateThumb); };
-  }, [ready, sectionId]);
+    return () => {
+      canvas.off('object:modified', updateThumb);
+      if (thumbTimer) clearTimeout(thumbTimer);
+    };
+  }, [ready, sectionId, store]);
 
   return (
     <div className="flex flex-col items-center gap-3">
@@ -295,13 +216,13 @@ export default function CanvasWorkspace({
         className="relative rounded-xl overflow-hidden border border-[#E5E8EB] shadow-[0_8px_32px_rgba(0,0,0,0.08)]"
         style={{ width: CANVAS_W }}
       >
-        {!ready && (
+        {(!ready || loading) && (
           <div
             className="absolute inset-0 flex flex-col items-center justify-center bg-[#1a1a1a] z-10 rounded-xl"
             style={{ minHeight: canvasHeight }}
           >
             <RefreshCw className="w-6 h-6 text-[#3182F6]/40 animate-spin mb-2" />
-            <span className="text-[10px] text-[#8B95A1]">캔버스 로딩 중...</span>
+            <span className="text-[10px] text-[#8B95A1]">섹션 로딩 중...</span>
           </div>
         )}
         <div ref={containerRef} />

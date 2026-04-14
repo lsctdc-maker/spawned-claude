@@ -37,7 +37,36 @@ interface HistoryEntry {
   timestamp: number;
 }
 
+export type PipelineStatus =
+  | 'idle'          // 초기 상태 (파이프라인 안 돌아감)
+  | 'loading'       // DB에서 기존 디자인 로드 중
+  | 'generating'    // Gemini 이미지 생성 중
+  | 'composing'     // 섹션 합성 중
+  | 'saving'        // DB 저장 중
+  | 'ready'         // 편집 가능
+  | 'error';        // 실패
+
+export interface PipelineProgress {
+  imaged: number;    // Gemini 완료 수
+  composed: number;  // compose 완료 수
+  total: number;     // 전체 섹션 수
+  errorMessage?: string;
+}
+
 interface CanvasEditorStore {
+  // ===== Pipeline state (Phase 5-6 추가) =====
+  status: PipelineStatus;
+  progress: PipelineProgress;
+  setStatus: (status: PipelineStatus, errorMessage?: string) => void;
+  setProgress: (progress: Partial<PipelineProgress>) => void;
+  bulkLoad: (designs: Array<{
+    sectionId: string;
+    canvasJSON: string;
+    canvasHeight: number;
+    imageUrl?: string | null;
+    thumbnail?: string | null;
+  }>) => void;
+
   // Per-section canvas data
   sections: Record<string, CanvasSectionState>;
 
@@ -92,6 +121,31 @@ const MAX_HISTORY = 50;
 export const useCanvasEditorStore = create<CanvasEditorStore>()(
   persist(
     (set, get) => ({
+      status: 'idle' as PipelineStatus,
+      progress: { imaged: 0, composed: 0, total: 0 } as PipelineProgress,
+      setStatus: (status, errorMessage) => set({
+        status,
+        progress: { ...get().progress, errorMessage },
+      }),
+      setProgress: (partial) => set({
+        progress: { ...get().progress, ...partial },
+      }),
+      bulkLoad: (designs) => {
+        const sections = { ...get().sections };
+        designs.forEach(d => {
+          sections[d.sectionId] = {
+            canvasJSON: d.canvasJSON,
+            canvasHeight: d.canvasHeight,
+            imageUrl: d.imageUrl ?? null,
+            isPlaceholder: false,
+            thumbnail: d.thumbnail ?? null,
+            dirty: true,
+            figmaTemplateId: null,
+          };
+        });
+        set({ sections });
+      },
+
       sections: {},
       activeSectionId: '',
       generating: {},
@@ -242,6 +296,8 @@ export const useCanvasEditorStore = create<CanvasEditorStore>()(
         generateError: {},
         history: {},
         selectedObjectId: null,
+        status: 'idle',
+        progress: { imaged: 0, composed: 0, total: 0 },
       }),
     }),
     {
