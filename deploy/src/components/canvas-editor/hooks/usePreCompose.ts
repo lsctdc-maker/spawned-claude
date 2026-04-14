@@ -68,6 +68,14 @@ export function usePreCompose(
             const json = JSON.stringify(
               (offscreen as any).toJSON(['name', 'locked', 'selectable', 'evented'])
             );
+
+            // Check if user is now viewing this section — discard to avoid race
+            const currentActive = useCanvasEditorStore.getState().activeSectionId;
+            if (section.id === currentActive) {
+              offscreen.dispose();
+              return;
+            }
+
             store.saveCanvasState(section.id, json, offscreen.getHeight());
 
             // Thumbnail for sidebar

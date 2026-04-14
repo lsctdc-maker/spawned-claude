@@ -5,11 +5,13 @@ import { ManuscriptSection, ProductInfo, USP } from '@/lib/types';
 import { useCanvasEditorStore, SECTION_IMAGE_MAP } from '../state/canvasStore';
 import { authFetch } from '@/lib/auth-fetch';
 import { getTemplate } from '../templates/sections';
+import { generateGeminiPrompt, DesignContext } from '@/lib/gemini-prompts';
 
 interface GenerationContext {
   productInfo: ProductInfo;
   extractedUSPs: USP[];
   selectedTone: string;
+  colors?: { primary: string; accent: string; bg: string; text: string };
 }
 
 export function useImageGeneration(ctx: GenerationContext) {
@@ -17,52 +19,76 @@ export function useImageGeneration(ctx: GenerationContext) {
   const abortRef = useRef(false);
 
   const generateForSection = useCallback(async (section: ManuscriptSection): Promise<string | null> => {
-    const imageType = SECTION_IMAGE_MAP[section.sectionType] || 'background';
-    const requestBody = JSON.stringify({
-      type: imageType,
-      productName: ctx.productInfo.name || '제품',
-      category: ctx.productInfo.category || 'others',
-      usps: ctx.extractedUSPs.map(u => u.title).slice(0, 3),
-      tone: ctx.selectedTone || 'trust',
-      imageGuide: section.imageGuide || '',
-    });
-
     store.setGenerating(section.id, true);
     store.setGenerateError(section.id, false);
-    try {
-      let data: any = null;
 
-      // Try authenticated fetch first, then check response, fallback to direct fetch
+    try {
+      // 1st: Try Gemini (complete section images with text+design baked in)
+      try {
+        const designCtx: DesignContext = {
+          productInfo: ctx.productInfo,
+          usps: ctx.extractedUSPs,
+          tone: ctx.selectedTone || 'trust',
+          colors: ctx.colors || { primary: '#0f1729', accent: '#3182F6', bg: '#0f1729', text: '#f0f0f0' },
+        };
+        const { prompt, width, height } = generateGeminiPrompt(section, designCtx);
+
+        const res = await authFetch('/api/generate-gemini', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt, width, height }),
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.imageUrl) {
+            store.setImage(section.id, data.imageUrl, false);
+            return data.imageUrl;
+          }
+        }
+        // Non-OK (401, 500, etc.) — fall through to stock image fallback
+      } catch (e) {
+        console.warn('Gemini generation failed, falling back to stock:', e);
+      }
+
+      // 2nd: Fallback to stock images (no DALL-E)
+      const imageType = SECTION_IMAGE_MAP[section.sectionType] || 'background';
+      const stockBody = JSON.stringify({
+        type: imageType,
+        productName: ctx.productInfo.name || '제품',
+        category: ctx.productInfo.category || 'others',
+        usps: ctx.extractedUSPs.map(u => u.title).slice(0, 3),
+        tone: ctx.selectedTone || 'trust',
+        imageGuide: section.imageGuide || '',
+      });
+
+      let data: any = null;
       try {
         const res = await authFetch('/api/image', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: requestBody,
+          body: stockBody,
         });
-        // authFetch returns 401 as normal Response (not throw) — must check status
         if (res.ok) {
           data = await res.json();
         } else {
-          // Auth returned 401/403 — fallback to direct fetch without auth header
-          console.warn(`authFetch returned ${res.status}, falling back to direct fetch`);
           const res2 = await fetch('/api/image', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: requestBody,
+            body: stockBody,
           });
           data = await res2.json();
         }
       } catch {
-        // Network error or supabase client crash — try direct fetch
         try {
           const res = await fetch('/api/image', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: requestBody,
+            body: stockBody,
           });
           data = await res.json();
         } catch (e2) {
-          console.error('Direct image fetch also failed:', e2);
+          console.error('Stock image fetch also failed:', e2);
         }
       }
 
@@ -80,7 +106,7 @@ export function useImageGeneration(ctx: GenerationContext) {
     } finally {
       store.setGenerating(section.id, false);
     }
-  }, [ctx.productInfo, ctx.extractedUSPs, ctx.selectedTone]);
+  }, [ctx.productInfo, ctx.extractedUSPs, ctx.selectedTone, ctx.colors]);
 
   const generateAll = useCallback(async (sections: ManuscriptSection[]) => {
     abortRef.current = false;
@@ -92,16 +118,15 @@ export function useImageGeneration(ctx: GenerationContext) {
       return !template.solidBackground;
     });
 
-    // Generate 5 at a time (parallel batches for faster initial load)
-    for (let i = 0; i < needsImage.length; i += 5) {
+    // Generate 3 at a time (Gemini is slower, smaller batches)
+    for (let i = 0; i < needsImage.length; i += 3) {
       if (abortRef.current) break;
-      const batch = needsImage.slice(i, i + 5);
+      const batch = needsImage.slice(i, i + 3);
       await Promise.allSettled(batch.map(s => generateForSection(s)));
     }
   }, [generateForSection]);
 
   const regenerateSection = useCallback(async (section: ManuscriptSection): Promise<string | null> => {
-    // Force regenerate by generating regardless of existing image
     return await generateForSection(section);
   }, [generateForSection]);
 

@@ -38,23 +38,38 @@ export async function composeSectionCanvas(
   category?: string,
   figmaTemplateId?: string,
 ): Promise<void> {
-  // Figma 템플릿 비활성화 — 솔리드 배경+텍스트만 렌더링되는 문제로 하드코딩 템플릿 사용
-  // TODO: Figma 템플릿에 shape/gradient 지원 추가 후 재활성화
-  // if (process.env.NEXT_PUBLIC_DISABLE_FIGMA_TEMPLATES !== 'true') {
-  //   try {
-  //     const figmaTemplate = figmaTemplateId
-  //       ? await getFigmaTemplateById(figmaTemplateId)
-  //       : await getFigmaTemplate(section.sectionType, category);
-  //     if (figmaTemplate) {
-  //       await applyFigmaTemplate(canvas, fabricModule, figmaTemplate, section, colors, fonts, productPhotoUrl);
-  //       return;
-  //     }
-  //   } catch (e) {
-  //     console.warn('Figma 템플릿 로드 실패, 기존 템플릿 사용:', e);
-  //   }
-  // }
+  // Gemini 이미지 감지: data URL이고 50KB 이상이면 텍스트+디자인 포함 완성 이미지
+  const isGeminiImage = bgImageUrl?.startsWith('data:') && bgImageUrl.length > 50000;
 
-  // 폴백: 기존 하드코딩 템플릿
+  if (isGeminiImage) {
+    const template = getTemplate(section.sectionType, section.order, category);
+    canvas.setDimensions({ width: 860, height: template.canvasHeight });
+    canvas.clear();
+    canvas.backgroundColor = '#1a1a1a';
+
+    try {
+      const img = await loadImage(fabricModule, bgImageUrl!);
+      const scale = 860 / img.width!;
+      const scaledHeight = img.height! * scale;
+      canvas.setDimensions({ width: 860, height: scaledHeight });
+      img.set({
+        left: 0, top: 0, scaleX: scale, scaleY: scale,
+        selectable: false, evented: false, name: 'AI 생성 이미지',
+      });
+      canvas.add(img);
+    } catch (e) {
+      console.warn('Gemini image load failed, falling back to template:', e);
+      // Fall through to hardcoded template below
+      canvas.clear();
+    }
+
+    if (canvas.getObjects().length > 0) {
+      canvas.renderAll();
+      return;
+    }
+  }
+
+  // 하드코딩 템플릿 (스톡 이미지 폴백용 또는 Gemini 미설정 시)
   // Use section.order for variant selection to ensure visual diversity
   const template = getTemplate(section.sectionType, section.order, category);
 

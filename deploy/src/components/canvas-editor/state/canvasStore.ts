@@ -166,7 +166,6 @@ export const useCanvasEditorStore = create<CanvasEditorStore>()(
 
       setImage: (sectionId, url, isPlaceholder = false) => {
         const existing = get().sections[sectionId];
-        const imageChanged = !existing || existing.imageUrl !== url;
         set({
           sections: {
             ...get().sections,
@@ -180,8 +179,6 @@ export const useCanvasEditorStore = create<CanvasEditorStore>()(
               }),
               imageUrl: url,
               isPlaceholder,
-              // 이미지 변경 시 stale 캐시 무효화 → 다음 클릭에서 재compose
-              ...(imageChanged && existing?.dirty ? { dirty: false } : {}),
             },
           },
         });

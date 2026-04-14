@@ -51,3 +51,14 @@ desktop.ini
 
 # ===== gstack (security reports, analytics) =====
 .gstack/
+
+.vercel
+.env*.local
+
+# ===== Claude Code / MCP =====
+.claude/
+.mcp.json
+
+# ===== 내부 자료 (NAS 원본, 분석 대상) =====
+deploy/input/
+nas_detail_page_jpgs.txt

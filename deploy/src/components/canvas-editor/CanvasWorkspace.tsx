@@ -80,10 +80,11 @@ export default function CanvasWorkspace({
     if (composingRef.current) return;
     composingRef.current = true;
 
+    const composeSectionId = sectionId; // Capture at start to detect stale closure
     const safetyTimer = setTimeout(() => { composingRef.current = false; }, 15000);
 
     try {
-      const figmaTemplateId = store.sections[sectionId]?.figmaTemplateId || undefined;
+      const figmaTemplateId = store.sections[composeSectionId]?.figmaTemplateId || undefined;
       await composeSectionCanvas(
         canvas,
         fabricModule,
@@ -95,18 +96,22 @@ export default function CanvasWorkspace({
         category,
         figmaTemplateId,
       );
+
+      // Discard if user switched to another section during compose
+      if (composeSectionId !== prevSectionIdRef.current) return;
+
       setCanvasHeight(canvas.getHeight());
 
       // Save state immediately (so future switches can restore instantly)
       const json = JSON.stringify(canvas.toJSON(['name', 'locked', 'selectable', 'evented']));
-      store.saveCanvasState(sectionId, json, canvas.getHeight());
-      store.pushHistory(sectionId, json);
+      store.saveCanvasState(composeSectionId, json, canvas.getHeight());
+      store.pushHistory(composeSectionId, json);
 
       // Generate thumbnail (delayed)
       setTimeout(() => {
         try {
           const thumb = canvas.toDataURL({ format: 'png', multiplier: 0.2, quality: 0.7 });
-          store.setThumbnail(sectionId, thumb);
+          store.setThumbnail(composeSectionId, thumb);
         } catch {}
       }, 300);
 
@@ -139,12 +144,16 @@ export default function CanvasWorkspace({
 
         if (saved && saved.canvasJSON && saved.dirty) {
           // Restore saved state instantly (~50ms)
+          const restoreSectionId = sectionId;
           setCanvasHeight(saved.canvasHeight);
           canvas.setDimensions({ width: CANVAS_W, height: saved.canvasHeight });
           try {
             await new Promise<void>((resolve) => {
               canvas.loadFromJSON(saved.canvasJSON, () => {
-                canvas.renderAll();
+                // Only render if still on the same section
+                if (prevSectionIdRef.current === restoreSectionId) {
+                  canvas.renderAll();
+                }
                 resolve();
               });
             });
@@ -169,15 +178,19 @@ export default function CanvasWorkspace({
     switchToSection();
   }, [sectionId, ready]);
 
+  // Stable ref for composeCanvas to avoid effect dependency churn
+  const composeCanvasRef = useRef(composeCanvas);
+  composeCanvasRef.current = composeCanvas;
+
   // Recompose when AI image URL arrives
   const currentImageUrl = store.sections[sectionId]?.imageUrl || null;
   useEffect(() => {
     if (!ready) return;
     if (currentImageUrl && currentImageUrl !== lastImageUrlRef.current && !userEditedRef.current) {
       setComposing(true);
-      composeCanvas(currentImageUrl).finally(() => setComposing(false));
+      composeCanvasRef.current(currentImageUrl).finally(() => setComposing(false));
     }
-  }, [currentImageUrl, ready, composeCanvas]);
+  }, [currentImageUrl, ready]);
 
   // Recompose when Figma template changes
   const currentFigmaTemplateId = store.sections[sectionId]?.figmaTemplateId || null;
@@ -189,9 +202,9 @@ export default function CanvasWorkspace({
       setComposing(true);
       userEditedRef.current = false;
       const imageUrl = store.sections[sectionId]?.imageUrl || null;
-      composeCanvas(imageUrl).finally(() => setComposing(false));
+      composeCanvasRef.current(imageUrl).finally(() => setComposing(false));
     }
-  }, [currentFigmaTemplateId, ready, composeCanvas, sectionId]);
+  }, [currentFigmaTemplateId, ready, sectionId]);
 
   // Track user edits
   useEffect(() => {

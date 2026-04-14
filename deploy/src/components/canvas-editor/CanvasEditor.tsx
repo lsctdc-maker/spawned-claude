@@ -97,11 +97,12 @@ export default function CanvasEditor() {
 
   const productPhotoUrl = productPhotos.length > 0 ? productPhotos[0].dataUrl : null;
 
-  // Image generation
+  // Image generation (Gemini primary, stock fallback)
   const { generateAll, regenerateSection } = useImageGeneration({
     productInfo,
     extractedUSPs,
     selectedTone: selectedTone || 'trust',
+    colors: { primary: colors.bg, accent: colors.accent, bg: colors.bg, text: colors.text },
   });
 
   // Auto-generate images on mount
