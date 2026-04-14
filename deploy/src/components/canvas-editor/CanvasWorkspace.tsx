@@ -72,59 +72,62 @@ export default function CanvasWorkspace({
     } catch {}
   }, [fabricCanvas]);
 
-  // Track the latest compose "generation" — increments on every call so older composes can detect they're stale
+  // Serialized compose queue: each compose awaits the previous one → no canvas race
   const composeGenRef = useRef(0);
+  const composeQueueRef = useRef<Promise<void>>(Promise.resolve());
 
-  // Compose canvas from template (only for first visit to a section)
   const composeCanvas = useCallback(async (imageUrl: string | null) => {
     const canvas = fabricCanvas.current;
     const fabricModule = getFabricModule();
     if (!canvas || !ready || !fabricModule) return;
 
-    const myGen = ++composeGenRef.current; // This compose's unique id
+    const myGen = ++composeGenRef.current;
     const composeSectionId = sectionId;
-    composingRef.current = true;
-    const safetyTimer = setTimeout(() => {
-      if (composeGenRef.current === myGen) composingRef.current = false;
-    }, 15000);
 
-    try {
-      const figmaTemplateId = store.sections[composeSectionId]?.figmaTemplateId || undefined;
-      await composeSectionCanvas(
-        canvas,
-        fabricModule,
-        section,
-        imageUrl,
-        colors,
-        fonts,
-        productPhotoUrl,
-        category,
-        figmaTemplateId,
-      );
+    // Wait for any in-flight compose to finish first — guarantees single canvas op at a time
+    const prevQueue = composeQueueRef.current;
+    const work = (async () => {
+      try { await prevQueue; } catch {}
 
-      // Stale: another compose started after this one, or user switched section
+      // Skip if superseded by a newer compose or user navigated away
       if (composeGenRef.current !== myGen) return;
-      if (composeSectionId !== prevSectionIdRef.current) return;
+      if (composeSectionId !== sectionId) return;
 
-      setCanvasHeight(canvas.getHeight());
+      composingRef.current = true;
+      const safetyTimer = setTimeout(() => { composingRef.current = false; }, 15000);
 
-      const json = JSON.stringify(canvas.toJSON(['name', 'locked', 'selectable', 'evented']));
-      store.saveCanvasState(composeSectionId, json, canvas.getHeight());
-      store.pushHistory(composeSectionId, json);
+      try {
+        const figmaTemplateId = store.sections[composeSectionId]?.figmaTemplateId || undefined;
+        await composeSectionCanvas(
+          canvas, fabricModule, section, imageUrl,
+          colors, fonts, productPhotoUrl, category, figmaTemplateId,
+        );
 
-      setTimeout(() => {
         if (composeGenRef.current !== myGen) return;
-        try {
-          const thumb = canvas.toDataURL({ format: 'png', multiplier: 0.2, quality: 0.7 });
-          store.setThumbnail(composeSectionId, thumb);
-        } catch {}
-      }, 300);
+        if (composeSectionId !== prevSectionIdRef.current && prevSectionIdRef.current !== '') return;
 
-      lastImageUrlRef.current = imageUrl;
-    } finally {
-      clearTimeout(safetyTimer);
-      if (composeGenRef.current === myGen) composingRef.current = false;
-    }
+        setCanvasHeight(canvas.getHeight());
+        const json = JSON.stringify(canvas.toJSON(['name', 'locked', 'selectable', 'evented']));
+        store.saveCanvasState(composeSectionId, json, canvas.getHeight());
+        store.pushHistory(composeSectionId, json);
+
+        setTimeout(() => {
+          if (composeGenRef.current !== myGen) return;
+          try {
+            const thumb = canvas.toDataURL({ format: 'png', multiplier: 0.2, quality: 0.7 });
+            store.setThumbnail(composeSectionId, thumb);
+          } catch {}
+        }, 300);
+
+        lastImageUrlRef.current = imageUrl;
+      } finally {
+        clearTimeout(safetyTimer);
+        composingRef.current = false;
+      }
+    })();
+
+    composeQueueRef.current = work.catch(() => {});
+    await work;
   }, [fabricCanvas, getFabricModule, ready, section, sectionId, colors, fonts, productPhotoUrl, category]);
 
   // === Main effect: Load/switch sections ===
@@ -187,15 +190,18 @@ export default function CanvasWorkspace({
   const composeCanvasRef = useRef(composeCanvas);
   composeCanvasRef.current = composeCanvas;
 
-  // Recompose when AI image URL arrives
+  // Recompose when AI image URL arrives — but only for the CURRENT section,
+  // and only after the main switch effect has settled (prevents double-compose)
   const currentImageUrl = store.sections[sectionId]?.imageUrl || null;
   useEffect(() => {
     if (!ready) return;
+    // Skip if this effect fired during section switch (main effect handles it)
+    if (prevSectionIdRef.current !== sectionId) return;
     if (currentImageUrl && currentImageUrl !== lastImageUrlRef.current && !userEditedRef.current) {
       setComposing(true);
       composeCanvasRef.current(currentImageUrl).finally(() => setComposing(false));
     }
-  }, [currentImageUrl, ready]);
+  }, [currentImageUrl, ready, sectionId]);
 
   // Recompose when Figma template changes
   const currentFigmaTemplateId = store.sections[sectionId]?.figmaTemplateId || null;
