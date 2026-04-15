@@ -1,6 +1,5 @@
 import { SectionTemplate } from './types';
 import { ManuscriptSectionType } from '@/lib/types';
-import { enrichTemplate } from './enrichTemplate';
 
 // ===== Korean e-commerce detail page templates =====
 // Design principles:
@@ -31,7 +30,6 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       hasProductImage: true,
       productImagePosition: { left: 520, top: 60, maxWidth: 300, maxHeight: 420 },
       textObjects: [
-        { binding: 'label', customText: 'BRAND STORY', left: 60, top: 80, width: 400, fontSize: 13, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', letterSpacing: 8, name: '카테고리 라벨', opacity: 0.9, shadow: PHOTO_LABEL_SHADOW },
         { binding: 'title', left: 60, top: 120, width: 420, fontSize: 42, fontWeight: 900, useHeadline: true, lineHeight: 1.2, letterSpacing: -1, name: '메인 타이틀', shadow: PHOTO_TITLE_SHADOW, stroke: 'rgba(0,0,0,0.3)', strokeWidth: 1 },
         { binding: 'bodyPreview', left: 60, top: 310, width: 420, fontSize: 15, fontWeight: 400, useHeadline: false, opacity: 0.85, lineHeight: 1.75, name: '서브 카피', shadow: PHOTO_BODY_SHADOW },
       ],
@@ -49,7 +47,6 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       overlayColor: 'rgba(0,0,0,0.45)',
       hasProductImage: false,
       textObjects: [
-        { binding: 'label', customText: 'BRAND STORY', left: 0, top: 100, width: 860, fontSize: 13, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 8, name: '카테고리 라벨', opacity: 0.8, shadow: PHOTO_LABEL_SHADOW },
         { binding: 'title', left: 80, top: 150, width: 700, fontSize: 48, fontWeight: 900, useHeadline: true, textAlign: 'center', lineHeight: 1.2, letterSpacing: -1, name: '메인 타이틀', shadow: PHOTO_TITLE_SHADOW, stroke: 'rgba(0,0,0,0.3)', strokeWidth: 1 },
         { binding: 'bodyPreview', left: 120, top: 350, width: 620, fontSize: 16, fontWeight: 400, useHeadline: false, textAlign: 'center', opacity: 0.8, lineHeight: 1.8, name: '서브 카피', shadow: PHOTO_BODY_SHADOW },
       ],
@@ -67,7 +64,6 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       hasProductImage: true,
       productImagePosition: { left: 280, top: 30, maxWidth: 300, maxHeight: 280 },
       textObjects: [
-        { binding: 'label', customText: 'BRAND STORY', left: 0, top: 340, width: 860, fontSize: 13, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 8, name: '카테고리 라벨', opacity: 0.8, shadow: PHOTO_LABEL_SHADOW },
         { binding: 'title', left: 80, top: 375, width: 700, fontSize: 42, fontWeight: 900, useHeadline: true, textAlign: 'center', lineHeight: 1.2, name: '메인 타이틀', shadow: PHOTO_TITLE_SHADOW, stroke: 'rgba(0,0,0,0.3)', strokeWidth: 1 },
         { binding: 'bodyPreview', left: 100, top: 490, width: 660, fontSize: 15, fontWeight: 400, useHeadline: false, textAlign: 'center', opacity: 0.8, lineHeight: 1.75, name: '서브 카피', shadow: PHOTO_BODY_SHADOW },
       ],
@@ -89,7 +85,6 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       hasProductImage: true,
       productImagePosition: { left: 520, top: 60, maxWidth: 300, maxHeight: 420 },
       textObjects: [
-        { binding: 'label', customText: 'BRAND STORY', left: 60, top: 80, width: 400, fontSize: 13, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', letterSpacing: 8, name: '카테고리 라벨', opacity: 0.9, shadow: PHOTO_LABEL_SHADOW },
         { binding: 'title', left: 60, top: 120, width: 420, fontSize: 42, fontWeight: 900, useHeadline: true, lineHeight: 1.2, name: '메인 타이틀', shadow: PHOTO_TITLE_SHADOW, stroke: 'rgba(0,0,0,0.3)', strokeWidth: 1 },
         { binding: 'bodyPreview', left: 60, top: 310, width: 420, fontSize: 15, fontWeight: 400, useHeadline: false, opacity: 0.85, lineHeight: 1.75, name: '서브 카피', shadow: PHOTO_BODY_SHADOW },
       ],
@@ -113,7 +108,6 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       overlayColor: '',
       hasProductImage: false,
       textObjects: [
-        { binding: 'label', customText: '이런 고민, 하고 계신가요?', left: 60, top: 60, width: 700, fontSize: 13, fontWeight: 600, useHeadline: false, fill: '{colors.accent}', letterSpacing: 6, name: '섹션 라벨' },
         { binding: 'title', left: 60, top: 100, width: 720, fontSize: 34, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', lineHeight: 1.4, name: '문제 제시', shadow: SOLID_TITLE_SHADOW },
         { binding: 'body', left: 80, top: 200, width: 720, fontSize: 15, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.8, name: '공감 설명' },
       ],
@@ -129,7 +123,6 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       overlayColor: '',
       hasProductImage: false,
       textObjects: [
-        { binding: 'label', customText: 'PROBLEM', left: 0, top: 60, width: 860, fontSize: 13, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 6, name: '섹션 라벨' },
         { binding: 'title', left: 120, top: 140, width: 620, fontSize: 34, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', textAlign: 'center', lineHeight: 1.4, name: '문제 제시', shadow: SOLID_TITLE_SHADOW },
         { binding: 'body', left: 120, top: 260, width: 620, fontSize: 15, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.8, textAlign: 'center', name: '공감 설명' },
       ],
@@ -146,7 +139,6 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       hasProductImage: true,
       productImagePosition: { left: 490, top: 70, maxWidth: 320, maxHeight: 360 },
       textObjects: [
-        { binding: 'label', customText: 'PROBLEM', left: 60, top: 60, width: 400, fontSize: 13, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', letterSpacing: 6, name: '섹션 라벨' },
         { binding: 'title', left: 60, top: 100, width: 400, fontSize: 32, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', lineHeight: 1.4, name: '문제 제시', shadow: SOLID_TITLE_SHADOW },
         { binding: 'body', left: 60, top: 220, width: 420, fontSize: 14, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.8, name: '공감 설명' },
       ],
@@ -165,7 +157,6 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       hasProductImage: true,
       productImagePosition: { left: 40, top: 60, maxWidth: 360, maxHeight: 380 },
       textObjects: [
-        { binding: 'label', customText: 'SOLUTION', left: 440, top: 80, width: 380, fontSize: 13, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', letterSpacing: 8, name: '섹션 라벨', shadow: PHOTO_LABEL_SHADOW },
         { binding: 'title', left: 440, top: 120, width: 380, fontSize: 34, fontWeight: 800, useHeadline: true, lineHeight: 1.35, name: '솔루션 타이틀', shadow: PHOTO_TITLE_SHADOW, stroke: 'rgba(0,0,0,0.3)', strokeWidth: 1 },
         { binding: 'bodyPreview', left: 440, top: 270, width: 380, fontSize: 14, fontWeight: 400, useHeadline: false, opacity: 0.8, lineHeight: 1.8, name: '솔루션 설명', shadow: PHOTO_BODY_SHADOW },
       ],
@@ -182,7 +173,6 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       overlayColor: 'rgba(0,0,0,0.5)',
       hasProductImage: false,
       textObjects: [
-        { binding: 'label', customText: 'SOLUTION', left: 0, top: 70, width: 860, fontSize: 13, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 8, name: '섹션 라벨', shadow: PHOTO_LABEL_SHADOW },
         { binding: 'title', left: 80, top: 110, width: 700, fontSize: 36, fontWeight: 800, useHeadline: true, textAlign: 'center', lineHeight: 1.35, name: '솔루션 타이틀', shadow: PHOTO_TITLE_SHADOW, stroke: 'rgba(0,0,0,0.3)', strokeWidth: 1 },
         { binding: 'bodyPreview', left: 100, top: 240, width: 660, fontSize: 15, fontWeight: 400, useHeadline: false, textAlign: 'center', opacity: 0.8, lineHeight: 1.8, name: '솔루션 설명', shadow: PHOTO_BODY_SHADOW },
       ],
@@ -201,7 +191,6 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       hasProductImage: true,
       productImagePosition: { left: 500, top: 60, maxWidth: 320, maxHeight: 380 },
       textObjects: [
-        { binding: 'label', customText: 'SOLUTION', left: 60, top: 80, width: 400, fontSize: 13, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', letterSpacing: 8, name: '섹션 라벨', shadow: PHOTO_LABEL_SHADOW },
         { binding: 'title', left: 60, top: 120, width: 420, fontSize: 34, fontWeight: 800, useHeadline: true, lineHeight: 1.35, name: '솔루션 타이틀', shadow: PHOTO_TITLE_SHADOW, stroke: 'rgba(0,0,0,0.3)', strokeWidth: 1 },
         { binding: 'bodyPreview', left: 60, top: 270, width: 420, fontSize: 14, fontWeight: 400, useHeadline: false, opacity: 0.8, lineHeight: 1.8, name: '솔루션 설명', shadow: PHOTO_BODY_SHADOW },
       ],
@@ -224,7 +213,6 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       overlayColor: '',
       hasProductImage: false,
       textObjects: [
-        { binding: 'label', customText: 'KEY FEATURES', left: 0, top: 50, width: 860, fontSize: 13, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 6, name: '섹션 라벨' },
         { binding: 'title', left: 80, top: 90, width: 700, fontSize: 36, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', textAlign: 'center', lineHeight: 1.35, name: '특장점 타이틀', shadow: SOLID_TITLE_SHADOW },
         { binding: 'body', left: 80, top: 180, width: 700, fontSize: 15, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.8, textAlign: 'center', name: '특장점 설명' },
       ],
@@ -240,7 +228,6 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       overlayColor: '',
       hasProductImage: false,
       textObjects: [
-        { binding: 'label', customText: 'POINT', left: 60, top: 60, width: 400, fontSize: 13, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', letterSpacing: 6, name: '섹션 라벨' },
         { binding: 'title', left: 60, top: 100, width: 500, fontSize: 34, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', lineHeight: 1.35, name: '특장점 타이틀', shadow: SOLID_TITLE_SHADOW },
         { binding: 'body', left: 60, top: 200, width: 720, fontSize: 15, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.8, name: '특장점 설명' },
       ],
@@ -257,7 +244,6 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       hasProductImage: true,
       productImagePosition: { left: 490, top: 70, maxWidth: 320, maxHeight: 440 },
       textObjects: [
-        { binding: 'label', customText: 'KEY FEATURES', left: 60, top: 60, width: 400, fontSize: 13, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', letterSpacing: 6, name: '섹션 라벨' },
         { binding: 'title', left: 60, top: 100, width: 400, fontSize: 32, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', lineHeight: 1.35, name: '특장점 타이틀', shadow: SOLID_TITLE_SHADOW },
         { binding: 'body', left: 60, top: 210, width: 420, fontSize: 14, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.8, name: '특장점 설명' },
       ],
@@ -278,7 +264,6 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       hasProductImage: true,
       productImagePosition: { left: 280, top: 40, maxWidth: 300, maxHeight: 220 },
       textObjects: [
-        { binding: 'label', customText: 'DETAIL', left: 0, top: 290, width: 860, fontSize: 13, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 6, name: '섹션 라벨' },
         { binding: 'title', left: 80, top: 325, width: 700, fontSize: 32, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', textAlign: 'center', lineHeight: 1.35, name: '상세 타이틀', shadow: SOLID_TITLE_SHADOW },
         { binding: 'body', left: 100, top: 400, width: 680, fontSize: 14, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.8, textAlign: 'center', name: '상세 설명' },
       ],
@@ -294,7 +279,6 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       overlayColor: '',
       hasProductImage: false,
       textObjects: [
-        { binding: 'label', customText: 'DETAIL', left: 60, top: 60, width: 400, fontSize: 13, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', letterSpacing: 6, name: '섹션 라벨' },
         { binding: 'title', left: 60, top: 100, width: 720, fontSize: 32, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', lineHeight: 1.35, name: '상세 타이틀', shadow: SOLID_TITLE_SHADOW },
         { binding: 'body', left: 60, top: 200, width: 720, fontSize: 14, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.8, name: '상세 설명' },
       ],
@@ -311,7 +295,6 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       hasProductImage: true,
       productImagePosition: { left: 480, top: 60, maxWidth: 340, maxHeight: 440 },
       textObjects: [
-        { binding: 'label', customText: 'DETAIL', left: 60, top: 60, width: 400, fontSize: 13, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', letterSpacing: 6, name: '섹션 라벨' },
         { binding: 'title', left: 60, top: 100, width: 400, fontSize: 32, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', lineHeight: 1.35, name: '상세 타이틀', shadow: SOLID_TITLE_SHADOW },
         { binding: 'body', left: 60, top: 210, width: 420, fontSize: 14, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.8, name: '상세 설명' },
       ],
@@ -331,7 +314,6 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       overlayColor: '',
       hasProductImage: false,
       textObjects: [
-        { binding: 'label', customText: 'HOW TO USE', left: 60, top: 50, width: 400, fontSize: 13, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', letterSpacing: 6, name: '섹션 라벨' },
         { binding: 'title', left: 60, top: 90, width: 720, fontSize: 34, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', lineHeight: 1.35, name: '사용법 타이틀', shadow: SOLID_TITLE_SHADOW },
         { binding: 'body', left: 60, top: 190, width: 740, fontSize: 14, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.8, name: '사용법 설명' },
       ],
@@ -347,7 +329,6 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       overlayColor: '',
       hasProductImage: false,
       textObjects: [
-        { binding: 'label', customText: 'HOW TO USE', left: 0, top: 50, width: 860, fontSize: 13, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 6, name: '섹션 라벨' },
         { binding: 'title', left: 80, top: 90, width: 700, fontSize: 34, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', textAlign: 'center', lineHeight: 1.35, name: '사용법 타이틀', shadow: SOLID_TITLE_SHADOW },
         { binding: 'body', left: 80, top: 190, width: 700, fontSize: 14, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.8, textAlign: 'center', name: '사용법 설명' },
       ],
@@ -365,7 +346,6 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       overlayColor: 'rgba(0,0,0,0.5)',
       hasProductImage: false,
       textObjects: [
-        { binding: 'label', customText: 'PROVEN RESULTS', left: 0, top: 70, width: 860, fontSize: 13, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 8, name: '섹션 라벨', shadow: PHOTO_LABEL_SHADOW },
         { binding: 'title', left: 80, top: 110, width: 700, fontSize: 34, fontWeight: 800, useHeadline: true, textAlign: 'center', lineHeight: 1.4, name: '사회적 증거', shadow: PHOTO_TITLE_SHADOW, stroke: 'rgba(0,0,0,0.3)', strokeWidth: 1 },
         { binding: 'body', left: 80, top: 240, width: 700, fontSize: 15, fontWeight: 400, useHeadline: false, opacity: 0.85, lineHeight: 1.8, textAlign: 'center', name: '리뷰/증거 내용', shadow: PHOTO_BODY_SHADOW },
       ],
@@ -388,7 +368,6 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       overlayColor: '',
       hasProductImage: false,
       textObjects: [
-        { binding: 'label', customText: 'REVIEW', left: 60, top: 50, width: 400, fontSize: 13, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', letterSpacing: 6, name: '섹션 라벨' },
         { binding: 'title', left: 60, top: 90, width: 720, fontSize: 32, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', lineHeight: 1.4, name: '사회적 증거', shadow: SOLID_TITLE_SHADOW },
         { binding: 'body', left: 60, top: 220, width: 720, fontSize: 15, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.8, name: '리뷰/증거 내용' },
       ],
@@ -402,7 +381,6 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       overlayColor: 'rgba(0,0,0,0.45)',
       hasProductImage: false,
       textObjects: [
-        { binding: 'label', customText: 'PROVEN RESULTS', left: 0, top: 60, width: 860, fontSize: 13, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 8, name: '섹션 라벨', opacity: 0.8, shadow: PHOTO_LABEL_SHADOW },
         { binding: 'title', left: 80, top: 100, width: 700, fontSize: 50, fontWeight: 900, useHeadline: true, textAlign: 'center', lineHeight: 1.2, name: '핵심 수치', shadow: PHOTO_TITLE_SHADOW, stroke: 'rgba(0,0,0,0.3)', strokeWidth: 1 },
         { binding: 'body', left: 80, top: 270, width: 700, fontSize: 15, fontWeight: 400, useHeadline: false, opacity: 0.85, lineHeight: 1.8, textAlign: 'center', name: '수치 설명', shadow: PHOTO_BODY_SHADOW },
       ],
@@ -426,7 +404,6 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       overlayColor: '',
       hasProductImage: false,
       textObjects: [
-        { binding: 'label', customText: 'WHY TRUST US', left: 0, top: 50, width: 860, fontSize: 13, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 6, name: '섹션 라벨' },
         { binding: 'title', left: 80, top: 90, width: 700, fontSize: 32, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', textAlign: 'center', lineHeight: 1.35, name: '신뢰 타이틀', shadow: SOLID_TITLE_SHADOW },
         { binding: 'body', left: 80, top: 180, width: 700, fontSize: 14, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.8, textAlign: 'center', name: '신뢰 설명' },
       ],
@@ -446,7 +423,6 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       overlayColor: '',
       hasProductImage: false,
       textObjects: [
-        { binding: 'label', customText: 'SPECIFICATIONS', left: 60, top: 50, width: 400, fontSize: 13, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', letterSpacing: 6, name: '섹션 라벨' },
         { binding: 'title', left: 60, top: 90, width: 720, fontSize: 32, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', lineHeight: 1.3, name: '스펙 타이틀', shadow: SOLID_TITLE_SHADOW },
         { binding: 'body', left: 60, top: 190, width: 720, fontSize: 14, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.8, name: '스펙 내용' },
       ],
@@ -462,7 +438,6 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       overlayColor: '',
       hasProductImage: false,
       textObjects: [
-        { binding: 'label', customText: 'SPECIFICATIONS', left: 0, top: 50, width: 860, fontSize: 13, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 6, name: '섹션 라벨' },
         { binding: 'title', left: 100, top: 110, width: 660, fontSize: 30, fontWeight: 800, useHeadline: true, fill: '#1a1a1a', textAlign: 'center', lineHeight: 1.3, name: '스펙 타이틀', shadow: SOLID_TITLE_SHADOW },
         { binding: 'body', left: 100, top: 200, width: 660, fontSize: 13, fontWeight: 400, useHeadline: false, fill: '#555555', lineHeight: 1.8, name: '스펙 내용' },
       ],
@@ -480,7 +455,6 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       overlayColor: 'rgba(0,0,0,0.45)',
       hasProductImage: false,
       textObjects: [
-        { binding: 'label', customText: 'GUARANTEE', left: 0, top: 70, width: 860, fontSize: 13, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 8, name: '섹션 라벨', shadow: PHOTO_LABEL_SHADOW },
         { binding: 'title', left: 80, top: 110, width: 700, fontSize: 34, fontWeight: 800, useHeadline: true, textAlign: 'center', lineHeight: 1.35, name: '보증 타이틀', shadow: PHOTO_TITLE_SHADOW, stroke: 'rgba(0,0,0,0.3)', strokeWidth: 1 },
         { binding: 'body', left: 80, top: 230, width: 700, fontSize: 14, fontWeight: 400, useHeadline: false, opacity: 0.85, lineHeight: 1.8, textAlign: 'center', name: '보증 내용', shadow: PHOTO_BODY_SHADOW },
       ],
@@ -497,7 +471,6 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       overlayColor: 'rgba(0,0,0,0.4)',
       hasProductImage: false,
       textObjects: [
-        { binding: 'label', customText: 'GUARANTEE', left: 0, top: 60, width: 860, fontSize: 13, fontWeight: 700, useHeadline: false, fill: '{colors.accent}', textAlign: 'center', letterSpacing: 8, name: '섹션 라벨', shadow: PHOTO_LABEL_SHADOW },
         { binding: 'title', left: 130, top: 125, width: 600, fontSize: 34, fontWeight: 800, useHeadline: true, textAlign: 'center', lineHeight: 1.35, name: '보증 타이틀', shadow: PHOTO_TITLE_SHADOW, stroke: 'rgba(0,0,0,0.3)', strokeWidth: 1 },
         { binding: 'body', left: 130, top: 240, width: 600, fontSize: 14, fontWeight: 400, useHeadline: false, opacity: 0.85, lineHeight: 1.8, textAlign: 'center', name: '보증 내용', shadow: PHOTO_BODY_SHADOW },
       ],
@@ -518,7 +491,6 @@ const templateVariants: Record<ManuscriptSectionType, SectionTemplate[]> = {
       overlayColor: 'rgba(0,0,0,0.35)',
       hasProductImage: false,
       textObjects: [
-        { binding: 'label', customText: 'SPECIAL OFFER', left: 0, top: 60, width: 860, fontSize: 13, fontWeight: 700, useHeadline: false, fill: '#ffffff', textAlign: 'center', letterSpacing: 8, name: '오퍼 라벨', opacity: 0.8, shadow: PHOTO_LABEL_SHADOW },
         { binding: 'title', left: 80, top: 100, width: 700, fontSize: 40, fontWeight: 900, useHeadline: true, fill: '#ffffff', textAlign: 'center', lineHeight: 1.25, name: '이벤트 타이틀', shadow: PHOTO_TITLE_SHADOW, stroke: 'rgba(0,0,0,0.3)', strokeWidth: 1 },
         { binding: 'bodyPreview', left: 100, top: 200, width: 660, fontSize: 16, fontWeight: 400, useHeadline: false, fill: '#ffffff', textAlign: 'center', opacity: 0.85, name: '가격/할인 정보', shadow: PHOTO_BODY_SHADOW },
       ],
@@ -602,29 +574,23 @@ const CATEGORY_VARIANT_PREFERENCES: Record<string, Partial<Record<ManuscriptSect
  */
 export function getTemplate(sectionType: ManuscriptSectionType, order?: number, category?: string): SectionTemplate {
   const variants = templateVariants[sectionType] || templateVariants.features;
+  if (variants.length <= 1) return variants[0];
 
-  const pickVariant = (): SectionTemplate => {
-    if (variants.length <= 1) return variants[0];
-
-    // 카테고리별 선호 variant가 있으면 우선 적용
-    if (category && CATEGORY_VARIANT_PREFERENCES[category]) {
-      const prefs = CATEGORY_VARIANT_PREFERENCES[category][sectionType];
-      if (prefs && prefs.length > 0) {
-        const prefIndex = (order ?? 0) % prefs.length;
-        const preferredId = prefs[prefIndex];
-        const found = variants.find(v => v.variantId === preferredId);
-        if (found) return found;
-      }
+  // 카테고리별 선호 variant가 있으면 우선 적용
+  if (category && CATEGORY_VARIANT_PREFERENCES[category]) {
+    const prefs = CATEGORY_VARIANT_PREFERENCES[category][sectionType];
+    if (prefs && prefs.length > 0) {
+      const prefIndex = (order ?? 0) % prefs.length;
+      const preferredId = prefs[prefIndex];
+      const found = variants.find(v => v.variantId === preferredId);
+      if (found) return found;
     }
+  }
 
-    // 폴백: 기존 order 기반 순환
-    if (order === undefined) return variants[0];
-    const variantIndex = order % variants.length;
-    return variants[variantIndex];
-  };
-
-  // Phase 5-1: 모든 템플릿에 데코레이티브 레이어 자동 추가 (10-15 레이어 보장)
-  return enrichTemplate(pickVariant());
+  // 폴백: 기존 order 기반 순환
+  if (order === undefined) return variants[0];
+  const variantIndex = order % variants.length;
+  return variants[variantIndex];
 }
 
 export function getAllTemplates(): Record<ManuscriptSectionType, SectionTemplate[]> {

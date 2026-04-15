@@ -23,6 +23,49 @@ interface PipelineContext {
 const IMAGE_BATCH = 3;   // Gemini 병렬 호출 수
 const COMPOSE_BATCH = 3; // offscreen compose 병렬 수
 
+// Phase 6-5: 카테고리별 폴백 그라디언트 (Gemini 완전 실패 시)
+const FALLBACK_GRADIENTS: Record<string, [string, string]> = {
+  food: ['#FFF8E1', '#FFE0B2'],
+  beverages: ['#FFF3E0', '#FFCC80'],
+  cosmetics: ['#FCE4EC', '#F8BBD0'],
+  beauty: ['#FCE4EC', '#F8BBD0'],
+  health: ['#E8F5E9', '#C8E6C9'],
+  electronics: ['#E3F2FD', '#BBDEFB'],
+  interior: ['#EFEBE9', '#D7CCC8'],
+  living: ['#FAFAFA', '#EEEEEE'],
+  pets: ['#FFF8E1', '#FFECB3'],
+  kids: ['#F3E5F5', '#E1BEE7'],
+  sports: ['#ECEFF1', '#CFD8DC'],
+  fashion: ['#F5F5F5', '#E0E0E0'],
+  automotive: ['#ECEFF1', '#B0BEC5'],
+  stationery: ['#FFF8E1', '#F5F5F5'],
+  digital: ['#E8EAF6', '#C5CAE9'],
+  others: ['#F5F5F5', '#E0E0E0'],
+};
+
+function buildGradientFallback(category: string | undefined, width: number, height: number): string {
+  const [c1, c2] = FALLBACK_GRADIENTS[category || 'others'] || FALLBACK_GRADIENTS.others;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+    <defs>
+      <linearGradient id="g" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="${c1}"/>
+        <stop offset="100%" stop-color="${c2}"/>
+      </linearGradient>
+    </defs>
+    <rect width="${width}" height="${height}" fill="url(#g)"/>
+  </svg>`;
+  return `data:image/svg+xml;base64,${typeof window !== 'undefined' ? window.btoa(svg) : Buffer.from(svg).toString('base64')}`;
+}
+
+// Gemini 응답 크기 엄격 체크 (빈 이미지는 보통 < 10KB)
+function isValidImageDataUrl(url: string | null | undefined): url is string {
+  if (!url || typeof url !== 'string') return false;
+  if (!url.startsWith('data:image/')) return url.startsWith('http'); // stock URL은 통과
+  // base64 이후 길이 체크 (최소 10KB 대응: base64 ~13,000 chars)
+  const base64Part = url.split(',')[1] || '';
+  return base64Part.length > 13000;
+}
+
 async function batchedParallel<T>(
   items: T[],
   batchSize: number,
@@ -66,19 +109,24 @@ export function useCanvasPipeline(
     };
     const { prompt, width, height } = generateGeminiPrompt(section, designCtx);
 
-    // 1) Gemini 시도
-    try {
-      const res = await authFetch('/api/generate-gemini', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, width, height }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.success && data.imageUrl) return data.imageUrl;
+    // 1) Gemini 시도 (최대 2회, 2회차는 variation hint 추가)
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const finalPrompt = attempt === 0
+          ? prompt
+          : prompt + `\n\n=== RETRY HINT ===\nPrevious attempt returned empty/white. Ensure scene is FULLY rendered with visible imagery, props, and atmospheric elements. NO blank white backgrounds.`;
+        const res = await authFetch('/api/generate-gemini', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: finalPrompt, width, height }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && isValidImageDataUrl(data.imageUrl)) return data.imageUrl;
+        }
+      } catch (e) {
+        console.warn(`[pipeline] Gemini attempt ${attempt + 1} failed for ${section.id}:`, e);
       }
-    } catch (e) {
-      console.warn(`[pipeline] Gemini failed for ${section.id}:`, e);
     }
 
     // 2) 스톡 이미지 폴백
@@ -99,13 +147,15 @@ export function useCanvasPipeline(
       });
       if (res.ok) {
         const data = await res.json();
-        if (data.success && data.imageUrl) return data.imageUrl;
+        if (data.success && isValidImageDataUrl(data.imageUrl)) return data.imageUrl;
       }
     } catch (e) {
       console.warn(`[pipeline] Stock image failed for ${section.id}:`, e);
     }
 
-    return null;
+    // 3) 최종 폴백: 카테고리별 그라디언트 (흰 배경 방지)
+    console.warn(`[pipeline] Using gradient fallback for ${section.id}`);
+    return buildGradientFallback(ctx.productInfo.category, width, height);
   }, [ctx.productInfo, ctx.extractedUSPs, ctx.selectedTone, ctx.colors]);
 
   const composeOffscreen = useCallback(async (
