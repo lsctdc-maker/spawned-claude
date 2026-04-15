@@ -557,7 +557,8 @@ export default function CanvasEditor() {
 
                         if (saved?.canvasJSON) {
                           canvas.setDimensions({ width: 860, height: saved.canvasHeight });
-                          await new Promise<void>(r => canvas.loadFromJSON(saved.canvasJSON, () => { canvas.renderAll(); r(); }));
+                          await canvas.loadFromJSON(saved.canvasJSON);
+                          canvas.renderAll();
                           await new Promise(r => setTimeout(r, 200));
                           const dataUrl = canvas.toDataURL({ format: 'png', multiplier: store.resolution, quality: 1 });
                           images.push({ dataUrl, w: 860 * store.resolution, h: saved.canvasHeight * store.resolution });
@@ -586,11 +587,12 @@ export default function CanvasEditor() {
                         link.click();
                       }
 
-                      // Restore current section
+                      // Restore current section (fabric v6)
                       const currentState = store.getCanvasState(activeSectionId);
                       if (currentState?.canvasJSON) {
                         canvas.setDimensions({ width: 860, height: currentState.canvasHeight });
-                        canvas.loadFromJSON(currentState.canvasJSON, () => canvas.renderAll());
+                        await canvas.loadFromJSON(currentState.canvasJSON);
+                        canvas.renderAll();
                       }
                     } finally {
                       setDownloading(false);

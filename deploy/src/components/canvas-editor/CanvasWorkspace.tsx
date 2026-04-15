@@ -106,17 +106,14 @@ export default function CanvasWorkspace({
       canvas.clear();
       canvas.backgroundColor = colors.bg;
 
-      // 3. Load incoming section's JSON
+      // 3. Load incoming section's JSON (fabric v6 Promise API)
       if (!cancelled && sectionJSON) {
         try {
           setCanvasHeight(sectionHeight);
           canvas.setDimensions({ width: CANVAS_W, height: sectionHeight });
-          await new Promise<void>((resolve) => {
-            canvas.loadFromJSON(sectionJSON, () => {
-              if (!cancelled) canvas.renderAll();
-              resolve();
-            });
-          });
+          // v6: loadFromJSON returns Promise; second arg is reviver, NOT completion callback
+          await canvas.loadFromJSON(sectionJSON);
+          if (!cancelled) canvas.renderAll();
         } catch (e) {
           console.warn(`Failed to load section ${sectionId}:`, e);
         }

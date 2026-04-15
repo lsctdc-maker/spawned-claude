@@ -40,25 +40,29 @@ export function useCanvasHistory(
     };
   }, [ready, sectionId]);
 
-  const undo = useCallback(() => {
+  const undo = useCallback(async () => {
     const entry = store.undo(sectionId);
     if (entry && fabricCanvas.current) {
       isLoadingRef.current = true;
-      fabricCanvas.current.loadFromJSON(entry.json, () => {
+      try {
+        await fabricCanvas.current.loadFromJSON(entry.json);
         fabricCanvas.current?.renderAll();
+      } finally {
         isLoadingRef.current = false;
-      });
+      }
     }
   }, [sectionId]);
 
-  const redo = useCallback(() => {
+  const redo = useCallback(async () => {
     const entry = store.redo(sectionId);
     if (entry && fabricCanvas.current) {
       isLoadingRef.current = true;
-      fabricCanvas.current.loadFromJSON(entry.json, () => {
+      try {
+        await fabricCanvas.current.loadFromJSON(entry.json);
         fabricCanvas.current?.renderAll();
+      } finally {
         isLoadingRef.current = false;
-      });
+      }
     }
   }, [sectionId]);
 

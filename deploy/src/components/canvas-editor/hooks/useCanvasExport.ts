@@ -57,14 +57,10 @@ export function useCanvasExport(
         onProgress(Math.round((i / sections.length) * 85));
 
         if (saved && saved.canvasJSON) {
-          // Load section canvas
+          // Load section canvas (fabric v6 Promise API)
           canvas.setDimensions({ width: 860, height: saved.canvasHeight });
-          await new Promise<void>(resolve => {
-            canvas.loadFromJSON(saved.canvasJSON, () => {
-              canvas.renderAll();
-              resolve();
-            });
-          });
+          await canvas.loadFromJSON(saved.canvasJSON);
+          canvas.renderAll();
 
           // Wait for images to load
           await new Promise(r => setTimeout(r, 200));
@@ -109,14 +105,13 @@ export function useCanvasExport(
       link.href = mergedCanvas.toDataURL('image/png');
       link.click();
 
-      // Restore current section
+      // Restore current section (fabric v6 Promise API)
       const currentSection = store.activeSectionId;
       const currentState = store.getCanvasState(currentSection);
       if (currentState?.canvasJSON) {
         canvas.setDimensions({ width: 860, height: currentState.canvasHeight });
-        canvas.loadFromJSON(currentState.canvasJSON, () => {
-          canvas.renderAll();
-        });
+        await canvas.loadFromJSON(currentState.canvasJSON);
+        canvas.renderAll();
       }
     } finally {
       isExportingRef.current = false;
