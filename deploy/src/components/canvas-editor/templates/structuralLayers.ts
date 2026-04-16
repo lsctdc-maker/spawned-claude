@@ -827,6 +827,12 @@ function eventBannerLayers(canvasHeight: number): StructuralLayers {
 // === 메인 함수 ===
 
 export function addStructuralLayers(template: SectionTemplate): SectionTemplate {
+  // HTML 디자인 템플릿이 있는 variant는 구조 레이어 스킵
+  // (HTML 렌더러가 이미 카드/배지/테이블을 다 그림)
+  if (template.useHtmlDesign) {
+    return template;
+  }
+
   let layers: StructuralLayers;
 
   switch (template.sectionType) {

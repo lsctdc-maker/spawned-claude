@@ -115,7 +115,14 @@ export async function composeSectionCanvas(
   }
 
   // Text objects (sync)
-  for (const textDef of template.textObjects) {
+  // useHtmlDesign=true일 때는 HTML 렌더러가 구조/placeholder를 이미 그렸으므로
+  // 사용자 콘텐츠 바인딩(title/body/bodyPreview)만 오버레이
+  const contentBindings = new Set(['title', 'body', 'bodyPreview']);
+  const visibleTexts = template.useHtmlDesign
+    ? template.textObjects.filter(t => contentBindings.has(t.binding))
+    : template.textObjects;
+
+  for (const textDef of visibleTexts) {
     const text = resolveText(textDef.binding, section, textDef.customText);
     const fillColor = resolveColor(textDef.fill, colors);
     const fontFamily = textDef.useHeadline
