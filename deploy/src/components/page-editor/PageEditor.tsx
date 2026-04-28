@@ -43,6 +43,8 @@ export default function PageEditor() {
   const [zoom, setZoom] = useState(100);
   const [sectionImages, setSectionImages] = useState<Record<string, string>>({});
   const [sectionBgColors, setSectionBgColors] = useState<Record<string, string>>({});
+  const [sectionIcons, setSectionIcons] = useState<Record<string, string[]>>({});
+  const [aiLoading, setAiLoading] = useState(false);
 
   // 색상 팔레트
   const colors = useMemo(() => ({
@@ -488,6 +490,61 @@ export default function PageEditor() {
           onImageUpload={(id, dataUrl) => setSectionImages(prev => ({ ...prev, [id]: dataUrl }))}
           sectionBgColor={selectedSectionId ? sectionBgColors[selectedSectionId] : undefined}
           onBgColorChange={(id, color) => setSectionBgColors(prev => ({ ...prev, [id]: color }))}
+          sectionIcons={selectedSectionId ? sectionIcons[selectedSectionId] : undefined}
+          onIconChange={(id, index, iconKey) => {
+            setSectionIcons(prev => {
+              const current = [...(prev[id] || [])];
+              current[index] = iconKey;
+              return { ...prev, [id]: current };
+            });
+          }}
+          onAiCopy={async (sectionId) => {
+            setAiLoading(true);
+            try {
+              const section = visibleSections.find(s => s.id === sectionId);
+              if (!section) return;
+              const res = await fetch('/api/copywriting', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  sectionType: section.sectionType,
+                  productName: productInfo.name,
+                  category: productInfo.category,
+                  usps: extractedUSPs.map(u => u.title),
+                }),
+              });
+              if (res.ok) {
+                const data = await res.json();
+                if (data.title) handleUpdateSection(sectionId, { title: data.title, body: data.body || '' });
+              }
+            } catch (e) { console.error('AI copy failed:', e); }
+            finally { setAiLoading(false); }
+          }}
+          onAiImage={async (sectionId) => {
+            setAiLoading(true);
+            try {
+              const { generateGeminiPrompt } = await import('@/lib/gemini-prompts');
+              const section = visibleSections.find(s => s.id === sectionId);
+              if (!section) return;
+              const { prompt, width, height } = generateGeminiPrompt(section, {
+                productInfo, usps: extractedUSPs, tone: 'trust',
+                colors: { primary: colors.primary, accent: colors.accent, bg: colors.primary, text: colors.text },
+              });
+              const res = await fetch('/api/generate-gemini', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt, width, height }),
+              });
+              if (res.ok) {
+                const data = await res.json();
+                if (data.success && data.imageUrl) {
+                  setSectionImages(prev => ({ ...prev, [sectionId]: data.imageUrl }));
+                }
+              }
+            } catch (e) { console.error('AI image failed:', e); }
+            finally { setAiLoading(false); }
+          }}
+          aiLoading={aiLoading}
           onExportSectionPng={async (sectionId) => {
             const el = sectionRefs.current[sectionId];
             if (!el) return;

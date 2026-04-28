@@ -1,8 +1,9 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { ManuscriptSection, ManuscriptSectionType } from '@/lib/types';
-import { Download, Upload, Sparkles, Type, Image as ImageIcon } from 'lucide-react';
+import { Download, Upload, Sparkles, Type, Image as ImageIcon, Wand2 } from 'lucide-react';
+import IconPicker, { ALL_ICONS } from './IconPicker';
 
 const SECTION_LABELS: Record<ManuscriptSectionType, string> = {
   hooking: '후킹', hero: '히어로', problem: '문제 공감', solution: '솔루션',
@@ -22,13 +23,22 @@ interface PropertiesPanelProps {
   onImageUpload?: (sectionId: string, dataUrl: string) => void;
   sectionBgColor?: string;
   onBgColorChange?: (sectionId: string, color: string) => void;
+  // 아이콘 편집
+  sectionIcons?: string[];
+  onIconChange?: (sectionId: string, index: number, iconKey: string) => void;
+  // AI 기능
+  onAiCopy?: (sectionId: string) => void;
+  onAiImage?: (sectionId: string) => void;
+  aiLoading?: boolean;
 }
 
 export default function PropertiesPanel({
   selectedSection, colors, onUpdateSection, onExportPng, onExportSectionPng,
   exporting, sectionImage, onImageUpload, sectionBgColor, onBgColorChange,
+  sectionIcons, onIconChange, onAiCopy, onAiImage, aiLoading,
 }: PropertiesPanelProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [iconPickerIndex, setIconPickerIndex] = useState<number | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -155,6 +165,63 @@ export default function PropertiesPanel({
             {/* 섹션 타입/순서 */}
             <div className="text-[10px] text-[#8B95A1] px-1">
               타입: {selectedSection.sectionType} · 순서: {selectedSection.order + 1}
+            </div>
+
+            {/* 아이콘 편집 (features/problem 등) */}
+            {sectionIcons && sectionIcons.length > 0 && onIconChange && (
+              <div className="border-t border-[#E5E8EB] pt-4">
+                <div className="text-[10px] uppercase tracking-widest text-[#8B95A1] font-semibold mb-3">아이콘</div>
+                <div className="flex flex-wrap gap-2">
+                  {sectionIcons.map((iconKey, i) => {
+                    const Icon = ALL_ICONS[iconKey] || ALL_ICONS.heart;
+                    return (
+                      <button
+                        key={i}
+                        onClick={() => setIconPickerIndex(i)}
+                        className="w-10 h-10 rounded-xl border border-[#E5E8EB] flex items-center justify-center hover:border-[#3182F6]/50 hover:bg-[#EBF4FF] transition-all"
+                        title={`아이콘 ${i + 1} 변경`}
+                      >
+                        <Icon className="w-5 h-5 text-[#4E5968]" />
+                      </button>
+                    );
+                  })}
+                </div>
+                {iconPickerIndex !== null && selectedSection && (
+                  <IconPicker
+                    currentIcon={sectionIcons[iconPickerIndex] || 'heart'}
+                    onSelect={(key) => {
+                      onIconChange(selectedSection.id, iconPickerIndex, key);
+                      setIconPickerIndex(null);
+                    }}
+                    onClose={() => setIconPickerIndex(null)}
+                  />
+                )}
+              </div>
+            )}
+
+            {/* AI 기능 */}
+            <div className="border-t border-[#E5E8EB] pt-4 space-y-2">
+              <div className="text-[10px] uppercase tracking-widest text-[#8B95A1] font-semibold mb-2">AI 도구</div>
+              {onAiCopy && (
+                <button
+                  onClick={() => onAiCopy(selectedSection.id)}
+                  disabled={aiLoading}
+                  className="w-full flex items-center justify-center gap-1.5 py-2.5 text-[12px] font-semibold text-[#3182F6] bg-[#EBF4FF] rounded-xl hover:bg-[#D6E8FF] transition-colors disabled:opacity-50"
+                >
+                  <Wand2 className="w-3.5 h-3.5" />
+                  {aiLoading ? 'AI 생성 중...' : 'AI로 문구 생성'}
+                </button>
+              )}
+              {onAiImage && (
+                <button
+                  onClick={() => onAiImage(selectedSection.id)}
+                  disabled={aiLoading}
+                  className="w-full flex items-center justify-center gap-1.5 py-2.5 text-[12px] font-semibold text-[#4E5968] border border-[#E5E8EB] rounded-xl hover:bg-[#F4F5F7] transition-colors disabled:opacity-50"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  AI 이미지 생성
+                </button>
+              )}
             </div>
 
             {/* 이 섹션 PNG */}
