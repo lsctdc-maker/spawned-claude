@@ -545,6 +545,8 @@ export default function PageEditor() {
             finally { setAiLoading(false); }
           }}
           aiLoading={aiLoading}
+          productName={productInfo.name}
+          productCategory={productInfo.category}
           onExportSectionPng={async (sectionId) => {
             const el = sectionRefs.current[sectionId];
             if (!el) return;

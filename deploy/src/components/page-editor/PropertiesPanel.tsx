@@ -2,8 +2,9 @@
 
 import { useRef, useState } from 'react';
 import { ManuscriptSection, ManuscriptSectionType } from '@/lib/types';
-import { Download, Upload, Sparkles, Type, Image as ImageIcon, Wand2 } from 'lucide-react';
+import { Download, Upload, Sparkles, Type, Image as ImageIcon, Wand2, Search } from 'lucide-react';
 import IconPicker, { ALL_ICONS } from './IconPicker';
+import CompetitorPanel from './CompetitorPanel';
 
 const SECTION_LABELS: Record<ManuscriptSectionType, string> = {
   hooking: '후킹', hero: '히어로', problem: '문제 공감', solution: '솔루션',
@@ -30,13 +31,18 @@ interface PropertiesPanelProps {
   onAiCopy?: (sectionId: string) => void;
   onAiImage?: (sectionId: string) => void;
   aiLoading?: boolean;
+  // 경쟁사 리서치
+  productName?: string;
+  productCategory?: string;
 }
 
 export default function PropertiesPanel({
   selectedSection, colors, onUpdateSection, onExportPng, onExportSectionPng,
   exporting, sectionImage, onImageUpload, sectionBgColor, onBgColorChange,
   sectionIcons, onIconChange, onAiCopy, onAiImage, aiLoading,
+  productName, productCategory,
 }: PropertiesPanelProps) {
+  const [showResearch, setShowResearch] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [iconPickerIndex, setIconPickerIndex] = useState<number | null>(null);
 
@@ -72,6 +78,29 @@ export default function PropertiesPanel({
               </div>
             ))}
           </div>
+        </div>
+
+        {/* 경쟁사 리서치 */}
+        <div className="border-t border-[#E5E8EB] pt-4">
+          <button
+            onClick={() => setShowResearch(!showResearch)}
+            className={`w-full flex items-center justify-center gap-1.5 py-2.5 text-[12px] font-semibold rounded-xl transition-colors ${
+              showResearch
+                ? 'text-[#3182F6] bg-[#EBF4FF]'
+                : 'text-[#4E5968] border border-[#E5E8EB] hover:bg-[#F4F5F7]'
+            }`}
+          >
+            <Search className="w-3.5 h-3.5" />
+            경쟁사 리서치
+          </button>
+          {showResearch && (
+            <div className="mt-3">
+              <CompetitorPanel
+                productName={productName || ''}
+                category={productCategory || ''}
+              />
+            </div>
+          )}
         </div>
 
         {/* 선택된 섹션 편집 */}
