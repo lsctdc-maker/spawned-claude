@@ -9,8 +9,9 @@ import SolutionSection from './sections/SolutionSection';
 import SpecsSection from './sections/SpecsSection';
 import CTASection from './sections/CTASection';
 import { ManuscriptSection } from '@/lib/types';
-import { Download, ChevronLeft, Eye, EyeOff } from 'lucide-react';
-import Button from '@/components/ui/Button';
+import { ChevronLeft } from 'lucide-react';
+import SectionList from './SectionList';
+import PropertiesPanel from './PropertiesPanel';
 
 /**
  * Phase 7: HTML 기반 상세페이지 에디터 (Hookable.ai 스타일)
@@ -27,9 +28,9 @@ export default function PageEditor() {
   const { state, dispatch } = useDetailPage();
   const { manuscriptSections, productPhotos, colorPalette, productInfo, extractedUSPs } = state;
   const pageRef = useRef<HTMLDivElement>(null);
+  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const [exporting, setExporting] = useState(false);
-  const [exportProgress, setExportProgress] = useState(0);
-  const [showOutlines, setShowOutlines] = useState(false);
+  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
 
   // 색상 팔레트
   const colors = useMemo(() => ({
@@ -47,6 +48,24 @@ export default function PageEditor() {
 
   // 제품 사진 URL
   const productPhotoUrl = productPhotos.length > 0 ? productPhotos[0].dataUrl : null;
+
+  // 선택된 섹션
+  const selectedSection = useMemo(() =>
+    visibleSections.find(s => s.id === selectedSectionId) || null,
+    [visibleSections, selectedSectionId]
+  );
+
+  // 섹션 선택 + 스크롤
+  const handleSelectSection = useCallback((id: string) => {
+    setSelectedSectionId(id);
+    const el = sectionRefs.current[id];
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, []);
+
+  // 섹션 데이터 업데이트
+  const handleUpdateSection = useCallback((id: string, data: Partial<ManuscriptSection>) => {
+    dispatch({ type: 'UPDATE_MANUSCRIPT_SECTION', payload: { id, data } });
+  }, [dispatch]);
 
   // 본문에서 bullet 포인트 추출
   const extractBulletPoints = useCallback((body: string, maxItems = 4): string[] => {
@@ -202,11 +221,11 @@ export default function PageEditor() {
   const handleExport = useCallback(async () => {
     if (!pageRef.current) return;
     setExporting(true);
-    setExportProgress(10);
+    // exportProgress(10);
 
     try {
       const { toPng } = await import('html-to-image');
-      setExportProgress(30);
+      // exportProgress(30);
 
       const dataUrl = await toPng(pageRef.current, {
         width: 860,
@@ -215,20 +234,20 @@ export default function PageEditor() {
         backgroundColor: '#FFFFFF',
       });
 
-      setExportProgress(90);
+      // exportProgress(90);
 
       const link = document.createElement('a');
       link.download = `${productInfo.name || 'detail'}_상세페이지.png`;
       link.href = dataUrl;
       link.click();
 
-      setExportProgress(100);
+      // exportProgress(100);
     } catch (e) {
       console.error('Export failed:', e);
       alert('내보내기 실패. 다시 시도해주세요.');
     } finally {
       setExporting(false);
-      setExportProgress(0);
+      // exportProgress(0);
     }
   }, [productInfo.name]);
 
@@ -263,45 +282,49 @@ export default function PageEditor() {
             <p className="text-[10px] text-[#8B95A1]">{visibleSections.length}개 섹션 · 클릭하여 편집</p>
           </div>
         </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowOutlines(!showOutlines)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg border transition-all ${
-              showOutlines ? 'text-[#3182F6] bg-[#EBF4FF] border-[#3182F6]/30' : 'text-[#8B95A1] border-[#E5E8EB]'
-            }`}
-          >
-            {showOutlines ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
-            섹션 구분
-          </button>
-
-          <Button
-            size="sm"
-            onClick={handleExport}
-            disabled={exporting}
-          >
-            <Download className="w-4 h-4 mr-1.5" />
-            {exporting ? `내보내는 중... ${exportProgress}%` : 'PNG 다운로드'}
-          </Button>
-        </div>
       </div>
 
-      {/* 메인 영역: 스크롤 가능한 페이지 */}
-      <div className="flex-1 overflow-auto flex justify-center py-8">
-        <div
-          ref={pageRef}
-          className="bg-white shadow-2xl rounded-lg overflow-hidden"
-          style={{ width: 860 }}
-        >
-          {visibleSections.map((section, i) => (
-            <div
-              key={section.id}
-              className={showOutlines ? 'ring-1 ring-blue-300/40 ring-inset' : ''}
-            >
-              {renderSection(section)}
-            </div>
-          ))}
+      {/* 3-column 레이아웃 */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* 좌측: 섹션 목록 */}
+        <SectionList
+          sections={visibleSections}
+          selectedId={selectedSectionId}
+          onSelect={handleSelectSection}
+        />
+
+        {/* 중앙: 페이지 프리뷰 */}
+        <div className="flex-1 overflow-auto flex justify-center py-8 bg-[#E5E8EB]">
+          <div
+            ref={pageRef}
+            className="bg-white shadow-2xl rounded-lg overflow-hidden"
+            style={{ width: 860 }}
+          >
+            {visibleSections.map((section) => (
+              <div
+                key={section.id}
+                ref={el => { sectionRefs.current[section.id] = el; }}
+                onClick={() => setSelectedSectionId(section.id)}
+                className={`cursor-pointer transition-all ${
+                  section.id === selectedSectionId
+                    ? 'ring-2 ring-[#3182F6]/50 ring-inset'
+                    : 'hover:ring-1 hover:ring-[#3182F6]/20 hover:ring-inset'
+                }`}
+              >
+                {renderSection(section)}
+              </div>
+            ))}
+          </div>
         </div>
+
+        {/* 우측: 속성 패널 */}
+        <PropertiesPanel
+          selectedSection={selectedSection}
+          colors={colors}
+          onUpdateSection={handleUpdateSection}
+          onExportPng={handleExport}
+          exporting={exporting}
+        />
       </div>
     </div>
   );
