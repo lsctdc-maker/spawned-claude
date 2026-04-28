@@ -13,6 +13,10 @@ import ReviewSection from './sections/ReviewSection';
 import TrustSection from './sections/TrustSection';
 import GuaranteeSection from './sections/GuaranteeSection';
 import DetailSection from './sections/DetailSection';
+import RecommendSection from './sections/RecommendSection';
+import FAQSection from './sections/FAQSection';
+import IngredientsSection from './sections/IngredientsSection';
+import ComparisonSection from './sections/ComparisonSection';
 import { ManuscriptSection } from '@/lib/types';
 import { ChevronLeft } from 'lucide-react';
 import SectionList from './SectionList';
@@ -36,6 +40,9 @@ export default function PageEditor() {
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const [exporting, setExporting] = useState(false);
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
+  const [zoom, setZoom] = useState(100);
+  const [sectionImages, setSectionImages] = useState<Record<string, string>>({});
+  const [sectionBgColors, setSectionBgColors] = useState<Record<string, string>>({});
 
   // 색상 팔레트
   const colors = useMemo(() => ({
@@ -71,6 +78,42 @@ export default function PageEditor() {
   const handleUpdateSection = useCallback((id: string, data: Partial<ManuscriptSection>) => {
     dispatch({ type: 'UPDATE_MANUSCRIPT_SECTION', payload: { id, data } });
   }, [dispatch]);
+
+  // 섹션 추가
+  const handleAddSection = useCallback((type: any) => {
+    const newSection: ManuscriptSection = {
+      id: `ms-${type}-${Date.now()}`,
+      sectionType: type,
+      title: '',
+      body: '',
+      imageGuide: '',
+      visible: true,
+      order: manuscriptSections.length,
+    };
+    dispatch({ type: 'ADD_MANUSCRIPT_SECTION', payload: newSection });
+  }, [dispatch, manuscriptSections.length]);
+
+  // 섹션 삭제
+  const handleDeleteSection = useCallback((id: string) => {
+    dispatch({ type: 'REMOVE_MANUSCRIPT_SECTION', payload: id });
+    if (selectedSectionId === id) setSelectedSectionId(null);
+  }, [dispatch, selectedSectionId]);
+
+  // 섹션 순서 변경
+  const handleReorder = useCallback((reordered: ManuscriptSection[]) => {
+    dispatch({ type: 'REORDER_MANUSCRIPT', payload: reordered });
+  }, [dispatch]);
+
+  // 섹션 표시/숨김
+  const handleToggleVisibility = useCallback((id: string) => {
+    dispatch({ type: 'TOGGLE_MANUSCRIPT_VISIBILITY', payload: id });
+  }, [dispatch]);
+
+  // 전체 섹션 (visible + hidden, 순서 유지)
+  const allSections = useMemo(() =>
+    [...manuscriptSections].sort((a, b) => a.order - b.order),
+    [manuscriptSections]
+  );
 
   // 본문에서 bullet 포인트 추출
   const extractBulletPoints = useCallback((body: string, maxItems = 4): string[] => {
@@ -375,31 +418,62 @@ export default function PageEditor() {
         {/* 좌측: 섹션 목록 */}
         <SectionList
           sections={visibleSections}
+          allSections={allSections}
           selectedId={selectedSectionId}
           onSelect={handleSelectSection}
+          onAdd={handleAddSection}
+          onDelete={handleDeleteSection}
+          onReorder={handleReorder}
+          onToggleVisibility={handleToggleVisibility}
         />
 
         {/* 중앙: 페이지 프리뷰 */}
-        <div className="flex-1 overflow-auto flex justify-center py-8 bg-[#E5E8EB]">
+        <div className="flex-1 overflow-auto flex flex-col items-center py-8 bg-[#E5E8EB] relative">
           <div
-            ref={pageRef}
-            className="bg-white shadow-2xl rounded-lg overflow-hidden"
-            style={{ width: 860 }}
+            style={{
+              transform: `scale(${zoom / 100})`,
+              transformOrigin: 'top center',
+            }}
           >
-            {visibleSections.map((section) => (
-              <div
-                key={section.id}
-                ref={el => { sectionRefs.current[section.id] = el; }}
-                onClick={() => setSelectedSectionId(section.id)}
-                className={`cursor-pointer transition-all ${
-                  section.id === selectedSectionId
-                    ? 'ring-2 ring-[#3182F6]/50 ring-inset'
-                    : 'hover:ring-1 hover:ring-[#3182F6]/20 hover:ring-inset'
+            <div
+              ref={pageRef}
+              className="bg-white shadow-2xl rounded-lg overflow-hidden"
+              style={{ width: 860 }}
+            >
+              {visibleSections.map((section) => (
+                <div
+                  key={section.id}
+                  ref={el => { sectionRefs.current[section.id] = el; }}
+                  onClick={() => setSelectedSectionId(section.id)}
+                  className={`cursor-pointer transition-all ${
+                    section.id === selectedSectionId
+                      ? 'ring-2 ring-[#3182F6]/50 ring-inset'
+                      : 'hover:ring-1 hover:ring-[#3182F6]/20 hover:ring-inset'
+                  }`}
+                >
+                  {renderSection(section)}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 하단 고정 줌 바 */}
+          <div className="sticky bottom-4 mt-4 flex items-center gap-3 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg border border-[#E5E8EB]">
+            {[50, 75, 100, 125, 150].map(z => (
+              <button
+                key={z}
+                onClick={() => setZoom(z)}
+                className={`px-2.5 py-1 text-[11px] font-medium rounded-md transition-all ${
+                  zoom === z ? 'bg-[#3182F6] text-white' : 'text-[#8B95A1] hover:text-[#191F28] hover:bg-[#F4F5F7]'
                 }`}
               >
-                {renderSection(section)}
-              </div>
+                {z}%
+              </button>
             ))}
+            <div className="w-px h-4 bg-[#E5E8EB]" />
+            <span className="text-[10px] text-[#8B95A1]">
+              높이: {pageRef.current?.scrollHeight || 0}px
+            </span>
           </div>
         </div>
 
@@ -410,6 +484,20 @@ export default function PageEditor() {
           onUpdateSection={handleUpdateSection}
           onExportPng={handleExport}
           exporting={exporting}
+          sectionImage={selectedSectionId ? sectionImages[selectedSectionId] || null : null}
+          onImageUpload={(id, dataUrl) => setSectionImages(prev => ({ ...prev, [id]: dataUrl }))}
+          sectionBgColor={selectedSectionId ? sectionBgColors[selectedSectionId] : undefined}
+          onBgColorChange={(id, color) => setSectionBgColors(prev => ({ ...prev, [id]: color }))}
+          onExportSectionPng={async (sectionId) => {
+            const el = sectionRefs.current[sectionId];
+            if (!el) return;
+            const { toPng } = await import('html-to-image');
+            const dataUrl = await toPng(el, { width: 860, pixelRatio: 2, quality: 1 });
+            const link = document.createElement('a');
+            link.download = `section_${sectionId}.png`;
+            link.href = dataUrl;
+            link.click();
+          }}
         />
       </div>
     </div>
