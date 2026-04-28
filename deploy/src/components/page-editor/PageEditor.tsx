@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef, useCallback, useState } from 'react';
+import { useMemo, useRef, useCallback, useState, useEffect } from 'react';
 import { useDetailPage } from '@/hooks/useDetailPage';
 import HeroSection from './sections/HeroSection';
 import FeatureGrid from './sections/FeatureGrid';
@@ -45,6 +45,8 @@ export default function PageEditor() {
   const [sectionBgColors, setSectionBgColors] = useState<Record<string, string>>({});
   const [sectionIcons, setSectionIcons] = useState<Record<string, string[]>>({});
   const [aiLoading, setAiLoading] = useState(false);
+  const [competitorInsights, setCompetitorInsights] = useState<any>(null);
+  const [researchStatus, setResearchStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
 
   // 색상 팔레트
   const colors = useMemo(() => ({
@@ -62,6 +64,29 @@ export default function PageEditor() {
 
   // 제품 사진 URL
   const productPhotoUrl = productPhotos.length > 0 ? productPhotos[0].dataUrl : null;
+
+  // 자동 경쟁사 리서치 (마운트 시 1회)
+  useEffect(() => {
+    if (!productInfo.name || researchStatus !== 'idle') return;
+    const query = productInfo.name + (productInfo.category ? ` ${productInfo.category}` : '');
+    setResearchStatus('loading');
+
+    fetch('/api/competitor-research', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, display: 20 }),
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setCompetitorInsights(data.data.insights);
+          setResearchStatus('done');
+        } else {
+          setResearchStatus('error');
+        }
+      })
+      .catch(() => setResearchStatus('error'));
+  }, [productInfo.name, productInfo.category]);
 
   // 선택된 섹션
   const selectedSection = useMemo(() =>
@@ -410,7 +435,11 @@ export default function PageEditor() {
           <div className="w-px h-5 bg-[#E5E8EB]" />
           <div>
             <h1 className="text-sm font-bold text-[#191F28]">상세페이지 에디터</h1>
-            <p className="text-[10px] text-[#8B95A1]">{visibleSections.length}개 섹션 · 클릭하여 편집</p>
+            <p className="text-[10px] text-[#8B95A1]">
+              {visibleSections.length}개 섹션
+              {researchStatus === 'loading' && ' · 🔍 경쟁사 분석 중...'}
+              {researchStatus === 'done' && competitorInsights && ` · ✅ ${competitorInsights.totalResults.toLocaleString()}개 경쟁상품 분석 완료`}
+            </p>
           </div>
         </div>
       </div>
@@ -545,8 +574,8 @@ export default function PageEditor() {
             finally { setAiLoading(false); }
           }}
           aiLoading={aiLoading}
-          productName={productInfo.name}
-          productCategory={productInfo.category}
+          competitorInsights={competitorInsights}
+          researchStatus={researchStatus}
           onExportSectionPng={async (sectionId) => {
             const el = sectionRefs.current[sectionId];
             if (!el) return;
