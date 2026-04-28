@@ -96,9 +96,8 @@ export default function PageEditor() {
 - 카테고리: ${insights.categoryPath}
 `.trim();
 
-        // 각 섹션별 AI 원고 생성 (원고가 비어있는 섹션만)
+        // 각 섹션별 AI 원고 생성 (경쟁사 데이터 기반 전체 재작성)
         for (const section of visibleSections) {
-          if (section.title && section.body) continue; // 이미 원고 있으면 스킵
 
           try {
             const copyRes = await fetch('/api/ai-copy', {
