@@ -8,6 +8,11 @@ import ProblemSection from './sections/ProblemSection';
 import SolutionSection from './sections/SolutionSection';
 import SpecsSection from './sections/SpecsSection';
 import CTASection from './sections/CTASection';
+import HowToSection from './sections/HowToSection';
+import ReviewSection from './sections/ReviewSection';
+import TrustSection from './sections/TrustSection';
+import GuaranteeSection from './sections/GuaranteeSection';
+import DetailSection from './sections/DetailSection';
 import { ManuscriptSection } from '@/lib/types';
 import { ChevronLeft } from 'lucide-react';
 import SectionList from './SectionList';
@@ -195,6 +200,87 @@ export default function PageEditor() {
             bgColor={colors.primary}
             {...baseProps}
           />
+        );
+
+      case 'howto':
+        return (
+          <HowToSection
+            key={section.id}
+            title={section.title || '이렇게 사용하세요'}
+            steps={extractBulletPoints(section.body, 4).map(text => ({ text }))}
+            bgColor={colors.primary}
+            {...baseProps}
+          />
+        );
+
+      case 'social_proof':
+        return (
+          <ReviewSection
+            key={section.id}
+            title={section.title || '실사용 후기'}
+            reviews={extractBulletPoints(section.body, 3).map((text, i) => ({
+              text: text.slice(0, 80),
+              author: `${['김', '이', '박', '최'][i % 4]}**님`,
+              rating: 5,
+            }))}
+            bgColor={colors.primary}
+            {...baseProps}
+          />
+        );
+
+      case 'trust':
+        return (
+          <TrustSection
+            key={section.id}
+            title={section.title || '인증 및 수상'}
+            badges={extractBulletPoints(section.body, 5).map(t => t.slice(0, 15))}
+            {...baseProps}
+          />
+        );
+
+      case 'guarantee':
+        return (
+          <GuaranteeSection
+            key={section.id}
+            title={section.title || '안심 보증'}
+            description={section.body?.slice(0, 150) || '걱정 없이 시작하세요'}
+            promises={['100% 환불 보증', '무료 교환', '24시간 고객지원']}
+            bgColor={colors.primary}
+            {...baseProps}
+          />
+        );
+
+      case 'detail':
+        return (
+          <DetailSection
+            key={section.id}
+            title={section.title || '상세 정보'}
+            description={section.body?.slice(0, 200) || '제품의 핵심 가치'}
+            stats={[
+              { value: '98%', label: '고객 만족도' },
+              { value: '4.8', label: '평균 평점' },
+              { value: '10만+', label: '누적 판매' },
+            ]}
+            {...baseProps}
+          />
+        );
+
+      case 'event_banner':
+        return (
+          <div key={section.id} className="w-[860px] py-16 px-16 text-center"
+            style={{ background: `linear-gradient(135deg, ${colors.accent} 0%, ${colors.primary} 100%)` }}>
+            <div className="text-[14px] font-bold tracking-widest text-white/70 mb-4">SPECIAL OFFER</div>
+            <h2 className="text-[40px] font-black text-white mb-4">
+              {section.title || '특별 할인 진행 중'}
+            </h2>
+            <p className="text-[16px] text-white/80 mb-8 max-w-[500px] mx-auto">
+              {section.body?.slice(0, 100) || '지금 바로 확인하세요'}
+            </p>
+            <div className="inline-block px-8 py-3.5 bg-white rounded-full text-[16px] font-bold"
+              style={{ color: colors.accent }}>
+              자세히 보기
+            </div>
+          </div>
         );
 
       // 범용 섹션 — 중앙 정렬
