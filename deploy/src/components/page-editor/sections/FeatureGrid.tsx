@@ -21,41 +21,37 @@ interface FeatureGridProps {
   bgColor: string;
   accentColor: string;
   textColor?: string;
-  columns?: 3 | 4;
   onUpdate?: (field: string, value: string) => void;
   onUpdateItem?: (index: number, field: string, value: string) => void;
 }
 
 export default function FeatureGrid({
   sectionTitle, items, bgColor, accentColor, textColor = '#FFFFFF',
-  columns = items.length <= 3 ? 3 : 4,
   onUpdate, onUpdateItem,
 }: FeatureGridProps) {
   const isDark = isDarkColor(bgColor);
-  const cardBg = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.03)';
-  const cardBorder = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)';
   const iconBg = isDark ? 'rgba(255,255,255,0.12)' : `${accentColor}12`;
   const iconColor = isDark ? '#FFFFFF' : accentColor;
   const titleColor = isDark ? '#FFFFFF' : '#191F28';
   const descColor = isDark ? 'rgba(255,255,255,0.75)' : '#4E5968';
+  const cardBg = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.02)';
+  const columns = items.length <= 3 ? 3 : items.length <= 4 ? 2 : 3;
 
   return (
-    <div className="w-[860px] py-16 px-14" style={{ backgroundColor: bgColor }}>
-      {/* 섹션 제목 */}
-      <div className="text-center mb-12">
-        <div className="w-8 h-1 rounded-full mx-auto mb-4" style={{ backgroundColor: accentColor }} />
-        <EditableText
-          value={sectionTitle}
-          onChange={v => onUpdate?.('sectionTitle', v)}
-          tag="h2"
-          className="text-[32px] font-extrabold tracking-tight"
-          style={{ color: titleColor }}
-        />
-      </div>
+    <div className="w-[860px] py-20 px-16 text-center" style={{ backgroundColor: bgColor }}>
+      {/* 중앙 정렬 섹션 제목 */}
+      <div className="w-10 h-[3px] rounded-full mx-auto mb-5" style={{ backgroundColor: isDark ? '#FFFFFF50' : accentColor }} />
+      <EditableText
+        value={sectionTitle}
+        onChange={v => onUpdate?.('sectionTitle', v)}
+        tag="h2"
+        className="text-[36px] font-black tracking-tight mb-14"
+        style={{ color: titleColor }}
+      />
 
-      {/* 카드 그리드 */}
+      {/* 카드 그리드 — 중앙 정렬 */}
       <div
-        className="grid gap-5"
+        className="grid gap-5 max-w-[720px] mx-auto"
         style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}
       >
         {items.map((item, i) => {
@@ -63,14 +59,10 @@ export default function FeatureGrid({
           return (
             <div
               key={i}
-              className="rounded-2xl p-7 text-center transition-all hover:scale-[1.02]"
-              style={{
-                backgroundColor: cardBg,
-                border: `1px solid ${cardBorder}`,
-                backdropFilter: 'blur(8px)',
-              }}
+              className="rounded-2xl p-7"
+              style={{ backgroundColor: cardBg }}
             >
-              {/* 아이콘 원형 */}
+              {/* 아이콘 원형 — 중앙 */}
               <div
                 className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5"
                 style={{ backgroundColor: iconBg }}
@@ -78,21 +70,21 @@ export default function FeatureGrid({
                 <Icon className="w-7 h-7" style={{ color: iconColor }} />
               </div>
 
-              {/* 제목 */}
+              {/* 제목 — 중앙 */}
               <EditableText
                 value={item.title}
                 onChange={v => onUpdateItem?.(i, 'title', v)}
                 tag="h3"
-                className="text-base font-bold mb-2"
+                className="text-[16px] font-bold mb-2"
                 style={{ color: titleColor }}
               />
 
-              {/* 설명 */}
+              {/* 설명 — 중앙 */}
               <EditableText
                 value={item.description}
                 onChange={v => onUpdateItem?.(i, 'description', v)}
                 tag="p"
-                className="text-sm leading-relaxed"
+                className="text-[13px] leading-[1.7]"
                 style={{ color: descColor }}
               />
             </div>

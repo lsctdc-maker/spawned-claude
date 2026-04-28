@@ -24,42 +24,44 @@ export default function ProblemSection({
   title, painPoints, accentColor, onUpdate, onUpdateItem,
 }: ProblemSectionProps) {
   return (
-    <div className="w-[860px] py-16 px-14" style={{ backgroundColor: '#F8F9FA' }}>
-      {/* 섹션 제목 */}
-      <div className="text-center mb-10">
-        <div className="w-8 h-1 rounded-full mx-auto mb-4" style={{ backgroundColor: accentColor }} />
+    <div className="w-[860px] py-20 px-16" style={{ backgroundColor: '#F8F9FA' }}>
+      {/* 중앙 정렬 섹션 제목 */}
+      <div className="text-center mb-14">
+        <div className="w-10 h-[3px] rounded-full mx-auto mb-5" style={{ backgroundColor: accentColor }} />
         <EditableText
           value={title}
           onChange={v => onUpdate?.('title', v)}
           tag="h2"
-          className="text-[32px] font-extrabold tracking-tight text-[#191F28]"
+          className="text-[36px] font-black tracking-tight text-[#191F28]"
         />
       </div>
 
-      {/* 페인 포인트 카드 */}
-      <div className="space-y-4 max-w-[680px] mx-auto">
+      {/* 카드 가로 배치 — 중앙 정렬 */}
+      <div className="flex justify-center gap-5">
         {painPoints.map((point, i) => {
           const Icon = ICONS[point.icon] || Frown;
           return (
             <div
               key={i}
-              className="flex items-start gap-5 bg-white rounded-2xl px-7 py-6"
+              className="w-[240px] bg-white rounded-2xl px-6 py-8 text-center"
               style={{
-                boxShadow: '0 2px 16px rgba(0,0,0,0.04), 0 1px 4px rgba(0,0,0,0.02)',
-                borderLeft: `4px solid ${accentColor}`,
+                boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
               }}
             >
+              {/* 아이콘 원형 — 중앙 */}
               <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ backgroundColor: `${accentColor}12` }}
+                className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-5"
+                style={{ backgroundColor: `${accentColor}15` }}
               >
-                <Icon className="w-5 h-5" style={{ color: accentColor }} />
+                <Icon className="w-6 h-6" style={{ color: accentColor }} />
               </div>
+
+              {/* 텍스트 — 중앙 */}
               <EditableText
                 value={point.text}
                 onChange={v => onUpdateItem?.(i, v)}
                 tag="p"
-                className="text-[15px] leading-relaxed text-[#4E5968] pt-2.5 flex-1"
+                className="text-[14px] leading-[1.8] text-[#4E5968]"
               />
             </div>
           );

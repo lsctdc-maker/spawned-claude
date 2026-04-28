@@ -197,19 +197,19 @@ export default function PageEditor() {
           />
         );
 
-      // 아직 전용 컴포넌트 없는 섹션 → 범용 렌더링
+      // 범용 섹션 — 중앙 정렬
       default:
         return (
           <div
             key={section.id}
-            className="w-[860px] py-14 px-14"
+            className="w-[860px] py-20 px-16 text-center"
             style={{ backgroundColor: section.order % 2 === 0 ? '#FFFFFF' : '#F8F9FA' }}
           >
-            <div className="w-8 h-1 rounded-full mb-4" style={{ backgroundColor: colors.accent }} />
-            <h2 className="text-[28px] font-extrabold tracking-tight text-[#191F28] mb-4">
+            <div className="w-10 h-[3px] rounded-full mx-auto mb-5" style={{ backgroundColor: colors.accent }} />
+            <h2 className="text-[32px] font-black tracking-tight text-[#191F28] mb-6 max-w-[640px] mx-auto">
               {section.title || '섹션 제목'}
             </h2>
-            <p className="text-[15px] leading-[1.8] text-[#4E5968] whitespace-pre-line">
+            <p className="text-[15px] leading-[1.9] text-[#4E5968] whitespace-pre-line max-w-[600px] mx-auto">
               {section.body || '섹션 내용을 입력하세요'}
             </p>
           </div>
