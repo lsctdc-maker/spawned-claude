@@ -65,27 +65,79 @@ export default function PageEditor() {
   // 제품 사진 URL
   const productPhotoUrl = productPhotos.length > 0 ? productPhotos[0].dataUrl : null;
 
-  // 자동 경쟁사 리서치 (마운트 시 1회)
+  // 자동 경쟁사 리서치 → AI 원고 개선 파이프라인
   useEffect(() => {
     if (!productInfo.name || researchStatus !== 'idle') return;
     const query = productInfo.name + (productInfo.category ? ` ${productInfo.category}` : '');
     setResearchStatus('loading');
 
-    fetch('/api/competitor-research', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query, display: 20 }),
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          setCompetitorInsights(data.data.insights);
-          setResearchStatus('done');
-        } else {
-          setResearchStatus('error');
+    (async () => {
+      try {
+        // Step 1: 네이버 경쟁사 검색
+        const res = await fetch('/api/competitor-research', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query, display: 20 }),
+        });
+        const data = await res.json();
+        if (!data.success) { setResearchStatus('error'); return; }
+
+        setCompetitorInsights(data.data.insights);
+
+        // Step 2: 경쟁사 데이터 기반으로 AI가 각 섹션 원고 개선
+        const insights = data.data.insights;
+        const usps = extractedUSPs.map(u => u.title).join(', ');
+        const competitorContext = `
+경쟁사 분석 결과:
+- 경쟁 상품 수: ${insights.totalResults}개
+- 평균가: ${insights.avgPrice?.toLocaleString()}원 (${insights.priceRange?.min?.toLocaleString()}~${insights.priceRange?.max?.toLocaleString()}원)
+- 인기 키워드: ${insights.commonKeywords?.slice(0, 10).join(', ')}
+- 상위 브랜드: ${insights.topBrands?.slice(0, 5).join(', ')}
+- 카테고리: ${insights.categoryPath}
+`.trim();
+
+        // 각 섹션별 AI 원고 생성 (원고가 비어있는 섹션만)
+        for (const section of visibleSections) {
+          if (section.title && section.body) continue; // 이미 원고 있으면 스킵
+
+          try {
+            const copyRes = await fetch('/api/ai-copy', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                sectionType: section.sectionType,
+                productName: productInfo.name,
+                category: productInfo.category,
+                usps: extractedUSPs.map(u => u.title),
+                competitorContext,
+              }),
+            });
+            if (copyRes.ok) {
+              const copyData = await copyRes.json();
+              if (copyData.title || copyData.body) {
+                dispatch({
+                  type: 'UPDATE_MANUSCRIPT_SECTION',
+                  payload: {
+                    id: section.id,
+                    data: {
+                      ...(copyData.title ? { title: copyData.title } : {}),
+                      ...(copyData.body ? { body: copyData.body } : {}),
+                    },
+                  },
+                });
+              }
+            }
+          } catch (e) {
+            console.warn(`AI copy failed for ${section.sectionType}:`, e);
+          }
         }
-      })
-      .catch(() => setResearchStatus('error'));
+
+        setResearchStatus('done');
+      } catch (e) {
+        console.error('Research pipeline error:', e);
+        setResearchStatus('error');
+      }
+    })();
   }, [productInfo.name, productInfo.category]);
 
   // 선택된 섹션
@@ -532,7 +584,7 @@ export default function PageEditor() {
             try {
               const section = visibleSections.find(s => s.id === sectionId);
               if (!section) return;
-              const res = await fetch('/api/copywriting', {
+              const res = await fetch('/api/ai-copy', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
