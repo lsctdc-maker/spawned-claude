@@ -111,8 +111,10 @@ export default function KonvaEditor() {
     setExporting(false);
   }, [productInfo.name]);
 
+  const productPhotoUrl = productPhotos.length > 0 ? productPhotos[0].dataUrl : null;
+
   const renderSection = useCallback((section: ManuscriptSection, y: number) => {
-    const p = { y, title: section.title, body: section.body, colors, sectionId: section.id, onSelect: setSelectedSectionId };
+    const p = { y, title: section.title, body: section.body, colors, sectionId: section.id, onSelect: setSelectedSectionId, productImageUrl: productPhotoUrl };
     switch (section.sectionType) {
       case 'hooking': case 'hero': return <HeroSection key={section.id} {...p} />;
       case 'problem': return <ProblemSection key={section.id} {...p} />;
@@ -152,7 +154,50 @@ export default function KonvaEditor() {
 
         <div className="flex-1 overflow-auto flex justify-center py-8 bg-[#E5E8EB]">
           <div style={{ transform: `scale(${zoom})`, transformOrigin: 'top center' }}>
-            <Stage ref={stageRef} width={W} height={totalHeight}>
+            <Stage
+              ref={stageRef}
+              width={W}
+              height={totalHeight}
+              onDblClick={(e: any) => {
+                // 더블클릭 텍스트 편집
+                const target = e.target;
+                if (target.className !== 'Text') return;
+                const textNode = target;
+                const stageBox = stageRef.current.container().getBoundingClientRect();
+                const textPos = textNode.absolutePosition();
+
+                const textarea = document.createElement('textarea');
+                textarea.value = textNode.text();
+                textarea.style.position = 'absolute';
+                textarea.style.left = `${stageBox.left + textPos.x * zoom}px`;
+                textarea.style.top = `${stageBox.top + textPos.y * zoom}px`;
+                textarea.style.width = `${textNode.width() * zoom}px`;
+                textarea.style.minHeight = `${textNode.height() * zoom}px`;
+                textarea.style.fontSize = `${textNode.fontSize() * zoom}px`;
+                textarea.style.fontFamily = textNode.fontFamily();
+                textarea.style.color = textNode.fill();
+                textarea.style.background = 'rgba(255,255,255,0.95)';
+                textarea.style.border = '2px solid #3182F6';
+                textarea.style.borderRadius = '8px';
+                textarea.style.padding = '8px';
+                textarea.style.zIndex = '9999';
+                textarea.style.resize = 'none';
+                textarea.style.outline = 'none';
+                textarea.style.lineHeight = String(textNode.lineHeight());
+                document.body.appendChild(textarea);
+                textarea.focus();
+                textarea.select();
+
+                const removeTextarea = () => {
+                  textNode.text(textarea.value);
+                  document.body.removeChild(textarea);
+                };
+                textarea.addEventListener('blur', removeTextarea);
+                textarea.addEventListener('keydown', (ev) => {
+                  if (ev.key === 'Escape') { removeTextarea(); }
+                });
+              }}
+            >
               <Layer>
                 {sectionPositions.map((pos, i) => renderSection(visibleSections[i], pos.y))}
               </Layer>

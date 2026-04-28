@@ -1,6 +1,27 @@
 'use client';
 
-import { Group, Rect, Text, Circle, Line } from 'react-konva';
+import { Group, Rect, Text, Circle, Line, Image as KonvaImage } from 'react-konva';
+import useImage from 'use-image';
+
+// Product image component with auto-loading
+function ProductImage({ src, x, y, width, height, draggable = true }: {
+  src?: string | null; x: number; y: number; width: number; height: number; draggable?: boolean;
+}) {
+  const [image] = useImage(src || '', 'anonymous');
+  if (!src || !image) {
+    return (
+      <Group>
+        <Rect x={x} y={y} width={width} height={height} fill="rgba(255,255,255,0.08)" cornerRadius={16} stroke="rgba(255,255,255,0.15)" strokeWidth={1} />
+        <Text text="제품 이미지" x={x + width/2 - 35} y={y + height/2 - 8} fontSize={13} fill="rgba(255,255,255,0.3)" />
+      </Group>
+    );
+  }
+  // Fit image to box maintaining aspect ratio
+  const scale = Math.min(width / image.width, height / image.height);
+  const imgW = image.width * scale;
+  const imgH = image.height * scale;
+  return <KonvaImage image={image} x={x + (width - imgW) / 2} y={y + (height - imgH) / 2} width={imgW} height={imgH} draggable={draggable} shadowColor="rgba(0,0,0,0.3)" shadowBlur={24} shadowOffsetY={12} />;
+}
 
 // Color utility
 function hexToRgba(hex: string, alpha: number): string {
@@ -18,12 +39,13 @@ interface SectionProps {
   colors: { primary: string; accent: string; text: string };
   onSelect?: (id: string) => void;
   sectionId: string;
+  productImageUrl?: string | null;
 }
 
 const W = 860;
 
 // 1. Hero Section (height: 720)
-export function HeroSection({ y, title, body, colors, sectionId, onSelect }: SectionProps & { productImageUrl?: string }) {
+export function HeroSection({ y, title, body, colors, sectionId, onSelect, productImageUrl }: SectionProps) {
   return (
     <Group y={y} onClick={() => onSelect?.(sectionId)}>
       {/* Background gradient - dark primary */}
@@ -36,9 +58,8 @@ export function HeroSection({ y, title, body, colors, sectionId, onSelect }: Sec
       <Text text={title || '제품명을 입력하세요'} x={80} y={440} width={700} fontSize={48} fontStyle="900" fontFamily="'Noto Sans KR', sans-serif" fill="#FFFFFF" align="center" draggable />
       {/* Body */}
       <Text text={body?.slice(0, 150) || '제품 설명을 입력하세요'} x={130} y={550} width={600} fontSize={17} fontFamily="'Noto Sans KR', sans-serif" fill="rgba(255,255,255,0.8)" align="center" lineHeight={1.8} draggable />
-      {/* Product image placeholder */}
-      <Rect x={W/2 - 120} y={100} width={240} height={280} fill="rgba(255,255,255,0.08)" cornerRadius={20} stroke="rgba(255,255,255,0.15)" strokeWidth={2} draggable />
-      <Text text="제품 이미지" x={W/2 - 60} y={220} fontSize={14} fill="rgba(255,255,255,0.3)" />
+      {/* Product image */}
+      <ProductImage src={productImageUrl} x={W/2 - 130} y={80} width={260} height={300} />
     </Group>
   );
 }
@@ -117,16 +138,15 @@ export function FeaturesSection({ y, title, body, colors, sectionId, onSelect }:
 }
 
 // 4. Solution Section (height: 580)
-export function SolutionSection({ y, title, body, colors, sectionId, onSelect }: SectionProps) {
+export function SolutionSection({ y, title, body, colors, sectionId, onSelect, productImageUrl }: SectionProps) {
   return (
     <Group y={y} onClick={() => onSelect?.(sectionId)}>
       <Rect width={W} height={580} fill="#FFFFFF" />
       <Rect x={W/2 - 20} y={40} width={40} height={3} fill={colors.accent} cornerRadius={2} />
       <Text text={title || '솔루션'} x={80} y={60} width={700} fontSize={36} fontStyle="900" fontFamily="'Noto Sans KR', sans-serif" fill="#191F28" align="center" draggable />
       <Text text={body?.slice(0, 200) || '제품이 어떻게 문제를 해결하는지'} x={130} y={130} width={600} fontSize={15} fontFamily="'Noto Sans KR', sans-serif" fill="#4E5968" align="center" lineHeight={1.9} draggable />
-      {/* Product placeholder */}
-      <Rect x={W/2 - 140} y={250} width={280} height={260} fill={hexToRgba(colors.primary, 0.05)} cornerRadius={24} draggable />
-      <Text text="제품 이미지" x={W/2 - 50} y={370} fontSize={14} fill="#8B95A1" />
+      {/* Product image */}
+      <ProductImage src={productImageUrl} x={W/2 - 130} y={240} width={260} height={240} />
       {/* Check points */}
       {['즉각적인 효과', '안전한 성분', '지속되는 결과'].map((cp, i) => (
         <Group key={i}>
