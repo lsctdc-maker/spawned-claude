@@ -1,6 +1,6 @@
 'use client';
 
-import { useReducer, useEffect, useState } from 'react';
+import { useReducer, useEffect, useState, useCallback } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { DetailPageContext, detailPageReducer, initialState } from '@/hooks/useDetailPage';
 import { DetailPageState } from '@/lib/types';
@@ -10,6 +10,8 @@ import dynamic from 'next/dynamic';
 const KonvaEditor = dynamic(() => import('@/components/konva-editor/KonvaEditor'), { ssr: false });
 import Step5Export from '@/components/steps/Step5Export';
 import { DESIGN_STEP_LABELS } from '@/lib/constants';
+import { supabase } from '@/lib/supabase';
+import LoginModal from '@/components/auth/LoginModal';
 
 const PLAN_STATE_KEY = 'dm_plan_state';
 
@@ -29,6 +31,21 @@ function loadDesignInitialState(): DetailPageState {
 
 export default function DesignPage() {
   const [ready, setReady] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) setShowLogin(true);
+    });
+  }, []);
+
+  const handleLoginClose = useCallback(() => {
+    setShowLogin(false);
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) window.location.href = '/';
+    });
+  }, []);
+
   const [designInitState] = useState<DetailPageState>(() => {
     // Runs only on client
     if (typeof window !== 'undefined') return loadDesignInitialState();
@@ -62,6 +79,7 @@ export default function DesignPage() {
     return (
       <DetailPageContext.Provider value={{ state, dispatch }}>
         {renderStep()}
+        <LoginModal open={showLogin} onClose={handleLoginClose} />
       </DetailPageContext.Provider>
     );
   }
@@ -88,6 +106,7 @@ export default function DesignPage() {
           </div>
         </main>
       </div>
+      <LoginModal open={showLogin} onClose={handleLoginClose} />
     </DetailPageContext.Provider>
   );
 }

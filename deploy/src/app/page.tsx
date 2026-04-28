@@ -53,10 +53,16 @@ export default function LandingPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link
-                  href="/plan"
+                  href="/plan?new=1"
                   className="inline-flex items-center justify-center bg-[#3182F6] text-white px-8 py-4 rounded-xl font-semibold text-base hover:bg-[#1B64DA] active:scale-[0.98] transition-all duration-200"
                 >
                   AI 기획 시작하기
+                </Link>
+                <Link
+                  href="/plan"
+                  className="inline-flex items-center justify-center border border-[#E5E8EB] text-[#4E5968] px-8 py-4 rounded-xl font-semibold text-base hover:bg-[#F4F5F7] active:scale-[0.98] transition-all duration-200"
+                >
+                  이어서 작업하기
                 </Link>
                 <Link
                   href="/design"
@@ -99,7 +105,7 @@ export default function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <Link href="/plan" className="inline-flex items-center justify-center w-full py-3 rounded-xl bg-[#3182F6]/10 text-[#3182F6] font-semibold text-sm hover:bg-[#3182F6]/20 active:scale-[0.98] transition-all duration-200">
+                <Link href="/plan?new=1" className="inline-flex items-center justify-center w-full py-3 rounded-xl bg-[#3182F6]/10 text-[#3182F6] font-semibold text-sm hover:bg-[#3182F6]/20 active:scale-[0.98] transition-all duration-200">
                   AI 기획 시작하기
                 </Link>
               </motion.div>
@@ -200,8 +206,11 @@ export default function LandingPage() {
             <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">지금 바로 시작하세요</h2>
             <p className="text-white/70 text-base mb-10 max-w-lg mx-auto">회원가입 없이 무료로 AI 기획과 이미지 제작을 경험할 수 있습니다.</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link href="/plan" className="inline-flex items-center justify-center bg-white text-[#3182F6] px-8 py-4 rounded-xl font-semibold text-base hover:bg-white/90 active:scale-[0.98] transition-all duration-200">
+              <Link href="/plan?new=1" className="inline-flex items-center justify-center bg-white text-[#3182F6] px-8 py-4 rounded-xl font-semibold text-base hover:bg-white/90 active:scale-[0.98] transition-all duration-200">
                 AI 기획 시작하기
+              </Link>
+              <Link href="/plan" className="inline-flex items-center justify-center border border-white/30 text-white px-8 py-4 rounded-xl font-semibold text-base hover:bg-white/10 active:scale-[0.98] transition-all duration-200">
+                이어서 작업하기
               </Link>
               <Link href="/design" className="inline-flex items-center justify-center border border-white/30 text-white px-8 py-4 rounded-xl font-semibold text-base hover:bg-white/10 active:scale-[0.98] transition-all duration-200">
                 이미지 제작 바로가기

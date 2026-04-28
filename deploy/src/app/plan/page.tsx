@@ -14,6 +14,7 @@ import { saveProject, updateProject, loadProject, ProjectData } from '@/lib/db';
 import { supabase } from '@/lib/supabase';
 import { DetailPageState } from '@/lib/types';
 import { ChevronLeft, Save, Check, Loader2 } from 'lucide-react';
+import LoginModal from '@/components/auth/LoginModal';
 
 const PLAN_STATE_KEY = 'dm_plan_state';
 const AUTOSAVE_DELAY = 5000;
@@ -69,7 +70,10 @@ function PlanPageInner() {
   const [projectId, setProjectId] = useState<string | null>(null);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [showResumeChoice, setShowResumeChoice] = useState(false);
+  const pendingSavedStateRef = useRef<DetailPageState | null>(null);
 
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastSavedRef = useRef<string>('');
@@ -78,6 +82,7 @@ function PlanPageInner() {
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       setIsLoggedIn(!!user);
+      if (!user) setShowLogin(true);
     });
   }, []);
 
@@ -114,19 +119,36 @@ function PlanPageInner() {
       });
     } else {
       // Try localStorage recovery
-      try {
-        const saved = localStorage.getItem(PLAN_STATE_KEY);
-        if (saved) {
-          const parsed = JSON.parse(saved) as DetailPageState;
-          if (parsed.productInfo) dispatch({ type: 'UPDATE_PRODUCT', payload: parsed.productInfo });
-          if (parsed.currentStep > 1) dispatch({ type: 'SET_STEP', payload: parsed.currentStep });
-          if (parsed.interviewCompleted) dispatch({ type: 'SET_INTERVIEW_COMPLETED', payload: true });
-          if (parsed.extractedUSPs?.length > 0) dispatch({ type: 'SET_USPS', payload: parsed.extractedUSPs });
-          if (parsed.manuscriptSections?.length > 0) dispatch({ type: 'SET_MANUSCRIPT', payload: parsed.manuscriptSections });
-          if (parsed.selectedTone) dispatch({ type: 'SET_TONE', payload: parsed.selectedTone as any });
-        }
-      } catch { /* ignore */ }
-      setLoaded(true);
+      const isNewStart = searchParams.get('new') === '1';
+      if (isNewStart) {
+        localStorage.removeItem(PLAN_STATE_KEY);
+        setLoaded(true);
+      } else {
+        try {
+          const saved = localStorage.getItem(PLAN_STATE_KEY);
+          if (saved) {
+            const parsed = JSON.parse(saved) as DetailPageState;
+            // Check there's actually meaningful data to resume
+            const hasMeaningfulData = parsed.productInfo?.name || parsed.currentStep > 1;
+            if (hasMeaningfulData) {
+              pendingSavedStateRef.current = parsed;
+              setShowResumeChoice(true);
+              setLoaded(true);
+            } else {
+              // Data exists but is trivial — just apply it silently
+              if (parsed.productInfo) dispatch({ type: 'UPDATE_PRODUCT', payload: parsed.productInfo });
+              if (parsed.interviewCompleted) dispatch({ type: 'SET_INTERVIEW_COMPLETED', payload: true });
+              if (parsed.extractedUSPs?.length > 0) dispatch({ type: 'SET_USPS', payload: parsed.extractedUSPs });
+              if (parsed.manuscriptSections?.length > 0) dispatch({ type: 'SET_MANUSCRIPT', payload: parsed.manuscriptSections });
+              if (parsed.selectedTone) dispatch({ type: 'SET_TONE', payload: parsed.selectedTone as any });
+              setLoaded(true);
+            }
+          } else {
+            setLoaded(true);
+          }
+        } catch { /* ignore */ }
+        if (!loaded) setLoaded(true);
+      }
     }
   }, [searchParams]);
 
@@ -212,6 +234,29 @@ function PlanPageInner() {
     window.location.href = '/';
   }, [saveStatus, isLoggedIn, handleSave]);
 
+  const applyPendingState = useCallback((parsed: DetailPageState) => {
+    if (parsed.productInfo) dispatch({ type: 'UPDATE_PRODUCT', payload: parsed.productInfo });
+    if (parsed.currentStep > 1) dispatch({ type: 'SET_STEP', payload: parsed.currentStep });
+    if (parsed.interviewCompleted) dispatch({ type: 'SET_INTERVIEW_COMPLETED', payload: true });
+    if (parsed.extractedUSPs?.length > 0) dispatch({ type: 'SET_USPS', payload: parsed.extractedUSPs });
+    if (parsed.manuscriptSections?.length > 0) dispatch({ type: 'SET_MANUSCRIPT', payload: parsed.manuscriptSections });
+    if (parsed.selectedTone) dispatch({ type: 'SET_TONE', payload: parsed.selectedTone as any });
+  }, [dispatch]);
+
+  const handleResumeWork = useCallback(() => {
+    if (pendingSavedStateRef.current) {
+      applyPendingState(pendingSavedStateRef.current);
+      pendingSavedStateRef.current = null;
+    }
+    setShowResumeChoice(false);
+  }, [applyPendingState]);
+
+  const handleNewStart = useCallback(() => {
+    localStorage.removeItem(PLAN_STATE_KEY);
+    pendingSavedStateRef.current = null;
+    setShowResumeChoice(false);
+  }, []);
+
   const renderStep = () => {
     switch (state.currentStep) {
       case 1: return <Step1ProductInfo />;
@@ -234,6 +279,28 @@ function PlanPageInner() {
 
   return (
     <DetailPageContext.Provider value={{ state, dispatch }}>
+      {showResumeChoice && (
+        <div className="fixed inset-0 z-[200] bg-black/50 flex items-center justify-center">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 text-center shadow-2xl">
+            <h2 className="text-lg font-bold text-[#191F28] mb-2">이전 작업이 있습니다</h2>
+            <p className="text-sm text-[#8B95A1] mb-6">이전에 작업하던 기획을 이어서 진행하시겠습니까?</p>
+            <div className="flex gap-3">
+              <button
+                onClick={handleNewStart}
+                className="flex-1 py-3 border border-[#E5E8EB] rounded-xl text-sm font-semibold text-[#191F28] hover:bg-[#F4F5F7] transition-colors"
+              >
+                새로 시작
+              </button>
+              <button
+                onClick={handleResumeWork}
+                className="flex-1 py-3 bg-[#3182F6] text-white rounded-xl text-sm font-semibold hover:bg-[#2B71DD] transition-colors"
+              >
+                이어하기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="flex flex-col bg-[#F8F9FA] fixed inset-0 z-50">
         {/* Top Bar */}
         <div className="flex items-center justify-between px-6 py-3 bg-white border-b border-[#E5E8EB] flex-shrink-0">
@@ -296,6 +363,18 @@ function PlanPageInner() {
           </aside>
         </div>
       </div>
+
+      <LoginModal
+        open={showLogin}
+        onClose={() => {
+          setShowLogin(false);
+          // Re-check auth after modal closes
+          supabase.auth.getUser().then(({ data: { user } }) => {
+            setIsLoggedIn(!!user);
+            if (!user) window.location.href = '/';
+          });
+        }}
+      />
     </DetailPageContext.Provider>
   );
 }
