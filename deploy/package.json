@@ -21,12 +21,15 @@
     "framer-motion": "^11.0.3",
     "html-to-image": "^1.11.13",
     "html2canvas": "^1.4.1",
+    "konva": "^9.3.22",
     "lucide-react": "^0.469.0",
     "next": "^14.2.35",
     "openai": "^4.73.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-konva": "^18.2.14",
     "sharp": "^0.34.5",
+    "use-image": "^1.1.4",
     "zustand": "^5.0.12"
   },
   "devDependencies": {
