@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDetailPage } from '@/hooks/useDetailPage';
 import { CATEGORIES, TARGET_AGE_OPTIONS, TARGET_GENDER_OPTIONS, TONE_STYLES } from '@/lib/constants';
@@ -46,6 +46,31 @@ export default function Step1ProductInfo() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isDragging, setIsDragging] = useState(false);
   const [showAllCategories, setShowAllCategories] = useState(false);
+
+  // Naver Shopping auto-search
+  const [competitorData, setCompetitorData] = useState<any>(null);
+  const [searchingCompetitors, setSearchingCompetitors] = useState(false);
+
+  useEffect(() => {
+    const name = productInfo.name;
+    if (!name || name.length < 2) return;
+
+    const timer = setTimeout(async () => {
+      setSearchingCompetitors(true);
+      try {
+        const res = await fetch('/api/competitor-research', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: name, display: 10 }),
+        });
+        const data = await res.json();
+        if (data.success) setCompetitorData(data.data.insights);
+      } catch {}
+      setSearchingCompetitors(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [productInfo.name]);
 
   // Competitor analysis
   const [showAnalysis, setShowAnalysis] = useState(false);
@@ -253,6 +278,23 @@ export default function Step1ProductInfo() {
           onChange={(e) => handleChange('name', e.target.value)}
           error={errors.name}
         />
+
+        {searchingCompetitors && (
+          <div className="text-xs text-blue-500 flex items-center gap-1 mt-1">
+            <span className="animate-pulse">🔍</span> 경쟁사 분석 중...
+          </div>
+        )}
+        {competitorData && (
+          <div className="mt-2 p-3 bg-blue-50 rounded-lg text-xs space-y-1">
+            <div className="font-bold text-blue-600">경쟁사 분석 완료</div>
+            <div>평균가: {competitorData.avgPrice?.toLocaleString()}원</div>
+            <div className="flex flex-wrap gap-1 mt-1">
+              {competitorData.commonKeywords?.slice(0, 6).map((kw: string, i: number) => (
+                <span key={i} className="px-1.5 py-0.5 bg-white rounded text-gray-600">{kw}</span>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* ===== Mall URL ===== */}
         <Input

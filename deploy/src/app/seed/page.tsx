@@ -166,7 +166,7 @@ export default function SeedPage() {
       // Clear any stale canvas editor data
       localStorage.removeItem('dm_canvas_editor');
       // Write the sample state
-      localStorage.setItem('dm_plan_state', JSON.stringify(sampleState));
+      localStorage.setItem('dm_seed_state', JSON.stringify(sampleState));
       setDone(true);
       // Full page navigation (not client-side routing) to avoid React transition errors
       setTimeout(() => {

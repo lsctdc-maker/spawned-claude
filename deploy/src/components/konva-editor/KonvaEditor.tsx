@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef, useCallback, useState, useEffect } from 'react';
+import { useMemo, useRef, useCallback, useState } from 'react';
 import { Stage, Layer } from 'react-konva';
 import { useDetailPage } from '@/hooks/useDetailPage';
 import { ManuscriptSection } from '@/lib/types';
@@ -20,8 +20,6 @@ export default function KonvaEditor() {
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
   const [zoom, setZoom] = useState(0.7);
   const [exporting, setExporting] = useState(false);
-  const [competitorInsights, setCompetitorInsights] = useState<any>(null);
-  const [researchStatus, setResearchStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
 
   const colors = useMemo(() => ({
     primary: colorPalette?.colors[0]?.hex || '#1a1a2e',
@@ -52,43 +50,6 @@ export default function KonvaEditor() {
   const totalHeight = sectionPositions.length > 0
     ? sectionPositions[sectionPositions.length - 1].y + sectionPositions[sectionPositions.length - 1].height
     : 600;
-
-  // Auto competitor research + AI copy
-  useEffect(() => {
-    if (!productInfo.name || researchStatus !== 'idle') return;
-    setResearchStatus('loading');
-    const query = productInfo.name + (productInfo.category ? ` ${productInfo.category}` : '');
-
-    (async () => {
-      try {
-        const res = await fetch('/api/competitor-research', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query, display: 20 }),
-        });
-        const data = await res.json();
-        if (data.success) {
-          setCompetitorInsights(data.data.insights);
-          const ins = data.data.insights;
-          const ctx = `경쟁 ${ins.totalResults}개. 평균가 ${ins.avgPrice?.toLocaleString()}원. 키워드: ${ins.commonKeywords?.slice(0, 8).join(', ')}.`;
-          for (const section of visibleSections) {
-            try {
-              const r = await fetch('/api/ai-copy', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ sectionType: section.sectionType, productName: productInfo.name, category: productInfo.category, usps: extractedUSPs.map(u => u.title), competitorContext: ctx }),
-              });
-              if (r.ok) {
-                const d = await r.json();
-                if (d.title || d.body) dispatch({ type: 'UPDATE_MANUSCRIPT_SECTION', payload: { id: section.id, data: { ...(d.title ? { title: d.title } : {}), ...(d.body ? { body: d.body } : {}) } } });
-              }
-            } catch {}
-          }
-          setResearchStatus('done');
-        } else setResearchStatus('error');
-      } catch { setResearchStatus('error'); }
-    })();
-  }, [productInfo.name]);
 
   const handleAddSection = useCallback((type: any) => {
     dispatch({ type: 'ADD_MANUSCRIPT_SECTION', payload: { id: `ms-${type}-${Date.now()}`, sectionType: type, title: '', body: '', imageGuide: '', visible: true, order: manuscriptSections.length } });
@@ -138,7 +99,7 @@ export default function KonvaEditor() {
           <div className="w-px h-5 bg-[#E5E8EB]" />
           <div>
             <h1 className="text-sm font-bold text-[#191F28]">상세페이지 에디터</h1>
-            <p className="text-[10px] text-[#8B95A1]">{visibleSections.length}개 섹션{researchStatus === 'loading' ? ' · 🔍 분석 중...' : researchStatus === 'done' ? ' · ✅ 분석 완료' : ''}</p>
+            <p className="text-[10px] text-[#8B95A1]">{visibleSections.length}개 섹션</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -207,12 +168,6 @@ export default function KonvaEditor() {
 
         <div className="w-56 bg-white border-l border-[#E5E8EB] overflow-y-auto flex-shrink-0 p-4">
           <div className="text-[9px] uppercase tracking-widest text-[#8B95A1] mb-3">속성</div>
-          {competitorInsights && (
-            <div className="bg-[#EBF4FF] rounded-xl p-3 mb-4">
-              <div className="text-[11px] font-bold text-[#3182F6]">평균가 {competitorInsights.avgPrice?.toLocaleString()}원</div>
-              <div className="flex flex-wrap gap-1 mt-2">{competitorInsights.commonKeywords?.slice(0, 6).map((kw: string, i: number) => <span key={i} className="px-2 py-0.5 text-[9px] bg-white rounded text-[#4E5968]">{kw}</span>)}</div>
-            </div>
-          )}
           <p className="text-[11px] text-[#8B95A1] text-center py-4">요소를 클릭하여 드래그하세요</p>
           <div className="text-[10px] text-[#8B95A1] mt-2">높이: {totalHeight}px</div>
         </div>
