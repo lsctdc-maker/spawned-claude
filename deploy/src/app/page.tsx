@@ -59,12 +59,6 @@ export default function LandingPage() {
                   AI 기획 시작하기
                 </Link>
                 <Link
-                  href="/plan"
-                  className="inline-flex items-center justify-center border border-[#E5E8EB] text-[#4E5968] px-8 py-4 rounded-xl font-semibold text-base hover:bg-[#F4F5F7] active:scale-[0.98] transition-all duration-200"
-                >
-                  이어서 작업하기
-                </Link>
-                <Link
                   href="/design"
                   className="inline-flex items-center justify-center border border-[#E5E8EB] text-[#4E5968] px-8 py-4 rounded-xl font-semibold text-base hover:bg-[#F4F5F7] active:scale-[0.98] transition-all duration-200"
                 >
@@ -208,9 +202,6 @@ export default function LandingPage() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link href="/plan?new=1" className="inline-flex items-center justify-center bg-white text-[#3182F6] px-8 py-4 rounded-xl font-semibold text-base hover:bg-white/90 active:scale-[0.98] transition-all duration-200">
                 AI 기획 시작하기
-              </Link>
-              <Link href="/plan" className="inline-flex items-center justify-center border border-white/30 text-white px-8 py-4 rounded-xl font-semibold text-base hover:bg-white/10 active:scale-[0.98] transition-all duration-200">
-                이어서 작업하기
               </Link>
               <Link href="/design" className="inline-flex items-center justify-center border border-white/30 text-white px-8 py-4 rounded-xl font-semibold text-base hover:bg-white/10 active:scale-[0.98] transition-all duration-200">
                 이미지 제작 바로가기
