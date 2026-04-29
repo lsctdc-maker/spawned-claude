@@ -6,7 +6,7 @@ import { ManuscriptSection, ManuscriptSectionType } from '@/lib/types';
 import {
   ChevronLeft, Download, ZoomIn, ZoomOut, Undo2, Redo2, Save,
   Plus, Trash2, ChevronUp, ChevronDown, Eye, EyeOff,
-  Type, Image as ImageIcon, Palette, AlignLeft, Sliders, Sparkles,
+  Type, Image as ImageIcon, Palette, Sparkles,
   LayoutGrid, Layers,
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
@@ -29,7 +29,7 @@ interface HistoryEntry {
   overrides: Record<string, SectionOverride>;
 }
 
-type PropTab = 'text' | 'typography' | 'colors' | 'image' | 'spacing' | 'ai';
+type ToolId = 'sections' | 'text' | 'colors' | 'image' | 'ai';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -56,9 +56,9 @@ const ADDABLE_SECTIONS: { type: ManuscriptSectionType; label: string; desc: stri
 ];
 
 const SECTION_ICON: Record<string, string> = {
-  hooking: '🔥', hero: '🔥', problem: '😰', solution: '💡',
-  features: '⭐', detail: '📋', howto: '📖', social_proof: '💬',
-  trust: '🏆', specs: '🔩', guarantee: '🛡️', event_banner: '🎉', cta: '🛒',
+  hooking: 'H', hero: 'H', problem: 'P', solution: 'S',
+  features: 'F', detail: 'D', howto: 'U', social_proof: 'R',
+  trust: 'T', specs: 'SP', guarantee: 'G', event_banner: 'E', cta: 'C',
 };
 
 // ─── Canvas Section Renderers ─────────────────────────────────────────────────
@@ -117,7 +117,7 @@ function PainSectionHTML({ section, override, colors, selected, onClick }: Rende
   const title = ( override.title ?? section.title) || '이런 고민, 공감되시나요?';
   const body = ( override.body ?? section.body) || '고민 1\n고민 2\n고민 3';
   const cards = body.split('\n').filter(l => l.trim()).slice(0, 3);
-  const emojis = ['😫', '😔', '😤'];
+  const iconLabels = ['!', '?', '...'];
   const py = override.paddingY ?? 64;
 
   return (
@@ -130,7 +130,7 @@ function PainSectionHTML({ section, override, colors, selected, onClick }: Rende
         <div className="flex gap-5 w-full justify-center">
           {cards.map((card, i) => (
             <div key={i} style={{ background: '#F8F9FA', borderRadius: 20, padding: '32px 24px', flex: 1, maxWidth: 260, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
-              <span style={{ fontSize: 36 }}>{emojis[i] || '😟'}</span>
+              <span style={{ fontSize: 28, fontWeight: 800, color: accent }}>{iconLabels[i] || '!'}</span>
               <p style={{ fontSize: 14, color: '#4E5968', textAlign: 'center', lineHeight: 1.7 }}>{card.trim()}</p>
             </div>
           ))}
@@ -251,8 +251,8 @@ function ReviewsSectionHTML({ section, override, colors, selected, onClick }: Re
           {reviews.map((rev, i) => (
             <div key={i} style={{ background: '#F8F9FA', borderRadius: 20, padding: '24px', flex: 1, boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
               <div className="flex items-center gap-3 mb-3">
-                <div style={{ width: 36, height: 36, borderRadius: '50%', background: `${accent}33`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
-                  {['👤', '👩', '🧑'][i]}
+                <div style={{ width: 36, height: 36, borderRadius: '50%', background: `${accent}33`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: accent }}>
+                  {names[i]?.[0] ?? 'U'}
                 </div>
                 <div>
                   <div style={{ fontSize: 12, fontWeight: 700, color: '#191F28' }}>{names[i]}</div>
@@ -286,7 +286,7 @@ function CertSectionHTML({ section, override, colors, selected, onClick }: Rende
         <div className="flex gap-6 flex-wrap justify-center">
           {certs.map((cert, i) => (
             <div key={i} style={{ width: 110, height: 110, borderRadius: '50%', background: '#FFFFFF', border: `3px solid ${accent}44`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 6, boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}>
-              <span style={{ fontSize: 26 }}>🏅</span>
+              <div style={{ width: 28, height: 28, borderRadius: '50%', background: accent, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 14, fontWeight: 900 }}>✓</div>
               <span style={{ fontSize: 11, fontWeight: 700, color: '#191F28', textAlign: 'center', padding: '0 8px' }}>{cert.trim()}</span>
             </div>
           ))}
@@ -334,7 +334,7 @@ function GenericSectionHTML({ section, override, colors, selected, onClick }: Re
     <div onClick={onClick} style={{ background: bg, paddingTop: py, paddingBottom: py, cursor: 'pointer', outline: selected ? `3px solid ${accent}` : 'none', outlineOffset: -3 }}>
       <div className="flex flex-col items-center px-12 gap-6 text-center">
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: `${accent}18`, padding: '4px 12px', borderRadius: 20 }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: accent }}>{SECTION_ICON[section.sectionType] || '📄'} {label}</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: accent }}>{SECTION_ICON[section.sectionType] || '#'} {label}</span>
         </div>
         <div style={{ background: accent, width: 40, height: 3, borderRadius: 2 }} />
         <h2 style={{ fontSize: override.fontSize ?? 32, fontWeight: 900, color: '#191F28', maxWidth: 680 }}>{title}</h2>
@@ -360,13 +360,12 @@ function renderSectionHTML(ctx: RenderCtx): React.ReactNode {
 
 // ─── Tool Sidebar ─────────────────────────────────────────────────────────────
 
-function ToolSidebar({ activeTool, onToolChange }: { activeTool: PropTab | null; onToolChange: (t: PropTab) => void }) {
-  const tools: { id: PropTab; icon: React.ReactNode; label: string }[] = [
+function ToolSidebar({ activeTool, onToolChange }: { activeTool: ToolId; onToolChange: (t: ToolId) => void }) {
+  const tools: { id: ToolId; icon: React.ReactNode; label: string }[] = [
+    { id: 'sections', icon: <Layers className="w-5 h-5" />, label: '섹션' },
     { id: 'text', icon: <Type className="w-5 h-5" />, label: '텍스트' },
-    { id: 'typography', icon: <AlignLeft className="w-5 h-5" />, label: '타이포' },
     { id: 'colors', icon: <Palette className="w-5 h-5" />, label: '색상' },
     { id: 'image', icon: <ImageIcon className="w-5 h-5" />, label: '이미지' },
-    { id: 'spacing', icon: <Sliders className="w-5 h-5" />, label: '간격' },
     { id: 'ai', icon: <Sparkles className="w-5 h-5" />, label: 'AI' },
   ];
 
@@ -526,7 +525,7 @@ function SectionPanel({ allSections, selectedId, onSelect, onAdd, onDelete, onRe
 interface PropPanelProps {
   selected: ManuscriptSection | null;
   override: SectionOverride;
-  activeTool: PropTab;
+  activeToolId: ToolId;
   colors: { primary: string; secondary: string; text: string; accent: string };
   onOverrideChange: (patch: Partial<SectionOverride>) => void;
   onSectionDataChange: (patch: { title?: string; body?: string }) => void;
@@ -535,7 +534,7 @@ interface PropPanelProps {
   isAILoading: boolean;
 }
 
-function PropPanel({ selected, override, activeTool, colors, onOverrideChange, onSectionDataChange, onImageUpload, onAIRewrite, isAILoading }: PropPanelProps) {
+function PropPanel({ selected, override, activeToolId, colors, onOverrideChange, onSectionDataChange, onImageUpload, onAIRewrite, isAILoading }: PropPanelProps) {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const labelStyle: React.CSSProperties = { fontSize: 10, fontWeight: 600, color: '#636B77', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 6, display: 'block' };
@@ -565,169 +564,160 @@ function PropPanel({ selected, override, activeTool, colors, onOverrideChange, o
 
       <div style={{ flex: 1, overflowY: 'auto', padding: 16 }}>
 
-        {/* TEXT TAB */}
-        {activeTool === 'text' && (
-          <>
-            <div style={sectionStyle}>
-              <label style={labelStyle}>섹션 제목</label>
-              <input
-                style={inputStyle}
-                value={override.title ?? selected.title}
-                onChange={e => onOverrideChange({ title: e.target.value })}
-                placeholder="섹션 제목"
-              />
-            </div>
-            <div style={sectionStyle}>
-              <label style={labelStyle}>본문 내용</label>
-              <textarea
-                style={{ ...inputStyle, minHeight: 120 }}
-                value={override.body ?? selected.body}
-                onChange={e => onOverrideChange({ body: e.target.value })}
-                placeholder="본문을 입력하세요"
-              />
-            </div>
-            <div style={{ ...sectionStyle, display: 'flex', gap: 8 }}>
-              <button
-                onClick={() => onSectionDataChange({ title: override.title ?? selected.title, body: override.body ?? selected.body })}
-                style={{ flex: 1, background: '#3182F6', color: '#fff', border: 'none', borderRadius: 8, padding: '8px', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
-              >
-                저장
-              </button>
-              <button
-                onClick={() => onOverrideChange({ title: undefined, body: undefined })}
-                style={{ flex: 1, background: '#1A1A24', color: '#9BA3AD', border: '1px solid #2A2A38', borderRadius: 8, padding: '8px', fontSize: 11, cursor: 'pointer' }}
-              >
-                원래대로
-              </button>
-            </div>
-          </>
-        )}
+        {/* TEXT */}
+        <div style={sectionStyle}>
+          <label style={labelStyle}>섹션 제목</label>
+          <input
+            style={inputStyle}
+            value={override.title ?? selected.title}
+            onChange={e => onOverrideChange({ title: e.target.value })}
+            placeholder="섹션 제목"
+          />
+        </div>
+        <div style={sectionStyle}>
+          <label style={labelStyle}>본문 내용</label>
+          <textarea
+            style={{ ...inputStyle, minHeight: 120 }}
+            value={override.body ?? selected.body}
+            onChange={e => onOverrideChange({ body: e.target.value })}
+            placeholder="본문을 입력하세요"
+          />
+        </div>
+        <div style={{ ...sectionStyle, display: 'flex', gap: 8 }}>
+          <button
+            onClick={() => onSectionDataChange({ title: override.title ?? selected.title, body: override.body ?? selected.body })}
+            style={{ flex: 1, background: '#3182F6', color: '#fff', border: 'none', borderRadius: 8, padding: '8px', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
+          >
+            저장
+          </button>
+          <button
+            onClick={() => onOverrideChange({ title: undefined, body: undefined })}
+            style={{ flex: 1, background: '#1A1A24', color: '#9BA3AD', border: '1px solid #2A2A38', borderRadius: 8, padding: '8px', fontSize: 11, cursor: 'pointer' }}
+          >
+            원래대로
+          </button>
+        </div>
 
-        {/* TYPOGRAPHY TAB */}
-        {activeTool === 'typography' && (
-          <div style={sectionStyle}>
-            <label style={labelStyle}>제목 크기</label>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <input
-                type="range" min={20} max={60} step={1}
-                value={override.fontSize ?? 34}
-                onChange={e => onOverrideChange({ fontSize: Number(e.target.value) })}
-                style={{ flex: 1, accentColor: '#3182F6' }}
-              />
-              <span style={{ fontSize: 11, color: '#9BA3AD', width: 32, textAlign: 'right' }}>{override.fontSize ?? 34}px</span>
-            </div>
+        <div style={{ height: 1, background: '#1E1E28', margin: '4px 0 20px' }} />
+
+        {/* TYPOGRAPHY */}
+        <div style={sectionStyle}>
+          <label style={labelStyle}>제목 크기</label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <input
+              type="range" min={20} max={60} step={1}
+              value={override.fontSize ?? 34}
+              onChange={e => onOverrideChange({ fontSize: Number(e.target.value) })}
+              style={{ flex: 1, accentColor: '#3182F6' }}
+            />
+            <span style={{ fontSize: 11, color: '#9BA3AD', width: 32, textAlign: 'right' }}>{override.fontSize ?? 34}px</span>
           </div>
-        )}
+        </div>
 
-        {/* COLORS TAB */}
-        {activeTool === 'colors' && (
-          <>
-            <div style={sectionStyle}>
-              <label style={labelStyle}>배경색</label>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <input type="color" value={override.bgColor || colors.primary}
-                  onChange={e => onOverrideChange({ bgColor: e.target.value })}
-                  style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid #2A2A38', cursor: 'pointer', padding: 2 }} />
-                <span style={{ fontSize: 11, color: '#9BA3AD' }}>{override.bgColor || colors.primary}</span>
-                <button onClick={() => onOverrideChange({ bgColor: undefined })} style={{ marginLeft: 'auto', fontSize: 10, color: '#636B77', background: 'none', border: 'none', cursor: 'pointer' }}>↺</button>
-              </div>
-            </div>
-            <div style={sectionStyle}>
-              <label style={labelStyle}>텍스트 색상</label>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <input type="color" value={override.textColor || '#FFFFFF'}
-                  onChange={e => onOverrideChange({ textColor: e.target.value })}
-                  style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid #2A2A38', cursor: 'pointer', padding: 2 }} />
-                <span style={{ fontSize: 11, color: '#9BA3AD' }}>{override.textColor || '#FFFFFF'}</span>
-                <button onClick={() => onOverrideChange({ textColor: undefined })} style={{ marginLeft: 'auto', fontSize: 10, color: '#636B77', background: 'none', border: 'none', cursor: 'pointer' }}>↺</button>
-              </div>
-            </div>
-            <div style={sectionStyle}>
-              <label style={labelStyle}>강조 색상</label>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <input type="color" value={override.accentColor || colors.accent}
-                  onChange={e => onOverrideChange({ accentColor: e.target.value })}
-                  style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid #2A2A38', cursor: 'pointer', padding: 2 }} />
-                <span style={{ fontSize: 11, color: '#9BA3AD' }}>{override.accentColor || colors.accent}</span>
-                <button onClick={() => onOverrideChange({ accentColor: undefined })} style={{ marginLeft: 'auto', fontSize: 10, color: '#636B77', background: 'none', border: 'none', cursor: 'pointer' }}>↺</button>
-              </div>
-            </div>
-            {/* Palette presets */}
-            <div style={sectionStyle}>
-              <label style={labelStyle}>색상 팔레트</label>
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                {[colors.primary, colors.secondary, colors.text, colors.accent].map((c, i) => (
-                  <button key={i} onClick={() => onOverrideChange({ bgColor: c })}
-                    style={{ width: 28, height: 28, borderRadius: 8, background: c, border: '2px solid #2A2A38', cursor: 'pointer' }} title={c} />
-                ))}
-              </div>
-            </div>
-          </>
-        )}
+        {/* SPACING */}
+        <div style={sectionStyle}>
+          <label style={labelStyle}>상하 패딩</label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <input
+              type="range" min={20} max={160} step={4}
+              value={override.paddingY ?? 64}
+              onChange={e => onOverrideChange({ paddingY: Number(e.target.value) })}
+              style={{ flex: 1, accentColor: '#3182F6' }}
+            />
+            <span style={{ fontSize: 11, color: '#9BA3AD', width: 32, textAlign: 'right' }}>{override.paddingY ?? 64}px</span>
+          </div>
+        </div>
 
-        {/* IMAGE TAB */}
-        {activeTool === 'image' && (
-          <div style={sectionStyle}>
-            <label style={labelStyle}>섹션 이미지</label>
-            <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={e => {
-              const file = e.target.files?.[0];
-              if (!file) return;
-              const reader = new FileReader();
-              reader.onload = ev => { if (ev.target?.result) onImageUpload(ev.target.result as string); };
-              reader.readAsDataURL(file);
-            }} />
-            {override.imageUrl && (
-              <img src={override.imageUrl} alt="section" style={{ width: '100%', borderRadius: 10, marginBottom: 10, objectFit: 'cover', maxHeight: 120 }} />
-            )}
-            <button
-              onClick={() => fileRef.current?.click()}
-              style={{ width: '100%', padding: '10px', background: '#1A1A24', border: '1px dashed #2A2A38', borderRadius: 10, color: '#9BA3AD', fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
-            >
-              <ImageIcon className="w-4 h-4" />
-              이미지 업로드
+        <div style={{ height: 1, background: '#1E1E28', margin: '4px 0 20px' }} />
+
+        {/* COLORS */}
+        <div style={sectionStyle}>
+          <label style={labelStyle}>배경색</label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <input type="color" value={override.bgColor || colors.primary}
+              onChange={e => onOverrideChange({ bgColor: e.target.value })}
+              style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid #2A2A38', cursor: 'pointer', padding: 2 }} />
+            <span style={{ fontSize: 11, color: '#9BA3AD' }}>{override.bgColor || colors.primary}</span>
+            <button onClick={() => onOverrideChange({ bgColor: undefined })} style={{ marginLeft: 'auto', fontSize: 10, color: '#636B77', background: 'none', border: 'none', cursor: 'pointer' }}>&#8635;</button>
+          </div>
+        </div>
+        <div style={sectionStyle}>
+          <label style={labelStyle}>텍스트 색상</label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <input type="color" value={override.textColor || '#FFFFFF'}
+              onChange={e => onOverrideChange({ textColor: e.target.value })}
+              style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid #2A2A38', cursor: 'pointer', padding: 2 }} />
+            <span style={{ fontSize: 11, color: '#9BA3AD' }}>{override.textColor || '#FFFFFF'}</span>
+            <button onClick={() => onOverrideChange({ textColor: undefined })} style={{ marginLeft: 'auto', fontSize: 10, color: '#636B77', background: 'none', border: 'none', cursor: 'pointer' }}>&#8635;</button>
+          </div>
+        </div>
+        <div style={sectionStyle}>
+          <label style={labelStyle}>강조 색상</label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <input type="color" value={override.accentColor || colors.accent}
+              onChange={e => onOverrideChange({ accentColor: e.target.value })}
+              style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid #2A2A38', cursor: 'pointer', padding: 2 }} />
+            <span style={{ fontSize: 11, color: '#9BA3AD' }}>{override.accentColor || colors.accent}</span>
+            <button onClick={() => onOverrideChange({ accentColor: undefined })} style={{ marginLeft: 'auto', fontSize: 10, color: '#636B77', background: 'none', border: 'none', cursor: 'pointer' }}>&#8635;</button>
+          </div>
+        </div>
+        <div style={sectionStyle}>
+          <label style={labelStyle}>색상 팔레트</label>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {[colors.primary, colors.secondary, colors.text, colors.accent].map((c, i) => (
+              <button key={i} onClick={() => onOverrideChange({ bgColor: c })}
+                style={{ width: 28, height: 28, borderRadius: 8, background: c, border: '2px solid #2A2A38', cursor: 'pointer' }} title={c} />
+            ))}
+          </div>
+        </div>
+
+        <div style={{ height: 1, background: '#1E1E28', margin: '4px 0 20px' }} />
+
+        {/* IMAGE */}
+        <div style={sectionStyle}>
+          <label style={labelStyle}>섹션 이미지</label>
+          <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={e => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => { if (ev.target?.result) onImageUpload(ev.target.result as string); };
+            reader.readAsDataURL(file);
+          }} />
+          {override.imageUrl && (
+            <img src={override.imageUrl} alt="section" style={{ width: '100%', borderRadius: 10, marginBottom: 10, objectFit: 'cover', maxHeight: 120 }} />
+          )}
+          <button
+            onClick={() => fileRef.current?.click()}
+            style={{ width: '100%', padding: '10px', background: '#1A1A24', border: '1px dashed #2A2A38', borderRadius: 10, color: '#9BA3AD', fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+          >
+            <ImageIcon className="w-4 h-4" />
+            이미지 업로드
+          </button>
+          {override.imageUrl && (
+            <button onClick={() => onOverrideChange({ imageUrl: undefined })}
+              style={{ marginTop: 8, width: '100%', padding: '8px', background: 'none', border: '1px solid #2A2A38', borderRadius: 8, color: '#636B77', fontSize: 11, cursor: 'pointer' }}>
+              이미지 제거
             </button>
-            {override.imageUrl && (
-              <button onClick={() => onOverrideChange({ imageUrl: undefined })}
-                style={{ marginTop: 8, width: '100%', padding: '8px', background: 'none', border: '1px solid #2A2A38', borderRadius: 8, color: '#636B77', fontSize: 11, cursor: 'pointer' }}>
-                이미지 제거
-              </button>
-            )}
-          </div>
-        )}
+          )}
+        </div>
 
-        {/* SPACING TAB */}
-        {activeTool === 'spacing' && (
-          <div style={sectionStyle}>
-            <label style={labelStyle}>상하 패딩</label>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <input
-                type="range" min={20} max={160} step={4}
-                value={override.paddingY ?? 64}
-                onChange={e => onOverrideChange({ paddingY: Number(e.target.value) })}
-                style={{ flex: 1, accentColor: '#3182F6' }}
-              />
-              <span style={{ fontSize: 11, color: '#9BA3AD', width: 32, textAlign: 'right' }}>{override.paddingY ?? 64}px</span>
-            </div>
-          </div>
-        )}
+        <div style={{ height: 1, background: '#1E1E28', margin: '4px 0 20px' }} />
 
-        {/* AI TAB */}
-        {activeTool === 'ai' && (
-          <div style={sectionStyle}>
-            <label style={labelStyle}>AI 도구</label>
-            <button
-              onClick={onAIRewrite}
-              disabled={isAILoading}
-              style={{ width: '100%', padding: '12px', background: isAILoading ? '#2A2A38' : 'linear-gradient(135deg, #3182F6, #8B5CF6)', border: 'none', borderRadius: 10, color: '#fff', fontSize: 12, fontWeight: 700, cursor: isAILoading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
-            >
-              <Sparkles className="w-4 h-4" />
-              {isAILoading ? 'AI 생성 중...' : 'AI로 내용 다시 쓰기'}
-            </button>
-            <p style={{ marginTop: 10, fontSize: 11, color: '#636B77', lineHeight: 1.6 }}>
-              선택된 섹션의 제목과 본문을 AI가 더 매력적으로 다시 작성합니다.
-            </p>
-          </div>
-        )}
+        {/* AI */}
+        <div style={sectionStyle}>
+          <label style={labelStyle}>AI 도구</label>
+          <button
+            onClick={onAIRewrite}
+            disabled={isAILoading}
+            style={{ width: '100%', padding: '12px', background: isAILoading ? '#2A2A38' : 'linear-gradient(135deg, #3182F6, #8B5CF6)', border: 'none', borderRadius: 10, color: '#fff', fontSize: 12, fontWeight: 700, cursor: isAILoading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+          >
+            <Sparkles className="w-4 h-4" />
+            {isAILoading ? 'AI 생성 중...' : 'AI로 내용 다시 쓰기'}
+          </button>
+          <p style={{ marginTop: 10, fontSize: 11, color: '#636B77', lineHeight: 1.6 }}>
+            선택된 섹션의 제목과 본문을 AI가 더 매력적으로 다시 작성합니다.
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -760,7 +750,8 @@ export default function DetailEditor() {
   // ── State ──
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [zoom, setZoom] = useState(0.75);
-  const [activeTool, setActiveTool] = useState<PropTab>('text');
+  const [activeTool, setActiveTool] = useState<ToolId>('sections');
+  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const [overrides, setOverrides] = useState<Record<string, SectionOverride>>({});
   const [isExporting, setIsExporting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -1084,16 +1075,22 @@ JSON 형식으로 응답하세요:
         {/* Tool Sidebar */}
         <ToolSidebar activeTool={activeTool} onToolChange={setActiveTool} />
 
-        {/* Section Panel */}
-        <SectionPanel
-          allSections={allSections}
-          selectedId={selectedId}
-          onSelect={id => { setSelectedId(id); }}
-          onAdd={handleAddSection}
-          onDelete={handleDeleteSection}
-          onReorder={handleReorder}
-          onToggleVisibility={handleToggleVisibility}
-        />
+        {/* Section Panel — visible only when Sections tool is active */}
+        {activeTool === 'sections' && (
+          <SectionPanel
+            allSections={allSections}
+            selectedId={selectedId}
+            onSelect={id => {
+              setSelectedId(id);
+              const el = sectionRefs.current[id];
+              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }}
+            onAdd={handleAddSection}
+            onDelete={handleDeleteSection}
+            onReorder={handleReorder}
+            onToggleVisibility={handleToggleVisibility}
+          />
+        )}
 
         {/* Canvas Area */}
         <div style={{ flex: 1, overflowY: 'auto', overflowX: 'auto', background: '#1A1A22', display: 'flex', justifyContent: 'center', padding: '32px 24px' }}>
@@ -1111,10 +1108,19 @@ JSON 형식으로 응답하세요:
                   colors,
                   productPhotoUrl: ov.imageUrl || productPhotoUrl,
                   selected: section.id === selectedId,
-                  onClick: () => setSelectedId(section.id),
+                  onClick: () => {
+                    setSelectedId(section.id);
+                    if (activeTool !== 'sections') return;
+                    const el = sectionRefs.current[section.id];
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  },
                   canvasWidth: CANVAS_WIDTH,
                 };
-                return renderSectionHTML(ctx);
+                return (
+                  <div key={section.id} ref={el => { sectionRefs.current[section.id] = el; }}>
+                    {renderSectionHTML(ctx)}
+                  </div>
+                );
               })}
               {visibleSections.length === 0 && (
                 <div style={{ padding: '80px 40px', textAlign: 'center', color: '#8B95A1' }}>
@@ -1126,11 +1132,11 @@ JSON 형식으로 응답하세요:
           </div>
         </div>
 
-        {/* Properties Panel */}
+        {/* Properties Panel — always visible when a section is selected */}
         <PropPanel
           selected={selectedSection}
           override={selectedOverride}
-          activeTool={activeTool}
+          activeToolId={activeTool}
           colors={colors}
           onOverrideChange={handleOverrideChange}
           onSectionDataChange={handleSectionDataChange}
