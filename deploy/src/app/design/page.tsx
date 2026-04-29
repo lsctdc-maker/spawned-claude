@@ -7,7 +7,7 @@ import { DetailPageState } from '@/lib/types';
 import Header from '@/components/layout/Header';
 import ProgressBar from '@/components/ui/ProgressBar';
 import dynamic from 'next/dynamic';
-const KonvaEditor = dynamic(() => import('@/components/konva-editor/KonvaEditor'), { ssr: false });
+const DetailEditor = dynamic(() => import('@/components/detail-editor/DetailEditor'), { ssr: false });
 import Step5Export from '@/components/steps/Step5Export';
 import { DESIGN_STEP_LABELS } from '@/lib/constants';
 import { supabase } from '@/lib/supabase';
@@ -60,9 +60,9 @@ export default function DesignPage() {
 
   const renderStep = () => {
     switch (state.currentStep) {
-      case 4: return <KonvaEditor />;
+      case 4: return <DetailEditor />;
       case 5: return <Step5Export />;
-      default: return <KonvaEditor />;
+      default: return <DetailEditor />;
     }
   };
 
