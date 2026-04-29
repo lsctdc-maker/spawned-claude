@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useRef, useCallback, useState } from 'react';
-import { Stage, Layer } from 'react-konva';
+import { Stage, Layer, Transformer } from 'react-konva';
 import { useDetailPage } from '@/hooks/useDetailPage';
 import { ManuscriptSection } from '@/lib/types';
 import { ChevronLeft, Download, ZoomIn, ZoomOut } from 'lucide-react';
@@ -17,9 +17,13 @@ export default function KonvaEditor() {
   const { state, dispatch } = useDetailPage();
   const { manuscriptSections, productPhotos, colorPalette, productInfo, extractedUSPs } = state;
   const stageRef = useRef<any>(null);
+  const transformerRef = useRef<any>(null);
+  const selectedShapeRef = useRef<any>(null);
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
   const [zoom, setZoom] = useState(0.7);
   const [exporting, setExporting] = useState(false);
+  const [selectedNodeAttrs, setSelectedNodeAttrs] = useState<any>(null);
+  const [, forceUpdate] = useState(0);
 
   const colors = useMemo(() => ({
     primary: colorPalette?.colors[0]?.hex || '#1a1a2e',
@@ -119,6 +123,21 @@ export default function KonvaEditor() {
               ref={stageRef}
               width={W}
               height={totalHeight}
+              onClick={(e: any) => {
+                const target = e.target;
+                // Clicking empty area or background rect → deselect
+                if (target === e.target.getStage() || !target.draggable()) {
+                  transformerRef.current?.nodes([]);
+                  selectedShapeRef.current = null;
+                  forceUpdate(n => n + 1);
+                  return;
+                }
+                // Select the clicked element
+                selectedShapeRef.current = target;
+                transformerRef.current?.nodes([target]);
+                transformerRef.current?.getLayer()?.batchDraw();
+                forceUpdate(n => n + 1);
+              }}
               onDblClick={(e: any) => {
                 // 더블클릭 텍스트 편집
                 const target = e.target;
@@ -161,15 +180,100 @@ export default function KonvaEditor() {
             >
               <Layer>
                 {sectionPositions.map((pos, i) => renderSection(visibleSections[i], pos.y))}
+                <Transformer
+                  ref={transformerRef}
+                  boundBoxFunc={(oldBox: any, newBox: any) => {
+                    // Minimum size
+                    if (newBox.width < 20 || newBox.height < 20) return oldBox;
+                    return newBox;
+                  }}
+                  enabledAnchors={['top-left', 'top-right', 'bottom-left', 'bottom-right', 'middle-left', 'middle-right']}
+                />
               </Layer>
             </Stage>
           </div>
         </div>
 
-        <div className="w-56 bg-white border-l border-[#E5E8EB] overflow-y-auto flex-shrink-0 p-4">
-          <div className="text-[9px] uppercase tracking-widest text-[#8B95A1] mb-3">속성</div>
-          <p className="text-[11px] text-[#8B95A1] text-center py-4">요소를 클릭하여 드래그하세요</p>
-          <div className="text-[10px] text-[#8B95A1] mt-2">높이: {totalHeight}px</div>
+        <div className="w-56 bg-white border-l border-[#E5E8EB] overflow-y-auto flex-shrink-0 p-4 space-y-4">
+          <div className="text-[9px] uppercase tracking-widest text-[#8B95A1]">속성</div>
+
+          {selectedShapeRef.current ? (
+            <>
+              <div className="text-[11px] font-bold text-[#191F28] mb-2">
+                {selectedShapeRef.current.className === 'Text' ? '텍스트' : '도형'}
+              </div>
+
+              {/* Position */}
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-[9px] text-[#8B95A1]">X</label>
+                  <input type="number" value={Math.round(selectedShapeRef.current.x())}
+                    onChange={e => { selectedShapeRef.current.x(+e.target.value); selectedShapeRef.current.getLayer().batchDraw(); forceUpdate(n => n + 1); }}
+                    className="w-full px-2 py-1 text-xs border rounded" />
+                </div>
+                <div>
+                  <label className="text-[9px] text-[#8B95A1]">Y</label>
+                  <input type="number" value={Math.round(selectedShapeRef.current.y())}
+                    onChange={e => { selectedShapeRef.current.y(+e.target.value); selectedShapeRef.current.getLayer().batchDraw(); forceUpdate(n => n + 1); }}
+                    className="w-full px-2 py-1 text-xs border rounded" />
+                </div>
+              </div>
+
+              {/* Size */}
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-[9px] text-[#8B95A1]">너비</label>
+                  <input type="number" value={Math.round(selectedShapeRef.current.width())}
+                    onChange={e => { selectedShapeRef.current.width(+e.target.value); selectedShapeRef.current.getLayer().batchDraw(); forceUpdate(n => n + 1); }}
+                    className="w-full px-2 py-1 text-xs border rounded" />
+                </div>
+                <div>
+                  <label className="text-[9px] text-[#8B95A1]">높이</label>
+                  <input type="number" value={Math.round(selectedShapeRef.current.height?.() || 0)}
+                    onChange={e => { if (selectedShapeRef.current.height) { selectedShapeRef.current.height(+e.target.value); selectedShapeRef.current.getLayer().batchDraw(); forceUpdate(n => n + 1); } }}
+                    className="w-full px-2 py-1 text-xs border rounded" />
+                </div>
+              </div>
+
+              {/* Text-specific */}
+              {selectedShapeRef.current.className === 'Text' && (
+                <>
+                  <div>
+                    <label className="text-[9px] text-[#8B95A1]">글자 크기</label>
+                    <input type="range" min="10" max="72" value={selectedShapeRef.current.fontSize()}
+                      onChange={e => { selectedShapeRef.current.fontSize(+e.target.value); selectedShapeRef.current.getLayer().batchDraw(); forceUpdate(n => n + 1); }}
+                      className="w-full" />
+                    <span className="text-[10px] text-[#8B95A1]">{selectedShapeRef.current.fontSize()}px</span>
+                  </div>
+                  <div>
+                    <label className="text-[9px] text-[#8B95A1]">색상</label>
+                    <input type="color" value={selectedShapeRef.current.fill() || '#000000'}
+                      onChange={e => { selectedShapeRef.current.fill(e.target.value); selectedShapeRef.current.getLayer().batchDraw(); forceUpdate(n => n + 1); }}
+                      className="w-full h-8 rounded" />
+                  </div>
+                </>
+              )}
+
+              {/* Fill for shapes */}
+              {selectedShapeRef.current.className !== 'Text' && selectedShapeRef.current.fill && (
+                <div>
+                  <label className="text-[9px] text-[#8B95A1]">배경색</label>
+                  <input type="color" value={selectedShapeRef.current.fill() || '#000000'}
+                    onChange={e => { selectedShapeRef.current.fill(e.target.value); selectedShapeRef.current.getLayer().batchDraw(); forceUpdate(n => n + 1); }}
+                    className="w-full h-8 rounded" />
+                </div>
+              )}
+            </>
+          ) : (
+            <p className="text-[11px] text-[#8B95A1] text-center py-8">요소를 클릭하여<br/>선택하세요</p>
+          )}
+
+          <div className="border-t pt-3 text-[10px] text-[#8B95A1]">
+            총 높이: {totalHeight}px
+          </div>
+          <button onClick={handleExport} disabled={exporting} className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 bg-[#3182F6] text-white rounded-lg text-xs font-semibold disabled:opacity-50">
+            <Download className="w-3.5 h-3.5" /> PNG 내보내기
+          </button>
         </div>
       </div>
     </div>
