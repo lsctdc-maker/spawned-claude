@@ -10,6 +10,21 @@ import {
   LayoutGrid, Layers,
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
+import { Upload, Copy, Wand2, PaintBucket, TypeIcon, Search } from 'lucide-react';
+
+// ─── Dark Scrollbar Style (inject once) ──────────────────────────────────────
+const SCROLLBAR_STYLE_ID = 'dm-dark-scrollbar';
+if (typeof document !== 'undefined' && !document.getElementById(SCROLLBAR_STYLE_ID)) {
+  const style = document.createElement('style');
+  style.id = SCROLLBAR_STYLE_ID;
+  style.textContent = `
+    *::-webkit-scrollbar { width: 4px; height: 4px; }
+    *::-webkit-scrollbar-track { background: transparent; }
+    *::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
+    *::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+  `;
+  document.head.appendChild(style);
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -417,7 +432,7 @@ function SectionPanel({ allSections, selectedId, onSelect, onAdd, onDelete, onRe
   };
 
   return (
-    <div style={{ width: 220, background: '#13131A', borderRight: '1px solid #1E1E28', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
+    <div style={{ width: 280, background: '#13131A', borderRight: '1px solid #1E1E28', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
       {/* Header */}
       <div style={{ padding: '14px 14px 10px', borderBottom: '1px solid #1E1E28', display: 'flex', alignItems: 'center', gap: 8 }}>
         <Layers className="w-4 h-4" style={{ color: '#636B77' }} />
@@ -543,7 +558,7 @@ function PropPanel({ selected, override, activeToolId, colors, onOverrideChange,
 
   if (!selected) {
     return (
-      <div style={{ width: 260, background: '#13131A', borderLeft: '1px solid #1E1E28', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+      <div style={{ width: 300, background: '#13131A', borderLeft: '1px solid #1E1E28', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
         <div style={{ textAlign: 'center', color: '#4E5968', padding: 24 }}>
           <LayoutGrid className="w-8 h-8 mx-auto mb-3" style={{ opacity: 0.3 }} />
           <p style={{ fontSize: 12 }}>섹션을 클릭하여<br />선택하세요</p>
@@ -553,7 +568,7 @@ function PropPanel({ selected, override, activeToolId, colors, onOverrideChange,
   }
 
   return (
-    <div style={{ width: 260, background: '#13131A', borderLeft: '1px solid #1E1E28', display: 'flex', flexDirection: 'column', flexShrink: 0, overflowY: 'auto' }}>
+    <div style={{ width: 300, background: '#13131A', borderLeft: '1px solid #1E1E28', display: 'flex', flexDirection: 'column', flexShrink: 0, overflowY: 'auto' }}>
       {/* Header */}
       <div style={{ padding: '14px 16px 10px', borderBottom: '1px solid #1E1E28' }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: '#C9D1D9' }}>
@@ -1075,8 +1090,8 @@ JSON 형식으로 응답하세요:
         {/* Tool Sidebar */}
         <ToolSidebar activeTool={activeTool} onToolChange={setActiveTool} />
 
-        {/* Section Panel — visible only when Sections tool is active */}
-        {activeTool === 'sections' && (
+        {/* Left Panel: Sections or Tool SubPanel */}
+        {activeTool === 'sections' ? (
           <SectionPanel
             allSections={allSections}
             selectedId={selectedId}
@@ -1090,6 +1105,138 @@ JSON 형식으로 응답하세요:
             onReorder={handleReorder}
             onToggleVisibility={handleToggleVisibility}
           />
+        ) : (
+          <div style={{ width: 280, background: '#13131A', borderRight: '1px solid #1E1E28', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
+            <div style={{ padding: '14px 14px 10px', borderBottom: '1px solid #1E1E28' }}>
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#C9D1D9' }}>
+                {activeTool === 'text' ? '텍스트 추가' : activeTool === 'colors' ? '컬러 스킴' : activeTool === 'image' ? '이미지 관리' : 'AI 도구'}
+              </span>
+            </div>
+            <div style={{ flex: 1, overflowY: 'auto', padding: 14 }}>
+
+              {/* TEXT tool */}
+              {activeTool === 'text' && (
+                <div>
+                  <p style={{ fontSize: 11, color: '#636B77', marginBottom: 12, lineHeight: 1.6 }}>새 텍스트 블록을 섹션에 추가합니다.</p>
+                  <div style={{ marginBottom: 12 }}>
+                    <label style={{ fontSize: 10, color: '#636B77', display: 'block', marginBottom: 4 }}>폰트</label>
+                    <select style={{ width: '100%', padding: '8px 10px', background: '#1A1A24', border: '1px solid #2A2A38', borderRadius: 8, color: '#C9D1D9', fontSize: 12 }}>
+                      <option>Noto Sans KR</option>
+                      <option>Pretendard</option>
+                    </select>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
+                    {[
+                      { label: '제목 추가', size: '24px', weight: 800, type: 'hooking' as ManuscriptSectionType },
+                      { label: '본문 추가', size: '14px', weight: 400, type: 'detail' as ManuscriptSectionType },
+                    ].map(t => (
+                      <button
+                        key={t.label}
+                        onClick={() => handleAddSection(t.type)}
+                        style={{ padding: '14px 10px', background: '#1A1A24', border: '1px solid #2A2A38', borderRadius: 10, color: '#C9D1D9', cursor: 'pointer', textAlign: 'center' }}
+                        onMouseEnter={e => (e.currentTarget.style.borderColor = '#3182F6')}
+                        onMouseLeave={e => (e.currentTarget.style.borderColor = '#2A2A38')}
+                      >
+                        <div style={{ fontSize: parseInt(t.size) > 16 ? 18 : 13, fontWeight: t.weight, marginBottom: 4 }}>Aa</div>
+                        <div style={{ fontSize: 10, color: '#636B77' }}>{t.label}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* COLORS tool */}
+              {activeTool === 'colors' && (
+                <div>
+                  <p style={{ fontSize: 11, color: '#636B77', marginBottom: 12, lineHeight: 1.6 }}>AI가 추천한 컬러 스킴입니다. 변경하면 전체 분위기가 바뀝니다.</p>
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 10, color: '#636B77', marginBottom: 6 }}>현재 팔레트</div>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      {Object.entries(colors).map(([key, hex]) => (
+                        <div key={key} style={{ textAlign: 'center' }}>
+                          <div style={{ width: 40, height: 40, borderRadius: 8, background: hex, border: '1px solid #2A2A38', cursor: 'pointer' }} />
+                          <div style={{ fontSize: 8, color: '#636B77', marginTop: 3 }}>{key}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 10, color: '#636B77', marginBottom: 6 }}>추천 스킴</div>
+                    {[
+                      { name: '딥 네이비', colors: ['#111827', '#1F2937', '#E5E7EB', '#3182F6'] },
+                      { name: '내추럴 그린', colors: ['#1b3a2d', '#2d5a42', '#F0FDF4', '#16a34a'] },
+                      { name: '웜 브라운', colors: ['#292524', '#44403C', '#FAFAF9', '#D97706'] },
+                    ].map(scheme => (
+                      <button
+                        key={scheme.name}
+                        style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px', background: '#1A1A24', border: '1px solid #2A2A38', borderRadius: 10, cursor: 'pointer', marginBottom: 6 }}
+                        onMouseEnter={e => (e.currentTarget.style.borderColor = '#3182F6')}
+                        onMouseLeave={e => (e.currentTarget.style.borderColor = '#2A2A38')}
+                      >
+                        <div style={{ display: 'flex', gap: 3 }}>
+                          {scheme.colors.map((c, i) => (
+                            <div key={i} style={{ width: 20, height: 20, borderRadius: 4, background: c, border: '1px solid #2A2A38' }} />
+                          ))}
+                        </div>
+                        <span style={{ fontSize: 11, color: '#C9D1D9' }}>{scheme.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* IMAGE tool */}
+              {activeTool === 'image' && (
+                <div>
+                  <p style={{ fontSize: 11, color: '#636B77', marginBottom: 12, lineHeight: 1.6 }}>업로드한 제품 사진을 관리합니다.</p>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
+                    {productPhotos.map((photo: any, i: number) => (
+                      <div key={i} style={{ borderRadius: 8, overflow: 'hidden', border: '1px solid #2A2A38', aspectRatio: '1', background: '#1A1A24' }}>
+                        <img src={photo.dataUrl} alt={`제품 ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      </div>
+                    ))}
+                  </div>
+                  {productPhotos.length === 0 && (
+                    <div style={{ textAlign: 'center', padding: '24px', color: '#636B77', fontSize: 11 }}>업로드한 이미지가 없습니다</div>
+                  )}
+                  <button style={{ width: '100%', padding: '12px', background: '#1A1A24', border: '1px dashed #2A2A38', borderRadius: 10, color: '#636B77', fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                    <Upload className="w-4 h-4" />
+                    이미지 추가
+                  </button>
+                </div>
+              )}
+
+              {/* AI tool */}
+              {activeTool === 'ai' && (
+                <div>
+                  <p style={{ fontSize: 11, color: '#636B77', marginBottom: 12, lineHeight: 1.6 }}>AI가 상세페이지를 분석하고 개선합니다.</p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <button
+                      onClick={handleAIRewrite}
+                      disabled={isAILoading}
+                      style={{ width: '100%', padding: '12px', background: 'linear-gradient(135deg, #3182F6, #8B5CF6)', border: 'none', borderRadius: 10, color: '#fff', fontSize: 12, fontWeight: 700, cursor: isAILoading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, opacity: isAILoading ? 0.6 : 1 }}
+                    >
+                      <Sparkles className="w-4 h-4" />
+                      {isAILoading ? '생성 중...' : '선택 섹션 AI 재작성'}
+                    </button>
+                    <button style={{ width: '100%', padding: '12px', background: '#1A1A24', border: '1px solid #2A2A38', borderRadius: 10, color: '#C9D1D9', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                      <Wand2 className="w-4 h-4" />
+                      전체 페이지 AI 개선
+                    </button>
+                    <button style={{ width: '100%', padding: '12px', background: '#1A1A24', border: '1px solid #2A2A38', borderRadius: 10, color: '#C9D1D9', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                      <ImageIcon className="w-4 h-4" />
+                      AI 이미지 생성
+                    </button>
+                    <button style={{ width: '100%', padding: '12px', background: '#1A1A24', border: '1px solid #2A2A38', borderRadius: 10, color: '#C9D1D9', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                      <Search className="w-4 h-4" />
+                      경쟁사 재분석
+                    </button>
+                  </div>
+                </div>
+              )}
+
+            </div>
+          </div>
         )}
 
         {/* Canvas Area */}
