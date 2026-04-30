@@ -775,6 +775,38 @@ export default function DetailEditor() {
   const [isSaving, setIsSaving] = useState(false);
   const [isAILoading, setIsAILoading] = useState(false);
 
+  // ── Composition state (per-section element positions persist drag edits) ──
+  const [compositions, setCompositions] = useState<Record<string, SectionComposition>>({});
+  const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
+
+  // Initialize compositions from templates (productPhotoUrl defined below)
+  useEffect(() => {
+    const pUrl = productPhotos.length > 0 ? productPhotos[0].dataUrl : null;
+    const newComps: Record<string, SectionComposition> = {};
+    visibleSections.forEach(section => {
+      if (!compositions[section.id]) {
+        const comp = getCompositionTemplate(section.sectionType, colors);
+        const elements = comp.elements.map(el => {
+          if (el.id.includes('title') && el.type === 'text' && section.title) return { ...el, text: section.title };
+          if ((el.id.includes('subtitle') || el.id.includes('desc')) && el.type === 'text' && section.body) return { ...el, text: section.body.slice(0, 150) };
+          if (el.type === 'image' && !el.src && pUrl) return { ...el, src: pUrl };
+          return el;
+        });
+        newComps[section.id] = { ...comp, elements };
+      }
+    });
+    if (Object.keys(newComps).length > 0) setCompositions(prev => ({ ...prev, ...newComps }));
+  }, [visibleSections.length, colors.primary]);
+
+  // Update element in composition
+  const handleUpdateElement = useCallback((sectionId: string, elementId: string, updates: Partial<CompositionElement>) => {
+    setCompositions(prev => {
+      const comp = prev[sectionId];
+      if (!comp) return prev;
+      return { ...prev, [sectionId]: { ...comp, elements: comp.elements.map(el => el.id === elementId ? { ...el, ...updates } : el) } };
+    });
+  }, []);
+
   // ── Undo/Redo history ──
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
@@ -1251,27 +1283,20 @@ JSON 형식으로 응답하세요:
               style={{ width: CANVAS_WIDTH, background: '#FFFFFF', boxShadow: '0 24px 64px rgba(0,0,0,0.4)', borderRadius: 4, overflow: 'hidden' }}
             >
               {visibleSections.map(section => {
-                const comp = getCompositionTemplate(section.sectionType, colors);
-                // Inject section title/body into composition text elements
-                const elements = comp.elements.map(el => {
-                  if (el.id.includes('title') && el.type === 'text' && section.title) return { ...el, text: section.title };
-                  if (el.id.includes('subtitle') && el.type === 'text' && section.body) return { ...el, text: section.body.slice(0, 150) };
-                  if (el.id.includes('desc') && el.type === 'text' && section.body) return { ...el, text: section.body.slice(0, 100) };
-                  if (el.type === 'image' && !el.src && productPhotoUrl) return { ...el, src: productPhotoUrl };
-                  return el;
-                });
+                const comp = compositions[section.id];
+                if (!comp) return null;
                 return (
                   <div
                     key={section.id}
                     ref={el => { sectionRefs.current[section.id] = el; }}
-                    onClick={() => { setSelectedId(section.id); }}
                     style={{ outline: section.id === selectedId ? '2px solid #3182F6' : '2px solid transparent', outlineOffset: -2 }}
                   >
                     <CompositionRenderer
-                      composition={{ ...comp, elements }}
-                      selectedElementId={null}
-                      onSelectElement={() => {}}
-                      onUpdateElement={() => {}}
+                      composition={comp}
+                      selectedElementId={selectedId === section.id ? selectedElementId : null}
+                      onSelectElement={elId => { setSelectedId(section.id); setSelectedElementId(elId); }}
+                      onUpdateElement={(elId, updates) => handleUpdateElement(section.id, elId, updates)}
+                      onDoubleClickText={elId => { setSelectedId(section.id); setSelectedElementId(elId); }}
                     />
                   </div>
                 );
