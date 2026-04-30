@@ -11,6 +11,9 @@ import {
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { Upload, Copy, Wand2, PaintBucket, TypeIcon, Search } from 'lucide-react';
+import CompositionRenderer from './CompositionRenderer';
+import { getCompositionTemplate } from '@/lib/composition-templates';
+import type { SectionComposition, CompositionElement } from '@/lib/composition-types';
 
 // ─── Dark Scrollbar Style (inject once) ──────────────────────────────────────
 const SCROLLBAR_STYLE_ID = 'dm-dark-scrollbar';
@@ -1248,24 +1251,28 @@ JSON 형식으로 응답하세요:
               style={{ width: CANVAS_WIDTH, background: '#FFFFFF', boxShadow: '0 24px 64px rgba(0,0,0,0.4)', borderRadius: 4, overflow: 'hidden' }}
             >
               {visibleSections.map(section => {
-                const ov = overrides[section.id] ?? {};
-                const ctx: RenderCtx = {
-                  section,
-                  override: ov,
-                  colors,
-                  productPhotoUrl: ov.imageUrl || productPhotoUrl,
-                  selected: section.id === selectedId,
-                  onClick: () => {
-                    setSelectedId(section.id);
-                    if (activeTool !== 'sections') return;
-                    const el = sectionRefs.current[section.id];
-                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                  },
-                  canvasWidth: CANVAS_WIDTH,
-                };
+                const comp = getCompositionTemplate(section.sectionType, colors);
+                // Inject section title/body into composition text elements
+                const elements = comp.elements.map(el => {
+                  if (el.id.includes('title') && el.type === 'text' && section.title) return { ...el, text: section.title };
+                  if (el.id.includes('subtitle') && el.type === 'text' && section.body) return { ...el, text: section.body.slice(0, 150) };
+                  if (el.id.includes('desc') && el.type === 'text' && section.body) return { ...el, text: section.body.slice(0, 100) };
+                  if (el.type === 'image' && !el.src && productPhotoUrl) return { ...el, src: productPhotoUrl };
+                  return el;
+                });
                 return (
-                  <div key={section.id} ref={el => { sectionRefs.current[section.id] = el; }}>
-                    {renderSectionHTML(ctx)}
+                  <div
+                    key={section.id}
+                    ref={el => { sectionRefs.current[section.id] = el; }}
+                    onClick={() => { setSelectedId(section.id); }}
+                    style={{ outline: section.id === selectedId ? '2px solid #3182F6' : '2px solid transparent', outlineOffset: -2 }}
+                  >
+                    <CompositionRenderer
+                      composition={{ ...comp, elements }}
+                      selectedElementId={null}
+                      onSelectElement={() => {}}
+                      onUpdateElement={() => {}}
+                    />
                   </div>
                 );
               })}
