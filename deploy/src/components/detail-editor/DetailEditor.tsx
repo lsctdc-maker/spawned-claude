@@ -587,7 +587,7 @@ function PropPanel({ selected, override, activeToolId, colors, onOverrideChange,
           <label style={labelStyle}>섹션 제목</label>
           <input
             style={inputStyle}
-            value={override.title ?? selected.title}
+            value={override.title ?? selected.title ?? ''}
             onChange={e => onOverrideChange({ title: e.target.value })}
             placeholder="섹션 제목"
           />
@@ -596,7 +596,7 @@ function PropPanel({ selected, override, activeToolId, colors, onOverrideChange,
           <label style={labelStyle}>본문 내용</label>
           <textarea
             style={{ ...inputStyle, minHeight: 120 }}
-            value={override.body ?? selected.body}
+            value={override.body ?? selected.body ?? ''}
             onChange={e => onOverrideChange({ body: e.target.value })}
             placeholder="본문을 입력하세요"
           />
@@ -787,8 +787,10 @@ export default function DetailEditor() {
       if (!compositions[section.id]) {
         const comp = getCompositionTemplate(section.sectionType, colors);
         const elements = comp.elements.map(el => {
-          if (el.id.includes('title') && el.type === 'text' && section.title) return { ...el, text: section.title };
-          if ((el.id.includes('subtitle') || el.id.includes('desc')) && el.type === 'text' && section.body) return { ...el, text: section.body.slice(0, 150) };
+          const isSectionTitle = el.id.endsWith('-title') && !el.id.includes('card') && !el.id.includes('item');
+          const isSectionSubtitle = el.id.endsWith('-subtitle');
+          if (isSectionTitle && el.type === 'text' && section.title) return { ...el, text: section.title };
+          if (isSectionSubtitle && el.type === 'text' && section.body) return { ...el, text: section.body.slice(0, 150) };
           if (el.type === 'image' && !el.src && pUrl) return { ...el, src: pUrl };
           return el;
         });
@@ -796,7 +798,7 @@ export default function DetailEditor() {
       }
     });
     if (Object.keys(newComps).length > 0) setCompositions(prev => ({ ...prev, ...newComps }));
-  }, [visibleSections.length, colors.primary]);
+  }, [visibleSections.map(s => s.id).join(','), colors.primary, colors.accent, colors.text]);
 
   // Update element in composition
   const handleUpdateElement = useCallback((sectionId: string, elementId: string, updates: Partial<CompositionElement>) => {
