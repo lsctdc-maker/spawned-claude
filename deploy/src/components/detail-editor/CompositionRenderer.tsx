@@ -33,21 +33,29 @@ export default function CompositionRenderer({
   composition, selectedElementId, onSelectElement, onUpdateElement, onDoubleClickText,
 }: CompositionRendererProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [dragState, setDragState] = useState<{ id: string; startX: number; startY: number; elX: number; elY: number } | null>(null);
+  const [dragState, setDragState] = useState<{ id: string; startX: number; startY: number; elX: number; elY: number; scale: number } | null>(null);
 
   const handleMouseDown = useCallback((e: React.MouseEvent, el: CompositionElement) => {
-    if (el.locked || !el.draggable) return;
+    if (el.locked) return; // let click propagate to section wrapper → selects section
+    if (!el.draggable) {
+      e.stopPropagation();
+      onSelectElement(el.id);
+      return;
+    }
     e.stopPropagation();
     onSelectElement(el.id);
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return;
-    setDragState({ id: el.id, startX: e.clientX, startY: e.clientY, elX: el.x, elY: el.y });
+    // Compute scale: rendered width vs CSS width (accounts for parent zoom transform)
+    const scale = rect.width / (containerRef.current?.offsetWidth || rect.width || 1);
+    setDragState({ id: el.id, startX: e.clientX, startY: e.clientY, elX: el.x, elY: el.y, scale: scale || 1 });
   }, [onSelectElement]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!dragState) return;
-    const dx = e.clientX - dragState.startX;
-    const dy = e.clientY - dragState.startY;
+    // Convert screen-space delta to composition-space delta using stored scale
+    const dx = (e.clientX - dragState.startX) / dragState.scale;
+    const dy = (e.clientY - dragState.startY) / dragState.scale;
     onUpdateElement(dragState.id, { x: dragState.elX + dx, y: dragState.elY + dy });
   }, [dragState, onUpdateElement]);
 
@@ -101,8 +109,7 @@ export default function CompositionRenderer({
               background: 'none',
               textAlign: el.textAlign || 'left',
               lineHeight: el.lineHeight || 1.5,
-              display: 'flex',
-              alignItems: 'flex-start',
+              display: 'block',
               overflow: 'hidden',
               whiteSpace: 'pre-wrap',
               wordBreak: 'break-word',

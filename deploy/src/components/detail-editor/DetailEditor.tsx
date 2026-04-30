@@ -8,9 +8,11 @@ import {
   Plus, Trash2, ChevronUp, ChevronDown, Eye, EyeOff,
   Type, Image as ImageIcon, Palette, Sparkles,
   LayoutGrid, Layers,
+  Zap, AlertTriangle, Lightbulb, Star, FileText, BookOpen,
+  Users, Award, Table2, ShieldCheck, ShoppingCart, Tag,
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
-import { Upload, Copy, Wand2, PaintBucket, TypeIcon, Search } from 'lucide-react';
+import { Upload, Wand2, Search } from 'lucide-react';
 import CompositionRenderer from './CompositionRenderer';
 import { getCompositionTemplate } from '@/lib/composition-templates';
 import type { SectionComposition, CompositionElement } from '@/lib/composition-types';
@@ -73,11 +75,26 @@ const ADDABLE_SECTIONS: { type: ManuscriptSectionType; label: string; desc: stri
   { type: 'event_banner', label: '이벤트 배너', desc: '할인/프로모' },
 ];
 
-const SECTION_ICON: Record<string, string> = {
-  hooking: 'H', hero: 'H', problem: 'P', solution: 'S',
-  features: 'F', detail: 'D', howto: 'U', social_proof: 'R',
-  trust: 'T', specs: 'SP', guarantee: 'G', event_banner: 'E', cta: 'C',
+// Maps section type → Lucide icon component (16x16)
+const SECTION_ICON_MAP: Record<string, React.ReactNode> = {
+  hooking:      <Zap className="w-3.5 h-3.5" />,
+  hero:         <Zap className="w-3.5 h-3.5" />,
+  problem:      <AlertTriangle className="w-3.5 h-3.5" />,
+  solution:     <Lightbulb className="w-3.5 h-3.5" />,
+  features:     <Star className="w-3.5 h-3.5" />,
+  detail:       <FileText className="w-3.5 h-3.5" />,
+  howto:        <BookOpen className="w-3.5 h-3.5" />,
+  social_proof: <Users className="w-3.5 h-3.5" />,
+  trust:        <Award className="w-3.5 h-3.5" />,
+  specs:        <Table2 className="w-3.5 h-3.5" />,
+  guarantee:    <ShieldCheck className="w-3.5 h-3.5" />,
+  event_banner: <Tag className="w-3.5 h-3.5" />,
+  cta:          <ShoppingCart className="w-3.5 h-3.5" />,
 };
+
+function SectionIcon({ type }: { type: string }) {
+  return <>{SECTION_ICON_MAP[type] ?? <Layers className="w-3.5 h-3.5" />}</>;
+}
 
 // ─── Canvas Section Renderers ─────────────────────────────────────────────────
 
@@ -352,7 +369,7 @@ function GenericSectionHTML({ section, override, colors, selected, onClick }: Re
     <div onClick={onClick} style={{ background: bg, paddingTop: py, paddingBottom: py, cursor: 'pointer', outline: selected ? `3px solid ${accent}` : 'none', outlineOffset: -3 }}>
       <div className="flex flex-col items-center px-12 gap-6 text-center">
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: `${accent}18`, padding: '4px 12px', borderRadius: 20 }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: accent }}>{SECTION_ICON[section.sectionType] || '#'} {label}</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: accent, display: 'inline-flex', alignItems: 'center', gap: 4 }}><SectionIcon type={section.sectionType} /> {label}</span>
         </div>
         <div style={{ background: accent, width: 40, height: 3, borderRadius: 2 }} />
         <h2 style={{ fontSize: override.fontSize ?? 32, fontWeight: 900, color: '#191F28', maxWidth: 680 }}>{title}</h2>
@@ -473,8 +490,8 @@ function SectionPanel({ allSections, selectedId, onSelect, onAdd, onDelete, onRe
                   {i + 1}
                 </div>
                 <div style={{ minWidth: 0, flex: 1 }}>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: isActive ? '#A8C8FF' : '#9BA3AD', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {SECTION_ICON[section.sectionType]} {SECTION_LABELS[section.sectionType] || section.sectionType}
+                  <div style={{ fontSize: 11, fontWeight: 600, color: isActive ? '#A8C8FF' : '#9BA3AD', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <SectionIcon type={section.sectionType} /> {SECTION_LABELS[section.sectionType] || section.sectionType}
                   </div>
                   <div style={{ fontSize: 10, color: '#4E5968', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {(section.title || '제목 없음').slice(0, 16)}
@@ -526,7 +543,7 @@ function SectionPanel({ allSections, selectedId, onSelect, onAdd, onDelete, onRe
                   onMouseEnter={e => (e.currentTarget.style.background = '#22222E')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'none')}
                 >
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#C9D1D9' }}>{SECTION_ICON[type]} {label}</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#C9D1D9', display: 'flex', alignItems: 'center', gap: 4 }}><SectionIcon type={type} /> {label}</div>
                   <div style={{ fontSize: 10, color: '#636B77', marginTop: 2 }}>{desc}</div>
                 </button>
               ))}
@@ -574,8 +591,8 @@ function PropPanel({ selected, override, activeToolId, colors, onOverrideChange,
     <div style={{ width: 300, background: '#13131A', borderLeft: '1px solid #1E1E28', display: 'flex', flexDirection: 'column', flexShrink: 0, overflowY: 'auto' }}>
       {/* Header */}
       <div style={{ padding: '14px 16px 10px', borderBottom: '1px solid #1E1E28' }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: '#C9D1D9' }}>
-          {SECTION_ICON[selected.sectionType]} {SECTION_LABELS[selected.sectionType] || selected.sectionType}
+        <div style={{ fontSize: 11, fontWeight: 700, color: '#C9D1D9', display: 'flex', alignItems: 'center', gap: 5 }}>
+          <SectionIcon type={selected.sectionType} /> {SECTION_LABELS[selected.sectionType] || selected.sectionType}
         </div>
         <div style={{ fontSize: 10, color: '#636B77', marginTop: 2 }}>섹션 속성</div>
       </div>
@@ -779,7 +796,10 @@ export default function DetailEditor() {
   const [compositions, setCompositions] = useState<Record<string, SectionComposition>>({});
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
 
-  // Initialize compositions from templates (productPhotoUrl defined below)
+  // Stable dep key: comma-joined visible section IDs
+  const visibleSectionIds = useMemo(() => visibleSections.map(s => s.id).join(','), [visibleSections]);
+
+  // Initialize compositions from templates when sections change
   useEffect(() => {
     const pUrl = productPhotos.length > 0 ? productPhotos[0].dataUrl : null;
     const newComps: Record<string, SectionComposition> = {};
@@ -798,7 +818,33 @@ export default function DetailEditor() {
       }
     });
     if (Object.keys(newComps).length > 0) setCompositions(prev => ({ ...prev, ...newComps }));
-  }, [visibleSections.map(s => s.id).join(','), colors.primary, colors.accent, colors.text]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visibleSectionIds, colors.primary, colors.accent, colors.text]);
+
+  // When product photos change, inject the first photo into all image-type elements that have no src
+  useEffect(() => {
+    const pUrl = productPhotos.length > 0 ? productPhotos[0].dataUrl : null;
+    if (!pUrl) return;
+    setCompositions(prev => {
+      const updated: Record<string, SectionComposition> = { ...prev };
+      let anyChanged = false;
+      Object.entries(prev).forEach(([id, comp]) => {
+        let compChanged = false;
+        const newElements = comp.elements.map(el => {
+          if (el.type === 'image' && !el.src) {
+            compChanged = true;
+            return { ...el, src: pUrl };
+          }
+          return el;
+        });
+        if (compChanged) {
+          updated[id] = { ...comp, elements: newElements };
+          anyChanged = true;
+        }
+      });
+      return anyChanged ? updated : prev;
+    });
+  }, [productPhotos]);
 
   // Update element in composition
   const handleUpdateElement = useCallback((sectionId: string, elementId: string, updates: Partial<CompositionElement>) => {
@@ -1277,9 +1323,12 @@ JSON 형식으로 응답하세요:
         )}
 
         {/* Canvas Area */}
-        <div style={{ flex: 1, overflowY: 'auto', overflowX: 'auto', background: '#1A1A22', display: 'flex', justifyContent: 'center', padding: '32px 24px' }}>
-          {/* Canvas scroll wrapper */}
-          <div style={{ transformOrigin: 'top center', transform: `scale(${zoom})`, transition: 'transform 0.15s', flexShrink: 0 }}>
+        <div style={{ flex: 1, overflowY: 'auto', overflowX: 'auto', background: '#1A1A22', padding: '32px 24px', display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
+          {/* CSS zoom affects layout flow (unlike transform:scale) — scroll works correctly at all zoom levels */}
+          <div style={{
+            zoom: zoom as unknown as number,
+            flexShrink: 0,
+          } as React.CSSProperties}>
             <div
               ref={canvasRef}
               style={{ width: CANVAS_WIDTH, background: '#FFFFFF', boxShadow: '0 24px 64px rgba(0,0,0,0.4)', borderRadius: 4, overflow: 'hidden' }}
@@ -1291,7 +1340,8 @@ JSON 형식으로 응답하세요:
                   <div
                     key={section.id}
                     ref={el => { sectionRefs.current[section.id] = el; }}
-                    style={{ outline: section.id === selectedId ? '2px solid #3182F6' : '2px solid transparent', outlineOffset: -2 }}
+                    onClick={() => setSelectedId(section.id)}
+                    style={{ outline: section.id === selectedId ? '2px solid #3182F6' : '2px solid transparent', outlineOffset: -2, cursor: 'default' }}
                   >
                     <CompositionRenderer
                       composition={comp}
