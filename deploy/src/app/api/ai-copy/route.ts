@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth, isAuthError } from '@/lib/auth-server';
 
 const SECTION_PROMPTS: Record<string, string> = {
   hooking: '후킹/히어로 섹션: 제품의 핵심 가치를 한 문장으로 강렬하게. 경쟁사 대비 차별점 강조.',
@@ -23,6 +24,9 @@ const SECTION_PROMPTS: Record<string, string> = {
  * body: { sectionType, productName, category, usps, competitorContext }
  */
 export async function POST(request: NextRequest) {
+  const authResult = await requireAuth(request);
+  if (isAuthError(authResult)) return authResult;
+
   try {
     const { sectionType, productName, category, usps, competitorContext } = await request.json();
 

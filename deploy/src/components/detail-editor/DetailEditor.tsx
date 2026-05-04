@@ -10,9 +10,9 @@ import {
   LayoutGrid, Layers,
   Zap, AlertTriangle, Lightbulb, Star, FileText, BookOpen,
   Users, Award, Table2, ShieldCheck, ShoppingCart, Tag,
+  Upload, Wand2, Search,
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
-import { Upload, Wand2, Search } from 'lucide-react';
 import CompositionRenderer from './CompositionRenderer';
 import { getCompositionTemplate } from '@/lib/composition-templates';
 import type { SectionComposition, CompositionElement } from '@/lib/composition-types';
@@ -94,303 +94,6 @@ const SECTION_ICON_MAP: Record<string, React.ReactNode> = {
 
 function SectionIcon({ type }: { type: string }) {
   return <>{SECTION_ICON_MAP[type] ?? <Layers className="w-3.5 h-3.5" />}</>;
-}
-
-// ─── Canvas Section Renderers ─────────────────────────────────────────────────
-
-interface RenderCtx {
-  section: ManuscriptSection;
-  override: SectionOverride;
-  colors: { primary: string; secondary: string; text: string; accent: string };
-  productPhotoUrl: string | null;
-  selected: boolean;
-  onClick: () => void;
-  canvasWidth: number;
-}
-
-function HeroSectionHTML({ section, override, colors, productPhotoUrl, selected, onClick }: RenderCtx) {
-  const bg = override.bgColor || colors.primary;
-  const accent = override.accentColor || colors.accent;
-  const textCol = override.textColor || '#FFFFFF';
-  const title = ( override.title ?? section.title) || '제품명을 입력하세요';
-  const body = ( override.body ?? section.body) || '제품의 핵심 가치를 한 줄로';
-  const py = override.paddingY ?? 80;
-
-  return (
-    <div
-      onClick={onClick}
-      style={{ background: bg, paddingTop: py, paddingBottom: py, cursor: 'pointer', outline: selected ? `3px solid ${accent}` : 'none', outlineOffset: -3 }}
-      className="relative w-full overflow-hidden"
-    >
-      {/* Decorative blob */}
-      <div style={{ background: `radial-gradient(circle, ${accent}22 0%, transparent 70%)` }} className="absolute top-0 right-0 w-96 h-96 rounded-full -translate-y-1/3 translate-x-1/4 pointer-events-none" />
-      <div className="relative flex flex-col items-center text-center px-12 gap-6">
-        {/* Product image */}
-        {productPhotoUrl ? (
-          <img src={productPhotoUrl} alt="product" className="w-48 h-48 object-contain drop-shadow-2xl rounded-2xl" />
-        ) : (
-          <div style={{ background: 'rgba(255,255,255,0.08)', border: '2px dashed rgba(255,255,255,0.2)' }} className="w-48 h-48 rounded-2xl flex items-center justify-center">
-            <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13 }}>제품 이미지</span>
-          </div>
-        )}
-        {/* Accent bar */}
-        <div style={{ background: accent, width: 48, height: 3, borderRadius: 2 }} />
-        <h1 style={{ color: textCol, fontSize: override.fontSize ?? 40, fontWeight: 900, lineHeight: 1.2, maxWidth: 680 }}>{title}</h1>
-        <p style={{ color: `${textCol}CC`, fontSize: 17, lineHeight: 1.8, maxWidth: 560 }}>{body}</p>
-        {/* CTA pill */}
-        <button style={{ background: accent, color: '#fff', padding: '14px 36px', borderRadius: 40, fontSize: 16, fontWeight: 700, border: 'none', cursor: 'default', boxShadow: `0 8px 24px ${accent}55` }}>
-          지금 구매하기 →
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function PainSectionHTML({ section, override, colors, selected, onClick }: RenderCtx) {
-  const bg = override.bgColor || '#FFFFFF';
-  const accent = override.accentColor || colors.accent;
-  const title = ( override.title ?? section.title) || '이런 고민, 공감되시나요?';
-  const body = ( override.body ?? section.body) || '고민 1\n고민 2\n고민 3';
-  const cards = body.split('\n').filter(l => l.trim()).slice(0, 3);
-  const iconLabels = ['!', '?', '...'];
-  const py = override.paddingY ?? 64;
-
-  return (
-    <div onClick={onClick} style={{ background: bg, paddingTop: py, paddingBottom: py, cursor: 'pointer', outline: selected ? `3px solid ${accent}` : 'none', outlineOffset: -3 }}>
-      <div className="flex flex-col items-center px-12 gap-10">
-        <div className="flex flex-col items-center gap-2">
-          <div style={{ background: accent, width: 40, height: 3, borderRadius: 2 }} />
-          <h2 style={{ fontSize: override.fontSize ?? 34, fontWeight: 900, color: '#191F28', textAlign: 'center' }}>{title}</h2>
-        </div>
-        <div className="flex gap-5 w-full justify-center">
-          {cards.map((card, i) => (
-            <div key={i} style={{ background: '#F8F9FA', borderRadius: 20, padding: '32px 24px', flex: 1, maxWidth: 260, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
-              <span style={{ fontSize: 28, fontWeight: 800, color: accent }}>{iconLabels[i] || '!'}</span>
-              <p style={{ fontSize: 14, color: '#4E5968', textAlign: 'center', lineHeight: 1.7 }}>{card.trim()}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function SolutionSectionHTML({ section, override, colors, selected, onClick }: RenderCtx) {
-  const accent = override.accentColor || colors.accent;
-  const bg = override.bgColor || `${accent}11`;
-  const title = ( override.title ?? section.title) || '이제 해결됩니다';
-  const body = ( override.body ?? section.body) || '제품이 어떻게 문제를 해결하는지 설명';
-  const py = override.paddingY ?? 64;
-
-  return (
-    <div onClick={onClick} style={{ background: bg, paddingTop: py, paddingBottom: py, cursor: 'pointer', outline: selected ? `3px solid ${accent}` : 'none', outlineOffset: -3 }}>
-      <div className="flex flex-col items-center px-12 gap-8 text-center">
-        <div className="flex flex-col items-center gap-2">
-          <div style={{ background: accent, width: 40, height: 3, borderRadius: 2 }} />
-          <h2 style={{ fontSize: override.fontSize ?? 34, fontWeight: 900, color: '#191F28' }}>{title}</h2>
-        </div>
-        <p style={{ fontSize: 16, color: '#4E5968', lineHeight: 1.9, maxWidth: 600 }}>{body}</p>
-        <div className="flex gap-6">
-          {['즉각적인 효과', '안전한 성분', '지속되는 결과'].map((cp, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ background: accent, width: 24, height: 24, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 13, fontWeight: 700, flexShrink: 0 }}>✓</div>
-              <span style={{ fontSize: 14, color: '#191F28', fontWeight: 600 }}>{cp}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function FeaturesSectionHTML({ section, override, colors, selected, onClick }: RenderCtx) {
-  const bg = override.bgColor || colors.primary;
-  const accent = override.accentColor || colors.accent;
-  const textCol = override.textColor || '#FFFFFF';
-  const title = ( override.title ?? section.title) || '핵심 특장점';
-  const body = ( override.body ?? section.body) || '특장점 1\n특장점 2\n특장점 3\n특장점 4';
-  const items = body.split('\n').filter(l => l.trim()).slice(0, 4);
-  const cardColors = ['#1a2f4a', '#1a3a2f', '#3a1a2f', '#2a2a1a'];
-  const py = override.paddingY ?? 64;
-
-  return (
-    <div onClick={onClick} style={{ background: bg, paddingTop: py, paddingBottom: py, cursor: 'pointer', outline: selected ? `3px solid ${accent}` : 'none', outlineOffset: -3 }}>
-      <div className="flex flex-col items-center px-12 gap-10">
-        <div className="flex flex-col items-center gap-2">
-          <div style={{ background: 'rgba(255,255,255,0.4)', width: 40, height: 3, borderRadius: 2 }} />
-          <h2 style={{ fontSize: override.fontSize ?? 34, fontWeight: 900, color: textCol, textAlign: 'center' }}>{title}</h2>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, width: '100%', maxWidth: 760 }}>
-          {items.map((item, i) => (
-            <div key={i} style={{ background: cardColors[i] || 'rgba(255,255,255,0.08)', borderRadius: 20, padding: '28px 24px', border: '1px solid rgba(255,255,255,0.1)' }}>
-              <div style={{ background: accent, width: 36, height: 36, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 15, fontWeight: 900, marginBottom: 14 }}>
-                0{i + 1}
-              </div>
-              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7 }}>{item.trim()}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function SpecsSectionHTML({ section, override, colors, selected, onClick }: RenderCtx) {
-  const accent = override.accentColor || colors.accent;
-  const bg = override.bgColor || '#F4F5F7';
-  const title = ( override.title ?? section.title) || '제품 상세 스펙';
-  const body = ( override.body ?? section.body) || '용량: -\n성분: -\n원산지: -\n유통기한: -';
-  const specs = body.split('\n').filter(l => l.trim()).slice(0, 8);
-  const py = override.paddingY ?? 64;
-
-  return (
-    <div onClick={onClick} style={{ background: bg, paddingTop: py, paddingBottom: py, cursor: 'pointer', outline: selected ? `3px solid ${accent}` : 'none', outlineOffset: -3 }}>
-      <div className="flex flex-col items-center px-12 gap-8">
-        <div className="flex flex-col items-center gap-2">
-          <div style={{ background: accent, width: 40, height: 3, borderRadius: 2 }} />
-          <h2 style={{ fontSize: override.fontSize ?? 32, fontWeight: 900, color: '#191F28', textAlign: 'center' }}>{title}</h2>
-        </div>
-        <div style={{ background: '#fff', borderRadius: 16, border: '1px solid #E5E8EB', overflow: 'hidden', width: '100%', maxWidth: 640 }}>
-          {specs.map((spec, i) => {
-            const [label, value] = spec.includes(':') ? spec.split(':').map(s => s.trim()) : [spec, '-'];
-            return (
-              <div key={i} style={{ display: 'flex', padding: '14px 24px', borderBottom: i < specs.length - 1 ? '1px solid #E5E8EB' : 'none', background: i % 2 === 0 ? '#FAFBFC' : '#fff' }}>
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#191F28', width: 160, flexShrink: 0 }}>{label}</span>
-                <span style={{ fontSize: 13, color: '#4E5968' }}>{value || '-'}</span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ReviewsSectionHTML({ section, override, colors, selected, onClick }: RenderCtx) {
-  const accent = override.accentColor || colors.accent;
-  const bg = override.bgColor || '#FFFFFF';
-  const title = ( override.title ?? section.title) || '고객 후기';
-  const body = ( override.body ?? section.body) || '정말 만족스러운 제품이에요!\n생각보다 효과가 빨랐어요.\n주변에 추천하고 싶은 제품입니다.';
-  const reviews = body.split('\n').filter(l => l.trim()).slice(0, 3);
-  const names = ['김민수', '이지영', '박서준'];
-  const py = override.paddingY ?? 64;
-
-  return (
-    <div onClick={onClick} style={{ background: bg, paddingTop: py, paddingBottom: py, cursor: 'pointer', outline: selected ? `3px solid ${accent}` : 'none', outlineOffset: -3 }}>
-      <div className="flex flex-col items-center px-12 gap-10">
-        <div className="flex flex-col items-center gap-2">
-          <div style={{ background: accent, width: 40, height: 3, borderRadius: 2 }} />
-          <h2 style={{ fontSize: override.fontSize ?? 32, fontWeight: 900, color: '#191F28', textAlign: 'center' }}>{title}</h2>
-        </div>
-        <div className="flex gap-4 w-full" style={{ maxWidth: 800 }}>
-          {reviews.map((rev, i) => (
-            <div key={i} style={{ background: '#F8F9FA', borderRadius: 20, padding: '24px', flex: 1, boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
-              <div className="flex items-center gap-3 mb-3">
-                <div style={{ width: 36, height: 36, borderRadius: '50%', background: `${accent}33`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: accent }}>
-                  {names[i]?.[0] ?? 'U'}
-                </div>
-                <div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#191F28' }}>{names[i]}</div>
-                  <div style={{ color: '#F5A623', fontSize: 11 }}>★★★★★</div>
-                </div>
-              </div>
-              <p style={{ fontSize: 13, color: '#4E5968', lineHeight: 1.7 }}>{rev.trim()}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function CertSectionHTML({ section, override, colors, selected, onClick }: RenderCtx) {
-  const accent = override.accentColor || colors.accent;
-  const bg = override.bgColor || '#F4F5F7';
-  const title = ( override.title ?? section.title) || '인증 및 수상';
-  const body = ( override.body ?? section.body) || 'HACCP\nISO 9001\n친환경 인증\n안전인증';
-  const certs = body.split('\n').filter(l => l.trim()).slice(0, 4);
-  const py = override.paddingY ?? 56;
-
-  return (
-    <div onClick={onClick} style={{ background: bg, paddingTop: py, paddingBottom: py, cursor: 'pointer', outline: selected ? `3px solid ${accent}` : 'none', outlineOffset: -3 }}>
-      <div className="flex flex-col items-center px-12 gap-8">
-        <div className="flex flex-col items-center gap-2">
-          <div style={{ background: accent, width: 40, height: 3, borderRadius: 2 }} />
-          <h2 style={{ fontSize: override.fontSize ?? 32, fontWeight: 900, color: '#191F28', textAlign: 'center' }}>{title}</h2>
-        </div>
-        <div className="flex gap-6 flex-wrap justify-center">
-          {certs.map((cert, i) => (
-            <div key={i} style={{ width: 110, height: 110, borderRadius: '50%', background: '#FFFFFF', border: `3px solid ${accent}44`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 6, boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}>
-              <div style={{ width: 28, height: 28, borderRadius: '50%', background: accent, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 14, fontWeight: 900 }}>✓</div>
-              <span style={{ fontSize: 11, fontWeight: 700, color: '#191F28', textAlign: 'center', padding: '0 8px' }}>{cert.trim()}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function CTASectionHTML({ section, override, colors, selected, onClick }: RenderCtx) {
-  const primary = override.bgColor || colors.primary;
-  const accent = override.accentColor || colors.accent;
-  const textCol = override.textColor || '#FFFFFF';
-  const title = ( override.title ?? section.title) || '지금 바로 시작하세요';
-  const body = ( override.body ?? section.body) || '특별한 혜택을 놓치지 마세요';
-  const py = override.paddingY ?? 80;
-
-  return (
-    <div onClick={onClick} style={{ background: `linear-gradient(135deg, ${primary} 0%, ${accent}88 100%)`, paddingTop: py, paddingBottom: py, cursor: 'pointer', position: 'relative', overflow: 'hidden', outline: selected ? `3px solid ${accent}` : 'none', outlineOffset: -3 }}>
-      <div className="absolute inset-0 pointer-events-none">
-        <div style={{ position: 'absolute', top: '-60px', right: '-60px', width: 280, height: 280, borderRadius: '50%', background: 'rgba(255,255,255,0.04)' }} />
-        <div style={{ position: 'absolute', bottom: '-80px', left: '-40px', width: 240, height: 240, borderRadius: '50%', background: 'rgba(255,255,255,0.04)' }} />
-      </div>
-      <div className="relative flex flex-col items-center text-center px-12 gap-6">
-        <h2 style={{ fontSize: override.fontSize ?? 40, fontWeight: 900, color: textCol, lineHeight: 1.2 }}>{title}</h2>
-        <div style={{ background: accent, width: 48, height: 3, borderRadius: 2 }} />
-        <p style={{ fontSize: 17, color: `${textCol}CC`, maxWidth: 520, lineHeight: 1.8 }}>{body}</p>
-        <button style={{ marginTop: 8, background: '#FFFFFF', color: primary, padding: '16px 48px', borderRadius: 40, fontSize: 17, fontWeight: 900, border: 'none', cursor: 'default', boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}>
-          지금 구매하기 →
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function GenericSectionHTML({ section, override, colors, selected, onClick }: RenderCtx) {
-  const accent = override.accentColor || colors.accent;
-  const bg = override.bgColor || '#FFFFFF';
-  const title = ( override.title ?? section.title) || '섹션 제목';
-  const body = ( override.body ?? section.body) || '섹션 내용을 입력하세요';
-  const py = override.paddingY ?? 56;
-  const label = SECTION_LABELS[section.sectionType] || section.sectionType;
-
-  return (
-    <div onClick={onClick} style={{ background: bg, paddingTop: py, paddingBottom: py, cursor: 'pointer', outline: selected ? `3px solid ${accent}` : 'none', outlineOffset: -3 }}>
-      <div className="flex flex-col items-center px-12 gap-6 text-center">
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: `${accent}18`, padding: '4px 12px', borderRadius: 20 }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: accent, display: 'inline-flex', alignItems: 'center', gap: 4 }}><SectionIcon type={section.sectionType} /> {label}</span>
-        </div>
-        <div style={{ background: accent, width: 40, height: 3, borderRadius: 2 }} />
-        <h2 style={{ fontSize: override.fontSize ?? 32, fontWeight: 900, color: '#191F28', maxWidth: 680 }}>{title}</h2>
-        <p style={{ fontSize: 15, color: '#4E5968', lineHeight: 1.9, maxWidth: 600 }}>{body}</p>
-      </div>
-    </div>
-  );
-}
-
-function renderSectionHTML(ctx: RenderCtx): React.ReactNode {
-  switch (ctx.section.sectionType) {
-    case 'hooking': case 'hero': return <HeroSectionHTML key={ctx.section.id} {...ctx} />;
-    case 'problem': return <PainSectionHTML key={ctx.section.id} {...ctx} />;
-    case 'solution': return <SolutionSectionHTML key={ctx.section.id} {...ctx} />;
-    case 'features': case 'detail': return <FeaturesSectionHTML key={ctx.section.id} {...ctx} />;
-    case 'specs': return <SpecsSectionHTML key={ctx.section.id} {...ctx} />;
-    case 'social_proof': return <ReviewsSectionHTML key={ctx.section.id} {...ctx} />;
-    case 'trust': return <CertSectionHTML key={ctx.section.id} {...ctx} />;
-    case 'cta': return <CTASectionHTML key={ctx.section.id} {...ctx} />;
-    default: return <GenericSectionHTML key={ctx.section.id} {...ctx} />;
-  }
 }
 
 // ─── Image Tool Panel ─────────────────────────────────────────────────────────
@@ -843,9 +546,12 @@ export default function DetailEditor() {
   const [activeTool, setActiveTool] = useState<ToolId>('sections');
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const [overrides, setOverrides] = useState<Record<string, SectionOverride>>({});
+  const overridesRef = useRef<Record<string, SectionOverride>>({});
+  useEffect(() => { overridesRef.current = overrides; }, [overrides]);
   const [isExporting, setIsExporting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isAILoading, setIsAILoading] = useState(false);
+  const [textFontFamily, setTextFontFamily] = useState('Noto Sans KR');
 
   // ── Composition state (per-section element positions persist drag edits) ──
   const [compositions, setCompositions] = useState<Record<string, SectionComposition>>({});
@@ -931,14 +637,22 @@ export default function DetailEditor() {
     setHistoryIndex(prev => Math.min(prev + 1, MAX_HISTORY - 1));
   }, []);
 
-  // Track section changes for undo
+  // Track section changes for undo (overridesRef avoids stale closure)
   const prevSections = useRef<ManuscriptSection[]>(manuscriptSections);
+  const initialHistoryPushed = useRef(false);
   useEffect(() => {
+    // Push initial snapshot on first render so undo index starts at 0
+    if (!initialHistoryPushed.current) {
+      initialHistoryPushed.current = true;
+      pushHistory(manuscriptSections, overridesRef.current);
+      prevSections.current = manuscriptSections;
+      return;
+    }
     if (JSON.stringify(prevSections.current) !== JSON.stringify(manuscriptSections)) {
-      pushHistory(manuscriptSections, overrides);
+      pushHistory(manuscriptSections, overridesRef.current);
       prevSections.current = manuscriptSections;
     }
-  }, [manuscriptSections]); // intentionally omitting pushHistory/overrides to avoid loops
+  }, [manuscriptSections]); // intentionally omitting pushHistory to avoid loops
 
   const canUndo = historyIndex > 0;
   const canRedo = historyIndex < history.length - 1;
@@ -963,21 +677,9 @@ export default function DetailEditor() {
     setTimeout(() => { isUndoRedo.current = false; }, 50);
   }, [canRedo, history, historyIndex, dispatch]);
 
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'z') { e.preventDefault(); if (e.shiftKey) redo(); else undo(); }
-      if ((e.metaKey || e.ctrlKey) && e.key === 'y') { e.preventDefault(); redo(); }
-    };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [undo, redo]);
-
   // ── Selections ──
   const selectedSection = useMemo(() => allSections.find(s => s.id === selectedId) ?? null, [allSections, selectedId]);
   const selectedOverride = useMemo(() => (selectedId ? overrides[selectedId] ?? {} : {}), [overrides, selectedId]);
-
-  const productPhotoUrl = productPhotos.length > 0 ? productPhotos[0].dataUrl : null;
 
   // ── Section actions ──
   const handleAddSection = useCallback((type: ManuscriptSectionType) => {
@@ -998,6 +700,26 @@ export default function DetailEditor() {
     dispatch({ type: 'REMOVE_MANUSCRIPT_SECTION', payload: id });
     if (selectedId === id) setSelectedId(null);
   }, [dispatch, selectedId]);
+
+  // Keyboard shortcuts (declared after handleDeleteSection to avoid hoisting issues)
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'z') { e.preventDefault(); if (e.shiftKey) redo(); else undo(); }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'y') { e.preventDefault(); redo(); }
+      // Delete / Backspace removes the selected section (skip if focus is on an input/textarea)
+      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedId) {
+        const tag = (e.target as HTMLElement).tagName;
+        if (tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') {
+          e.preventDefault();
+          if (window.confirm('선택된 섹션을 삭제하시겠습니까?')) {
+            handleDeleteSection(selectedId);
+          }
+        }
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [undo, redo, selectedId, handleDeleteSection]);
 
   const handleReorder = useCallback((sections: ManuscriptSection[]) => {
     dispatch({ type: 'REORDER_MANUSCRIPT', payload: sections });
@@ -1125,12 +847,14 @@ JSON 형식으로 응답하세요:
           } catch { /* ignore parse errors */ }
         }
       }
+      // Push a single history entry after all sections have been rewritten
+      pushHistory(manuscriptSections, overridesRef.current);
     } catch (e) {
       console.error('Full page AI rewrite failed:', e);
     } finally {
       setIsAILoading(false);
     }
-  }, [visibleSections, overrides, productInfo.name]);
+  }, [visibleSections, overrides, productInfo.name, pushHistory, manuscriptSections]);
 
   // ── Save ──
   const handleSave = useCallback(async () => {
@@ -1311,12 +1035,18 @@ JSON 형식으로 응답하세요:
               {/* TEXT tool */}
               {activeTool === 'text' && (
                 <div>
-                  <p style={{ fontSize: 11, color: '#636B77', marginBottom: 12, lineHeight: 1.6 }}>새 텍스트 블록을 섹션에 추가합니다.</p>
+                  <p style={{ fontSize: 11, color: '#636B77', marginBottom: 12, lineHeight: 1.6 }}>
+                    {selectedId ? '새 텍스트 섹션을 추가합니다.' : '섹션을 먼저 선택하세요.'}
+                  </p>
                   <div style={{ marginBottom: 12 }}>
                     <label style={{ fontSize: 10, color: '#636B77', display: 'block', marginBottom: 4 }}>폰트</label>
-                    <select style={{ width: '100%', padding: '8px 10px', background: '#1A1A24', border: '1px solid #2A2A38', borderRadius: 8, color: '#C9D1D9', fontSize: 12 }}>
-                      <option>Noto Sans KR</option>
-                      <option>Pretendard</option>
+                    <select
+                      value={textFontFamily}
+                      onChange={e => setTextFontFamily(e.target.value)}
+                      style={{ width: '100%', padding: '8px 10px', background: '#1A1A24', border: '1px solid #2A2A38', borderRadius: 8, color: '#C9D1D9', fontSize: 12 }}
+                    >
+                      <option value="Noto Sans KR">Noto Sans KR</option>
+                      <option value="Pretendard">Pretendard</option>
                     </select>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
@@ -1327,9 +1057,10 @@ JSON 형식으로 응답하세요:
                       <button
                         key={t.label}
                         onClick={() => handleAddSection(t.type)}
-                        style={{ padding: '14px 10px', background: '#1A1A24', border: '1px solid #2A2A38', borderRadius: 10, color: '#C9D1D9', cursor: 'pointer', textAlign: 'center' }}
-                        onMouseEnter={e => (e.currentTarget.style.borderColor = '#3182F6')}
-                        onMouseLeave={e => (e.currentTarget.style.borderColor = '#2A2A38')}
+                        disabled={!selectedId}
+                        style={{ padding: '14px 10px', background: '#1A1A24', border: '1px solid #2A2A38', borderRadius: 10, color: selectedId ? '#C9D1D9' : '#4E5968', cursor: selectedId ? 'pointer' : 'not-allowed', textAlign: 'center', opacity: selectedId ? 1 : 0.5 }}
+                        onMouseEnter={e => { if (selectedId) (e.currentTarget as HTMLButtonElement).style.borderColor = '#3182F6'; }}
+                        onMouseLeave={e => { if (selectedId) (e.currentTarget as HTMLButtonElement).style.borderColor = '#2A2A38'; }}
                       >
                         <div style={{ fontSize: parseInt(t.size) > 16 ? 18 : 13, fontWeight: t.weight, marginBottom: 4 }}>Aa</div>
                         <div style={{ fontSize: 10, color: '#636B77' }}>{t.label}</div>
@@ -1396,8 +1127,8 @@ JSON 형식으로 응답하세요:
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     <button
                       onClick={handleAIRewrite}
-                      disabled={isAILoading}
-                      style={{ width: '100%', padding: '12px', background: 'linear-gradient(135deg, #3182F6, #8B5CF6)', border: 'none', borderRadius: 10, color: '#fff', fontSize: 12, fontWeight: 700, cursor: isAILoading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, opacity: isAILoading ? 0.6 : 1 }}
+                      disabled={isAILoading || !selectedSection}
+                      style={{ width: '100%', padding: '12px', background: 'linear-gradient(135deg, #3182F6, #8B5CF6)', border: 'none', borderRadius: 10, color: '#fff', fontSize: 12, fontWeight: 700, cursor: (isAILoading || !selectedSection) ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, opacity: (isAILoading || !selectedSection) ? 0.5 : 1 }}
                     >
                       <Sparkles className="w-4 h-4" />
                       {isAILoading ? '생성 중...' : '선택 섹션 AI 재작성'}

@@ -1,25 +1,7 @@
 'use client';
 
 import { useState, useRef, useCallback } from 'react';
-
-// Import types (will be at @/lib/composition-types)
-interface CompositionElement {
-  id: string;
-  type: 'rect' | 'circle' | 'text' | 'image' | 'line' | 'badge';
-  x: number; y: number; width: number; height: number;
-  fill?: string; opacity?: number; cornerRadius?: number; rotation?: number;
-  text?: string; fontSize?: number; fontWeight?: number; fontFamily?: string;
-  textAlign?: 'left' | 'center' | 'right'; lineHeight?: number; color?: string;
-  src?: string; objectFit?: 'cover' | 'contain';
-  stroke?: string; strokeWidth?: number; shadow?: boolean;
-  gradient?: { from: string; to: string; direction?: string };
-  draggable?: boolean; editable?: boolean; locked?: boolean; name?: string;
-}
-
-interface SectionComposition {
-  sectionType: string; variantId: string; width: number; height: number;
-  background: string; elements: CompositionElement[];
-}
+import type { CompositionElement, SectionComposition } from '@/lib/composition-types';
 
 interface CompositionRendererProps {
   composition: SectionComposition;
@@ -61,9 +43,32 @@ export default function CompositionRenderer({
     } else if (resizeState) {
       const dx = (e.clientX - resizeState.startX) / resizeState.scale;
       const dy = (e.clientY - resizeState.startY) / resizeState.scale;
-      const newW = Math.max(20, resizeState.startW + dx);
-      const newH = Math.max(20, resizeState.startH + dy);
-      onUpdateElement(resizeState.id, { width: newW, height: newH });
+      const { corner, startW, startH, startX: rsx, startY: rsy, id: rid } = resizeState;
+      // Find original element position
+      const el = composition.elements.find(el => el.id === rid);
+      if (!el) return;
+      let newW = startW;
+      let newH = startH;
+      let newX = el.x;
+      let newY = el.y;
+      if (corner === 'se') {
+        newW = Math.max(20, startW + dx);
+        newH = Math.max(20, startH + dy);
+      } else if (corner === 'sw') {
+        newW = Math.max(20, startW - dx);
+        newH = Math.max(20, startH + dy);
+        newX = el.x + (startW - newW);
+      } else if (corner === 'ne') {
+        newW = Math.max(20, startW + dx);
+        newH = Math.max(20, startH - dy);
+        newY = el.y + (startH - newH);
+      } else if (corner === 'nw') {
+        newW = Math.max(20, startW - dx);
+        newH = Math.max(20, startH - dy);
+        newX = el.x + (startW - newW);
+        newY = el.y + (startH - newH);
+      }
+      onUpdateElement(resizeState.id, { x: newX, y: newY, width: newW, height: newH });
     }
   }, [dragState, resizeState, onUpdateElement]);
 
@@ -82,6 +87,7 @@ export default function CompositionRenderer({
       borderRadius: el.type === 'circle' ? '50%' : (el.cornerRadius || 0),
       transform: el.rotation ? `rotate(${el.rotation}deg)` : undefined,
       cursor: el.draggable ? 'move' : (el.locked ? 'default' : 'pointer'),
+      zIndex: el.zIndex ?? 1,
       outline: isSelected ? '2px solid #3182F6' : 'none',
       outlineOffset: isSelected ? 2 : 0,
       userSelect: 'none',
@@ -116,7 +122,7 @@ export default function CompositionRenderer({
               fontSize: el.fontSize || 14,
               fontWeight: el.fontWeight || 400,
               fontFamily: el.fontFamily || "'Noto Sans KR', sans-serif",
-              color: el.color || el.fill || '#000',
+              color: el.color || '#000000',
               background: 'none',
               textAlign: el.textAlign || 'left',
               lineHeight: el.lineHeight || 1.5,
@@ -157,7 +163,17 @@ export default function CompositionRenderer({
       case 'badge':
         return (
           <div key={el.id} style={{ ...baseStyle, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onMouseDown={e => handleMouseDown(e, el)}>
-            {el.text && <span style={{ fontSize: el.fontSize || 14, fontWeight: 700, color: el.color || '#fff' }}>{el.text}</span>}
+            {el.text && (
+              <span style={{
+                fontSize: el.fontSize || 14,
+                fontWeight: 700,
+                fontFamily: el.fontFamily || "'Noto Sans KR', sans-serif",
+                color: el.color || '#ffffff',
+                textAlign: el.textAlign || 'center',
+              }}>
+                {el.text}
+              </span>
+            )}
           </div>
         );
 

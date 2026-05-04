@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth, isAuthError } from '@/lib/auth-server';
 
 const NAVER_CLIENT_ID = process.env.NAVER_CLIENT_ID;
 const NAVER_CLIENT_SECRET = process.env.NAVER_CLIENT_SECRET;
@@ -52,6 +53,9 @@ interface CompetitorAnalysis {
  * 4) 구조화된 인사이트 반환
  */
 export async function POST(request: NextRequest) {
+  const authResult = await requireAuth(request);
+  if (isAuthError(authResult)) return authResult;
+
   if (!NAVER_CLIENT_ID || !NAVER_CLIENT_SECRET) {
     return NextResponse.json(
       { success: false, error: 'Naver API credentials not configured' },

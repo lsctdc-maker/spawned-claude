@@ -30,6 +30,7 @@ export interface CompositionElement {
   editable?: boolean;
   locked?: boolean;
   name?: string;
+  zIndex?: number;
 }
 
 export interface SectionComposition {
