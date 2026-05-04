@@ -146,8 +146,7 @@ function PlanPageInner() {
           } else {
             setLoaded(true);
           }
-        } catch { /* ignore */ }
-        if (!loaded) setLoaded(true);
+        } catch { setLoaded(true); }
       }
     }
   }, [searchParams]);

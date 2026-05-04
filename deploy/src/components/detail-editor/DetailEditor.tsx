@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import { useDetailPage } from '@/hooks/useDetailPage';
-import { ManuscriptSection, ManuscriptSectionType } from '@/lib/types';
+import { ManuscriptSection, ManuscriptSectionType, ProductPhoto } from '@/lib/types';
 import {
   ChevronLeft, Download, ZoomIn, ZoomOut, Undo2, Redo2, Save,
   Plus, Trash2, ChevronUp, ChevronDown, Eye, EyeOff,
@@ -391,6 +391,61 @@ function renderSectionHTML(ctx: RenderCtx): React.ReactNode {
     case 'cta': return <CTASectionHTML key={ctx.section.id} {...ctx} />;
     default: return <GenericSectionHTML key={ctx.section.id} {...ctx} />;
   }
+}
+
+// ─── Image Tool Panel ─────────────────────────────────────────────────────────
+
+function ImageToolPanel({
+  productPhotos,
+  onAddPhoto,
+  onRemovePhoto,
+}: {
+  productPhotos: ProductPhoto[];
+  onAddPhoto: (photo: ProductPhoto) => void;
+  onRemovePhoto: (id: string) => void;
+}) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      if (ev.target?.result) {
+        onAddPhoto({ id: `photo-${Date.now()}`, dataUrl: ev.target.result as string, name: file.name });
+      }
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
+
+  return (
+    <div>
+      <p style={{ fontSize: 11, color: '#636B77', marginBottom: 12, lineHeight: 1.6 }}>업로드한 제품 사진을 관리합니다.</p>
+      <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFileChange} />
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
+        {productPhotos.map((photo, i) => (
+          <div key={photo.id} style={{ borderRadius: 8, overflow: 'hidden', border: '1px solid #2A2A38', aspectRatio: '1', background: '#1A1A24', position: 'relative' }}>
+            <img src={photo.dataUrl} alt={`제품 ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <button
+              onClick={() => onRemovePhoto(photo.id)}
+              style={{ position: 'absolute', top: 4, right: 4, background: 'rgba(0,0,0,0.65)', border: 'none', borderRadius: 4, color: '#fff', fontSize: 10, cursor: 'pointer', padding: '2px 5px', lineHeight: 1 }}
+            >✕</button>
+          </div>
+        ))}
+      </div>
+      {productPhotos.length === 0 && (
+        <div style={{ textAlign: 'center', padding: '24px', color: '#636B77', fontSize: 11 }}>업로드한 이미지가 없습니다</div>
+      )}
+      <button
+        onClick={() => fileInputRef.current?.click()}
+        style={{ width: '100%', padding: '12px', background: '#1A1A24', border: '1px dashed #2A2A38', borderRadius: 10, color: '#636B77', fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+      >
+        <Upload className="w-4 h-4" />
+        이미지 추가
+      </button>
+    </div>
+  );
 }
 
 // ─── Tool Sidebar ─────────────────────────────────────────────────────────────
@@ -860,16 +915,21 @@ export default function DetailEditor() {
   const [historyIndex, setHistoryIndex] = useState(-1);
   const isUndoRedo = useRef(false);
 
+  // historyIndexRef keeps the index in sync with state so pushHistory doesn't close over a stale value
+  const historyIndexRef = useRef(historyIndex);
+  useEffect(() => { historyIndexRef.current = historyIndex; }, [historyIndex]);
+
   const pushHistory = useCallback((sections: ManuscriptSection[], ov: Record<string, SectionOverride>) => {
     if (isUndoRedo.current) return;
+    const currentIndex = historyIndexRef.current;
     setHistory(prev => {
-      const truncated = prev.slice(0, historyIndex + 1);
+      const truncated = prev.slice(0, currentIndex + 1);
       const next = [...truncated, { sections: JSON.parse(JSON.stringify(sections)), overrides: JSON.parse(JSON.stringify(ov)) }];
       if (next.length > MAX_HISTORY) next.shift();
       return next;
     });
     setHistoryIndex(prev => Math.min(prev + 1, MAX_HISTORY - 1));
-  }, [historyIndex]);
+  }, []);
 
   // Track section changes for undo
   const prevSections = useRef<ManuscriptSection[]>(manuscriptSections);
@@ -1020,6 +1080,57 @@ JSON 형식으로 응답하세요:
       setIsAILoading(false);
     }
   }, [selectedSection, selectedOverride, productInfo.name, handleOverrideChange]);
+
+  // ── Full-page AI rewrite (rewrites every visible section sequentially) ──
+  const handleFullPageAIRewrite = useCallback(async () => {
+    if (visibleSections.length === 0) return;
+    setIsAILoading(true);
+    try {
+      for (const section of visibleSections) {
+        const sectionLabel = SECTION_LABELS[section.sectionType];
+        const sectionOverride = overrides[section.id] ?? {};
+        const currentTitle = sectionOverride.title ?? section.title;
+        const currentBody = sectionOverride.body ?? section.body;
+
+        const res = await fetch('/api/interview', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: [{
+              role: 'user',
+              content: `상세페이지의 "${sectionLabel}" 섹션을 더 매력적으로 다시 작성해주세요.\n\n제품명: ${productInfo.name || '제품'}\n현재 제목: ${currentTitle}\n현재 내용: ${currentBody}\n\nJSON 형식으로 응답하세요:\n{"title": "새 제목", "body": "새 내용"}`,
+            }],
+            systemPrompt: '당신은 상품 상세페이지 카피라이터입니다. 주어진 섹션을 더 매력적으로 다시 작성하고 JSON으로 응답하세요.',
+          }),
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          const text = data.message || data.content || '';
+          try {
+            const jsonMatch = text.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+              const parsed = JSON.parse(jsonMatch[0]);
+              if (parsed.title || parsed.body) {
+                setOverrides(prev => ({
+                  ...prev,
+                  [section.id]: {
+                    ...prev[section.id],
+                    title: parsed.title || currentTitle,
+                    body: parsed.body || currentBody,
+                  },
+                }));
+              }
+            }
+          } catch { /* ignore parse errors */ }
+        }
+      }
+    } catch (e) {
+      console.error('Full page AI rewrite failed:', e);
+    } finally {
+      setIsAILoading(false);
+    }
+  }, [visibleSections, overrides, productInfo.name]);
 
   // ── Save ──
   const handleSave = useCallback(async () => {
@@ -1246,12 +1357,13 @@ JSON 형식으로 응답하세요:
                   <div>
                     <div style={{ fontSize: 10, color: '#636B77', marginBottom: 6 }}>추천 스킴</div>
                     {[
-                      { name: '딥 네이비', colors: ['#111827', '#1F2937', '#E5E7EB', '#3182F6'] },
-                      { name: '내추럴 그린', colors: ['#1b3a2d', '#2d5a42', '#F0FDF4', '#16a34a'] },
-                      { name: '웜 브라운', colors: ['#292524', '#44403C', '#FAFAF9', '#D97706'] },
+                      { name: '딥 네이비', colors: ['#111827', '#1F2937', '#E5E7EB', '#3182F6'], palette: { colors: [{ hex: '#111827', label: '딥 네이비' }, { hex: '#1F2937', label: '다크 그레이' }, { hex: '#E5E7EB', label: '라이트 그레이' }], accent: { hex: '#3182F6', label: '블루 액센트' }, rationale: '딥 네이비 스킴' } },
+                      { name: '내추럴 그린', colors: ['#1b3a2d', '#2d5a42', '#F0FDF4', '#16a34a'], palette: { colors: [{ hex: '#1b3a2d', label: '딥 그린' }, { hex: '#2d5a42', label: '포레스트 그린' }, { hex: '#F0FDF4', label: '민트 화이트' }], accent: { hex: '#16a34a', label: '그린 액센트' }, rationale: '내추럴 그린 스킴' } },
+                      { name: '웜 브라운', colors: ['#292524', '#44403C', '#FAFAF9', '#D97706'], palette: { colors: [{ hex: '#292524', label: '다크 브라운' }, { hex: '#44403C', label: '미디엄 브라운' }, { hex: '#FAFAF9', label: '오프 화이트' }], accent: { hex: '#D97706', label: '앰버 액센트' }, rationale: '웜 브라운 스킴' } },
                     ].map(scheme => (
                       <button
                         key={scheme.name}
+                        onClick={() => dispatch({ type: 'SET_COLOR_PALETTE', payload: scheme.palette })}
                         style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px', background: '#1A1A24', border: '1px solid #2A2A38', borderRadius: 10, cursor: 'pointer', marginBottom: 6 }}
                         onMouseEnter={e => (e.currentTarget.style.borderColor = '#3182F6')}
                         onMouseLeave={e => (e.currentTarget.style.borderColor = '#2A2A38')}
@@ -1270,23 +1382,11 @@ JSON 형식으로 응답하세요:
 
               {/* IMAGE tool */}
               {activeTool === 'image' && (
-                <div>
-                  <p style={{ fontSize: 11, color: '#636B77', marginBottom: 12, lineHeight: 1.6 }}>업로드한 제품 사진을 관리합니다.</p>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
-                    {productPhotos.map((photo: any, i: number) => (
-                      <div key={i} style={{ borderRadius: 8, overflow: 'hidden', border: '1px solid #2A2A38', aspectRatio: '1', background: '#1A1A24' }}>
-                        <img src={photo.dataUrl} alt={`제품 ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      </div>
-                    ))}
-                  </div>
-                  {productPhotos.length === 0 && (
-                    <div style={{ textAlign: 'center', padding: '24px', color: '#636B77', fontSize: 11 }}>업로드한 이미지가 없습니다</div>
-                  )}
-                  <button style={{ width: '100%', padding: '12px', background: '#1A1A24', border: '1px dashed #2A2A38', borderRadius: 10, color: '#636B77', fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-                    <Upload className="w-4 h-4" />
-                    이미지 추가
-                  </button>
-                </div>
+                <ImageToolPanel
+                  productPhotos={productPhotos}
+                  onAddPhoto={photo => dispatch({ type: 'ADD_PRODUCT_PHOTO', payload: photo })}
+                  onRemovePhoto={id => dispatch({ type: 'REMOVE_PRODUCT_PHOTO', payload: id })}
+                />
               )}
 
               {/* AI tool */}
@@ -1302,17 +1402,29 @@ JSON 형식으로 응답하세요:
                       <Sparkles className="w-4 h-4" />
                       {isAILoading ? '생성 중...' : '선택 섹션 AI 재작성'}
                     </button>
-                    <button style={{ width: '100%', padding: '12px', background: '#1A1A24', border: '1px solid #2A2A38', borderRadius: 10, color: '#C9D1D9', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                    <button
+                      onClick={handleFullPageAIRewrite}
+                      disabled={isAILoading}
+                      style={{ width: '100%', padding: '12px', background: '#1A1A24', border: '1px solid #2A2A38', borderRadius: 10, color: isAILoading ? '#636B77' : '#C9D1D9', fontSize: 12, fontWeight: 600, cursor: isAILoading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, opacity: isAILoading ? 0.6 : 1 }}
+                    >
                       <Wand2 className="w-4 h-4" />
-                      전체 페이지 AI 개선
+                      {isAILoading ? '생성 중...' : '전체 페이지 AI 개선'}
                     </button>
-                    <button style={{ width: '100%', padding: '12px', background: '#1A1A24', border: '1px solid #2A2A38', borderRadius: 10, color: '#C9D1D9', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                    <button
+                      disabled
+                      title="준비 중"
+                      style={{ width: '100%', padding: '12px', background: '#1A1A24', border: '1px solid #2A2A38', borderRadius: 10, color: '#3A3A4A', fontSize: 12, fontWeight: 600, cursor: 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, opacity: 0.5 }}
+                    >
                       <ImageIcon className="w-4 h-4" />
-                      AI 이미지 생성
+                      AI 이미지 생성 (준비 중)
                     </button>
-                    <button style={{ width: '100%', padding: '12px', background: '#1A1A24', border: '1px solid #2A2A38', borderRadius: 10, color: '#C9D1D9', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                    <button
+                      disabled
+                      title="준비 중"
+                      style={{ width: '100%', padding: '12px', background: '#1A1A24', border: '1px solid #2A2A38', borderRadius: 10, color: '#3A3A4A', fontSize: 12, fontWeight: 600, cursor: 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, opacity: 0.5 }}
+                    >
                       <Search className="w-4 h-4" />
-                      경쟁사 재분석
+                      경쟁사 재분석 (준비 중)
                     </button>
                   </div>
                 </div>

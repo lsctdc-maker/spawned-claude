@@ -34,6 +34,7 @@ export default function CompositionRenderer({
 }: CompositionRendererProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dragState, setDragState] = useState<{ id: string; startX: number; startY: number; elX: number; elY: number; scale: number } | null>(null);
+  const [resizeState, setResizeState] = useState<{ id: string; startX: number; startY: number; startW: number; startH: number; corner: string; scale: number } | null>(null);
 
   const handleMouseDown = useCallback((e: React.MouseEvent, el: CompositionElement) => {
     if (el.locked) return; // let click propagate to section wrapper → selects section
@@ -52,14 +53,24 @@ export default function CompositionRenderer({
   }, [onSelectElement]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!dragState) return;
-    // Convert screen-space delta to composition-space delta using stored scale
-    const dx = (e.clientX - dragState.startX) / dragState.scale;
-    const dy = (e.clientY - dragState.startY) / dragState.scale;
-    onUpdateElement(dragState.id, { x: dragState.elX + dx, y: dragState.elY + dy });
-  }, [dragState, onUpdateElement]);
+    if (dragState) {
+      // Convert screen-space delta to composition-space delta using stored scale
+      const dx = (e.clientX - dragState.startX) / dragState.scale;
+      const dy = (e.clientY - dragState.startY) / dragState.scale;
+      onUpdateElement(dragState.id, { x: dragState.elX + dx, y: dragState.elY + dy });
+    } else if (resizeState) {
+      const dx = (e.clientX - resizeState.startX) / resizeState.scale;
+      const dy = (e.clientY - resizeState.startY) / resizeState.scale;
+      const newW = Math.max(20, resizeState.startW + dx);
+      const newH = Math.max(20, resizeState.startH + dy);
+      onUpdateElement(resizeState.id, { width: newW, height: newH });
+    }
+  }, [dragState, resizeState, onUpdateElement]);
 
-  const handleMouseUp = useCallback(() => { setDragState(null); }, []);
+  const handleMouseUp = useCallback(() => {
+    setDragState(null);
+    setResizeState(null);
+  }, []);
 
   const renderElement = (el: CompositionElement) => {
     const isSelected = el.id === selectedElementId;
@@ -179,17 +190,27 @@ export default function CompositionRenderer({
         const el = composition.elements.find(e => e.id === selectedElementId);
         if (!el || el.locked) return null;
         const handles = [
-          { cursor: 'nw-resize', x: el.x - 4, y: el.y - 4 },
-          { cursor: 'ne-resize', x: el.x + el.width - 4, y: el.y - 4 },
-          { cursor: 'sw-resize', x: el.x - 4, y: el.y + el.height - 4 },
-          { cursor: 'se-resize', x: el.x + el.width - 4, y: el.y + el.height - 4 },
+          { cursor: 'nw-resize', x: el.x - 4, y: el.y - 4, corner: 'nw' },
+          { cursor: 'ne-resize', x: el.x + el.width - 4, y: el.y - 4, corner: 'ne' },
+          { cursor: 'sw-resize', x: el.x - 4, y: el.y + el.height - 4, corner: 'sw' },
+          { cursor: 'se-resize', x: el.x + el.width - 4, y: el.y + el.height - 4, corner: 'se' },
         ];
         return handles.map((h, i) => (
-          <div key={`handle-${i}`} style={{
-            position: 'absolute', left: h.x, top: h.y,
-            width: 8, height: 8, background: '#3182F6', borderRadius: 2,
-            cursor: h.cursor, zIndex: 999,
-          }} />
+          <div
+            key={`handle-${i}`}
+            style={{
+              position: 'absolute', left: h.x, top: h.y,
+              width: 8, height: 8, background: '#3182F6', borderRadius: 2,
+              cursor: h.cursor, zIndex: 999,
+            }}
+            onMouseDown={e => {
+              e.stopPropagation();
+              const rect = containerRef.current?.getBoundingClientRect();
+              if (!rect) return;
+              const scale = rect.width / (containerRef.current?.offsetWidth || rect.width || 1);
+              setResizeState({ id: el.id, startX: e.clientX, startY: e.clientY, startW: el.width, startH: el.height, corner: h.corner, scale: scale || 1 });
+            }}
+          />
         ));
       })()}
     </div>
